@@ -220,7 +220,7 @@ body .app-shell::after {
 }
 
 /* ============================================================
-   SCOREBOARD – VOLLE BREITE (wie Stadion-Anzeigetafel)
+   SCOREBOARD – VOLLE BREITE (Stadion-Anzeigetafel)
    ============================================================ */
 .scoreboard {
   display: flex;
@@ -330,17 +330,18 @@ body .app-shell::after {
   display: none;
 }
 
+/* ---- ×-Button zum Entfernen des Team-Logos (nur bei Hover sichtbar) ---- */
 .team-logo-wrapper .remove-logo-btn {
   position: absolute;
   top: -6px;
   right: -6px;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   background: rgba(0,0,0,0.85);
   color: white;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 900;
   line-height: 1;
   padding: 0;
@@ -356,7 +357,6 @@ body .app-shell::after {
   background: var(--bundesliga-red);
 }
 
-/* Teamnamen – riesig, immer vollständig sichtbar */
 .team-name {
   font-size: clamp(1.8rem, 4.5vw, 4.8rem);
   font-weight: 900;
@@ -465,7 +465,6 @@ body .app-shell::after {
   align-items: stretch;
 }
 
-/* Container für Feld + Thesen (nebeneinander auf Desktop) */
 .field-thesis-wrapper {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -474,8 +473,6 @@ body .app-shell::after {
   width: 100%;
   transition: grid-template-columns 0.3s ease;
 }
-
-/* Wenn Thesen ausgeblendet: Feld zentriert */
 .field-thesis-wrapper.thesis-hidden {
   grid-template-columns: 1fr;
   justify-items: center;
@@ -635,6 +632,7 @@ body .app-shell::after {
   object-position: center bottom;
   padding: 4px;
 }
+/* ×-Button zum Entfernen des Figurenfotos */
 .remove-player-photo {
   position: absolute;
   top: 6px;
@@ -651,6 +649,10 @@ body .app-shell::after {
   cursor: pointer;
   font-size: 0.85rem;
   padding: 0;
+  transition: background 0.2s;
+}
+.remove-player-photo:hover {
+  background: var(--bundesliga-red);
 }
 
 .drop-cell {
@@ -878,7 +880,7 @@ body .app-shell::after {
 }
 
 /* ============================================================
-   SETTINGS DIALOG (unverändert)
+   SETTINGS DIALOG
    ============================================================ */
 .settings-dialog {
   width: min(920px, calc(100% - 28px));
@@ -905,10 +907,32 @@ body .app-shell::after {
   padding: 18px;
 }
 
+/* ×-Button zum Schließen des Dialogs */
+.close-button {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  min-height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 6px;
+  background: var(--bundesliga-black);
+  color: var(--white);
+  padding: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.close-button:hover {
+  background: var(--bundesliga-red);
+  transform: scale(1.05);
+}
+
 .results-panel {
   display: grid;
   gap: 10px;
 }
+
 .evaluation-list {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -952,6 +976,7 @@ body .app-shell::after {
 .evaluation-controls button:hover {
   background: rgba(255, 255, 255, 0.15);
 }
+/* Aktive Zustände für die Bewertungsbuttons */
 .evaluation-controls .neutral-button.active {
   background: var(--bundesliga-gold);
   color: var(--bundesliga-black);
@@ -1085,12 +1110,8 @@ body .app-shell::after {
 }
 
 /* ============================================================
-   RESPONSIVE:
-   - Desktop (>1024px): Scoreboard oben, Feld + Thesen nebeneinander
-   - Tablet & Handy (<1024px): Alle 3 Module untereinander
+   RESPONSIVE – speziell für Tablets & Handys
    ============================================================ */
-
-/* Desktop: Feld + Thesen nebeneinander */
 @media (min-width: 1025px) {
   .field-thesis-wrapper {
     grid-template-columns: auto 1fr;
@@ -1100,468 +1121,141 @@ body .app-shell::after {
   }
 }
 
-/* Tablet & Handy: Alles untereinander */
 @media (max-width: 1024px) {
-  .app-shell {
-    padding: 16px 0 24px;
-  }
-  .board-panel {
-    padding: 14px;
-  }
-  .game-layout {
-    gap: 16px;
-  }
-
-  /* Alle Module untereinander */
+  .app-shell { padding: 16px 0 24px; }
+  .board-panel { padding: 14px; }
+  .game-layout { gap: 16px; }
   .field-thesis-wrapper {
     grid-template-columns: 1fr;
     gap: 16px;
     justify-items: center;
   }
-  .field-thesis-wrapper.thesis-hidden {
-    grid-template-columns: 1fr;
-  }
-  .field-wrap {
-    justify-self: center;
-  }
-  .thesis-panel {
-    width: 100%;
-    min-height: 300px;
-  }
+  .field-thesis-wrapper.thesis-hidden { grid-template-columns: 1fr; }
+  .field-wrap { justify-self: center; }
+  .thesis-panel { width: 100%; min-height: 300px; }
 
-  /* Scoreboard etwas kompakter */
-  .scorebug {
-    padding: 12px 18px 10px;
-    border-radius: 16px;
-  }
-  .score-row {
-    gap: 12px;
-    padding: 2px 0;
-  }
-  .team-name {
-    font-size: clamp(1.6rem, 3.5vw, 2.8rem);
-    max-width: 35vw;
-  }
-  .score-core {
-    min-height: 60px;
-    min-width: 100px;
-    padding: 0 16px;
-  }
-  .score-core span {
-    font-size: clamp(2.8rem, 6vw, 4.4rem);
-  }
-  .team-logo-wrapper {
-    width: 34px;
-    height: 34px;
-  }
-  .league-logo-wrapper {
-    width: 30px;
-    height: 30px;
-  }
-  .league-logo-wrapper img {
-    width: 22px;
-  }
+  .scorebug { padding: 12px 18px 10px; border-radius: 16px; }
+  .score-row { gap: 12px; padding: 2px 0; }
+  .team-name { font-size: clamp(1.6rem, 3.5vw, 2.8rem); max-width: 35vw; }
+  .score-core { min-height: 60px; min-width: 100px; padding: 0 16px; }
+  .score-core span { font-size: clamp(2.8rem, 6vw, 4.4rem); }
+  .team-logo-wrapper { width: 34px; height: 34px; }
+  .league-logo-wrapper { width: 30px; height: 30px; }
+  .league-logo-wrapper img { width: 22px; }
+  .ticker-row { font-size: 0.55rem; min-height: 20px; gap: 8px; }
+  .ticker-label { width: 50px; font-size: 0.35rem; }
 
-  /* Ticker kleiner */
-  .ticker-row {
-    font-size: 0.55rem;
-    min-height: 20px;
-    gap: 8px;
-  }
-  .ticker-label {
-    width: 50px;
-    font-size: 0.35rem;
-  }
+  .chess-grid { --cell-size: clamp(56px, min(7vw, 14vh), 90px); }
+  .grid-cell { padding: 4px; }
+  .piece-svg { max-width: 50px; }
+  .placed-chip { font-size: clamp(0.4rem, 0.5vw, 0.55rem); padding: 8px 4px 4px; }
+  .chip-score { font-size: 0.45rem; min-width: 14px; min-height: 12px; padding: 1px 3px; }
+  .chip-watermark { font-size: clamp(0.8rem, calc(var(--cell-size) * 0.18), 1.6rem); }
+  .field-watermark { font-size: clamp(0.8rem, calc(var(--cell-size) * 0.18), 1.6rem); }
+  .cell-value { font-size: clamp(0.7rem, calc(var(--cell-size) * 0.12), 1rem); }
 
-  /* Spielfeld anpassen */
-  .chess-grid {
-    --cell-size: clamp(56px, min(7vw, 14vh), 90px);
-  }
-  .grid-cell {
-    padding: 4px;
-  }
-  .piece-svg {
-    max-width: 50px;
-  }
-  .placed-chip {
-    font-size: clamp(0.4rem, 0.5vw, 0.55rem);
-    padding: 8px 4px 4px;
-  }
-  .chip-score {
-    font-size: 0.45rem;
-    min-width: 14px;
-    min-height: 12px;
-    padding: 1px 3px;
-  }
-  .chip-watermark {
-    font-size: clamp(0.8rem, calc(var(--cell-size) * 0.18), 1.6rem);
-  }
-  .field-watermark {
-    font-size: clamp(0.8rem, calc(var(--cell-size) * 0.18), 1.6rem);
-  }
-  .cell-value {
-    font-size: clamp(0.7rem, calc(var(--cell-size) * 0.12), 1rem);
-  }
+  .thesis-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .thesis-card { height: calc(var(--cell-size) * 0.85); font-size: 0.7rem; }
+  .thesis-card .thesis-title { font-size: 0.75rem; }
+  .thesis-panel { min-height: 320px; padding: 12px; }
 
-  /* Thesis-Panel anpassen */
-  .thesis-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .thesis-card {
-    height: calc(var(--cell-size) * 0.85);
-    font-size: 0.7rem;
-  }
-  .thesis-card .thesis-title {
-    font-size: 0.75rem;
-  }
-  .thesis-panel {
-    min-height: 320px;
-    padding: 12px;
-  }
-
-  /* Einstellungen Dialog anpassen */
-  .settings-dialog {
-    width: calc(100% - 20px);
-    max-height: calc(100vh - 20px);
-  }
-  .settings-shell {
-    padding: 14px;
-    gap: 12px;
-  }
-  .evaluation-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .results-grid {
-    grid-template-columns: 1fr;
-  }
+  .settings-dialog { width: calc(100% - 20px); max-height: calc(100vh - 20px); }
+  .settings-shell { padding: 14px; gap: 12px; }
+  .evaluation-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .results-grid { grid-template-columns: 1fr; }
 }
 
-/* Kleine Tablets und große Handys */
 @media (max-width: 820px) {
-  .app-shell {
-    padding: 10px 0 16px;
-  }
-  .board-panel {
-    padding: 10px;
-  }
-  .topbar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-  .topbar .action-buttons {
-    justify-content: flex-start;
-  }
+  .app-shell { padding: 10px 0 16px; }
+  .board-panel { padding: 10px; }
+  .topbar { flex-direction: column; align-items: stretch; gap: 8px; }
+  .topbar .action-buttons { justify-content: flex-start; }
 
-  .scorebug {
-    padding: 10px 14px 8px;
-    border-radius: 14px;
-  }
-  .score-row {
-    gap: 8px;
-  }
-  .team-name {
-    font-size: clamp(1.2rem, 2.8vw, 2rem);
-    max-width: 30vw;
-  }
-  .score-core {
-    min-height: 48px;
-    min-width: 76px;
-    padding: 0 10px;
-  }
-  .score-core span {
-    font-size: clamp(2rem, 5vw, 3.2rem);
-  }
-  .team-logo-wrapper {
-    width: 28px;
-    height: 28px;
-  }
-  .team-logo-wrapper .remove-logo-btn {
-    width: 14px;
-    height: 14px;
-    font-size: 8px;
-    top: -4px;
-    right: -4px;
-  }
-  .league-logo-wrapper {
-    width: 24px;
-    height: 24px;
-  }
-  .league-logo-wrapper img {
-    width: 18px;
-  }
-  .scoreboard-title .live-badge {
-    font-size: 0.4rem;
-  }
-  .scoreboard-title .season {
-    font-size: 0.4rem;
-  }
+  .scorebug { padding: 10px 14px 8px; border-radius: 14px; }
+  .score-row { gap: 8px; }
+  .team-name { font-size: clamp(1.2rem, 2.8vw, 2rem); max-width: 30vw; }
+  .score-core { min-height: 48px; min-width: 76px; padding: 0 10px; }
+  .score-core span { font-size: clamp(2rem, 5vw, 3.2rem); }
+  .team-logo-wrapper { width: 28px; height: 28px; }
+  .team-logo-wrapper .remove-logo-btn { width: 14px; height: 14px; font-size: 8px; top: -4px; right: -4px; }
+  .league-logo-wrapper { width: 24px; height: 24px; }
+  .league-logo-wrapper img { width: 18px; }
+  .scoreboard-title .live-badge { font-size: 0.4rem; }
+  .scoreboard-title .season { font-size: 0.4rem; }
 
-  .ticker-row {
-    font-size: 0.5rem;
-    gap: 6px;
-    flex-wrap: wrap;
-    min-height: 18px;
-  }
-  .ticker-label {
-    width: 40px;
-    font-size: 0.3rem;
-  }
-  .ticker-content {
-    font-size: 0.5rem;
-    gap: 2px 8px;
-  }
-  .ticker-footer {
-    font-size: 0.4rem;
-    gap: 4px;
-  }
-  .live-dot {
-    font-size: 0.6rem;
-  }
+  .ticker-row { font-size: 0.5rem; gap: 6px; flex-wrap: wrap; min-height: 18px; }
+  .ticker-label { width: 40px; font-size: 0.3rem; }
+  .ticker-content { font-size: 0.5rem; gap: 2px 8px; }
+  .ticker-footer { font-size: 0.4rem; gap: 4px; }
+  .live-dot { font-size: 0.6rem; }
 
-  .chess-grid {
-    --cell-size: clamp(44px, calc((100vw - 40px) / 5), 72px);
-  }
-  .grid-cell {
-    padding: 3px;
-  }
-  .piece-svg {
-    max-width: 36px;
-  }
-  .placed-chip {
-    font-size: clamp(0.35rem, 0.4vw, 0.45rem);
-    padding: 6px 3px 3px;
-  }
-  .chip-score {
-    font-size: 0.35rem;
-    min-width: 12px;
-    min-height: 10px;
-    padding: 0 2px;
-  }
-  .chip-watermark {
-    font-size: clamp(0.6rem, calc(var(--cell-size) * 0.15), 1.2rem);
-    top: 3px;
-    left: 4px;
-  }
-  .field-watermark {
-    font-size: clamp(0.6rem, calc(var(--cell-size) * 0.15), 1.2rem);
-    right: 4px;
-    bottom: 4px;
-  }
-  .cell-value {
-    font-size: clamp(0.5rem, calc(var(--cell-size) * 0.1), 0.8rem);
-  }
+  .chess-grid { --cell-size: clamp(44px, calc((100vw - 40px) / 5), 72px); }
+  .grid-cell { padding: 3px; }
+  .piece-svg { max-width: 36px; }
+  .placed-chip { font-size: clamp(0.35rem, 0.4vw, 0.45rem); padding: 6px 3px 3px; }
+  .chip-score { font-size: 0.35rem; min-width: 12px; min-height: 10px; padding: 0 2px; }
+  .chip-watermark { font-size: clamp(0.6rem, calc(var(--cell-size) * 0.15), 1.2rem); top: 3px; left: 4px; }
+  .field-watermark { font-size: clamp(0.6rem, calc(var(--cell-size) * 0.15), 1.2rem); right: 4px; bottom: 4px; }
+  .cell-value { font-size: clamp(0.5rem, calc(var(--cell-size) * 0.1), 0.8rem); }
 
-  .thesis-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .thesis-card {
-    height: calc(var(--cell-size) * 0.7);
-    font-size: 0.6rem;
-  }
-  .thesis-card .thesis-title {
-    font-size: 0.65rem;
-  }
-  .thesis-panel {
-    min-height: 240px;
-    padding: 10px;
-  }
-  .thesis-head h2 {
-    font-size: 0.85rem;
-  }
+  .thesis-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .thesis-card { height: calc(var(--cell-size) * 0.7); font-size: 0.6rem; }
+  .thesis-card .thesis-title { font-size: 0.65rem; }
+  .thesis-panel { min-height: 240px; padding: 10px; }
+  .thesis-head h2 { font-size: 0.85rem; }
 
-  .evaluation-list {
-    grid-template-columns: 1fr;
-  }
-  .result-row {
-    grid-template-columns: 50px 1fr;
-  }
-  .settings-dialog {
-    width: calc(100% - 12px);
-  }
-  .settings-shell {
-    padding: 10px;
-    gap: 10px;
-  }
+  .evaluation-list { grid-template-columns: 1fr; }
+  .result-row { grid-template-columns: 50px 1fr; }
+  .settings-dialog { width: calc(100% - 12px); }
+  .settings-shell { padding: 10px; gap: 10px; }
 }
 
-/* Kleine Handys */
 @media (max-width: 480px) {
-  .app-shell {
-    padding: 6px 0 12px;
-    width: calc(100% - 8px);
-  }
-  .board-panel {
-    padding: 6px;
-  }
-  .scorebug {
-    padding: 8px 10px 6px;
-    border-radius: 10px;
-  }
-  .score-row {
-    gap: 4px;
-  }
-  .team-name {
-    font-size: clamp(0.8rem, 2.4vw, 1.2rem);
-    max-width: 40vw;
-  }
-  .score-core {
-    min-height: 34px;
-    min-width: 52px;
-    padding: 0 6px;
-    border-radius: 8px;
-  }
-  .score-core span {
-    font-size: clamp(1.4rem, 4.2vw, 2.2rem);
-  }
-  .score-separator {
-    padding: 0 1px;
-  }
-  .team-logo-wrapper {
-    width: 20px;
-    height: 20px;
-  }
-  .team-logo-wrapper .remove-logo-btn {
-    width: 12px;
-    height: 12px;
-    font-size: 7px;
-    top: -3px;
-    right: -3px;
-  }
-  .league-logo-wrapper {
-    width: 18px;
-    height: 18px;
-  }
-  .league-logo-wrapper img {
-    width: 14px;
-  }
-  .scoreboard-title .live-badge {
-    font-size: 0.35rem;
-  }
-  .scoreboard-title .season {
-    font-size: 0.35rem;
-  }
+  .app-shell { padding: 6px 0 12px; width: calc(100% - 8px); }
+  .board-panel { padding: 6px; }
+  .scorebug { padding: 8px 10px 6px; border-radius: 10px; }
+  .score-row { gap: 4px; }
+  .team-name { font-size: clamp(0.8rem, 2.4vw, 1.2rem); max-width: 40vw; }
+  .score-core { min-height: 34px; min-width: 52px; padding: 0 6px; border-radius: 8px; }
+  .score-core span { font-size: clamp(1.4rem, 4.2vw, 2.2rem); }
+  .score-separator { padding: 0 1px; }
+  .team-logo-wrapper { width: 20px; height: 20px; }
+  .team-logo-wrapper .remove-logo-btn { width: 12px; height: 12px; font-size: 7px; top: -3px; right: -3px; }
+  .league-logo-wrapper { width: 18px; height: 18px; }
+  .league-logo-wrapper img { width: 14px; }
+  .scoreboard-title .live-badge { font-size: 0.35rem; }
+  .scoreboard-title .season { font-size: 0.35rem; }
 
-  .ticker-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-    font-size: 0.45rem;
-    padding: 2px 4px;
-    min-height: 16px;
-  }
-  .ticker-label {
-    width: auto;
-    font-size: 0.3rem;
-  }
-  .ticker-content {
-    font-size: 0.45rem;
-  }
-  .ticker-footer {
-    font-size: 0.35rem;
-    gap: 3px;
-    padding-top: 2px;
-  }
-  .live-dot {
-    font-size: 0.5rem;
-  }
+  .ticker-row { flex-direction: column; align-items: flex-start; gap: 2px; font-size: 0.45rem; padding: 2px 4px; min-height: 16px; }
+  .ticker-label { width: auto; font-size: 0.3rem; }
+  .ticker-content { font-size: 0.45rem; }
+  .ticker-footer { font-size: 0.35rem; gap: 3px; padding-top: 2px; }
+  .live-dot { font-size: 0.5rem; }
 
-  .chess-grid {
-    --cell-size: clamp(32px, calc((100vw - 24px) / 5), 50px);
-  }
-  .grid-cell {
-    padding: 2px;
-  }
-  .piece-svg {
-    max-width: 28px;
-  }
-  .placed-chip {
-    font-size: clamp(0.3rem, 0.35vw, 0.4rem);
-    padding: 4px 2px 2px;
-    border-radius: 3px;
-  }
-  .chip-score {
-    font-size: 0.3rem;
-    min-width: 10px;
-    min-height: 8px;
-    padding: 0 2px;
-    top: 2px;
-    right: 2px;
-    border-radius: 999px;
-  }
-  .chip-watermark {
-    font-size: clamp(0.5rem, calc(var(--cell-size) * 0.12), 0.9rem);
-    top: 2px;
-    left: 3px;
-  }
-  .field-watermark {
-    font-size: clamp(0.5rem, calc(var(--cell-size) * 0.12), 0.9rem);
-    right: 3px;
-    bottom: 3px;
-  }
-  .cell-value {
-    font-size: clamp(0.4rem, calc(var(--cell-size) * 0.08), 0.6rem);
-  }
+  .chess-grid { --cell-size: clamp(32px, calc((100vw - 24px) / 5), 50px); }
+  .grid-cell { padding: 2px; }
+  .piece-svg { max-width: 28px; }
+  .placed-chip { font-size: clamp(0.3rem, 0.35vw, 0.4rem); padding: 4px 2px 2px; border-radius: 3px; }
+  .chip-score { font-size: 0.3rem; min-width: 10px; min-height: 8px; padding: 0 2px; top: 2px; right: 2px; }
+  .chip-watermark { font-size: clamp(0.5rem, calc(var(--cell-size) * 0.12), 0.9rem); top: 2px; left: 3px; }
+  .field-watermark { font-size: clamp(0.5rem, calc(var(--cell-size) * 0.12), 0.9rem); right: 3px; bottom: 3px; }
+  .cell-value { font-size: clamp(0.4rem, calc(var(--cell-size) * 0.08), 0.6rem); }
 
-  .thesis-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 4px;
-  }
-  .thesis-card {
-    height: calc(var(--cell-size) * 0.6);
-    font-size: 0.5rem;
-    padding: 4px;
-  }
-  .thesis-card .thesis-title {
-    font-size: 0.55rem;
-  }
-  .thesis-panel {
-    min-height: 160px;
-    padding: 6px;
-  }
-  .thesis-head h2 {
-    font-size: 0.7rem;
-  }
-  .thesis-head .eyebrow {
-    font-size: 0.45rem;
-  }
+  .thesis-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+  .thesis-card { height: calc(var(--cell-size) * 0.6); font-size: 0.5rem; padding: 4px; }
+  .thesis-card .thesis-title { font-size: 0.55rem; }
+  .thesis-panel { min-height: 160px; padding: 6px; }
+  .thesis-head h2 { font-size: 0.7rem; }
+  .thesis-head .eyebrow { font-size: 0.45rem; }
 
-  .settings-dialog {
-    width: calc(100% - 8px);
-    max-height: calc(100vh - 8px);
-  }
-  .settings-shell {
-    padding: 8px;
-    gap: 8px;
-  }
-  .evaluation-controls button {
-    font-size: 0.6rem;
-    min-height: 22px;
-  }
-  .result-row {
-    grid-template-columns: 40px 1fr;
-    gap: 4px;
-  }
-  .result-row label {
-    font-size: 0.6rem;
-  }
-  .result-row input {
-    min-height: 24px;
-    font-size: 0.7rem;
-  }
-  .storage-card span,
-  .storage-status {
-    font-size: 0.65rem;
-  }
-  .import-export-actions button {
-    font-size: 0.6rem;
-    min-height: 24px;
-  }
-  .randomizer-card button {
-    font-size: 0.65rem;
-    min-height: 28px;
-  }
-  .randomizer-card span {
-    font-size: 0.7rem;
-  }
+  .settings-dialog { width: calc(100% - 8px); max-height: calc(100vh - 8px); }
+  .settings-shell { padding: 8px; gap: 8px; }
+  .evaluation-controls button { font-size: 0.6rem; min-height: 22px; }
+  .result-row { grid-template-columns: 40px 1fr; gap: 4px; }
+  .result-row label { font-size: 0.6rem; }
+  .result-row input { min-height: 24px; font-size: 0.7rem; }
+  .storage-card span, .storage-status { font-size: 0.65rem; }
+  .import-export-actions button { font-size: 0.6rem; min-height: 24px; }
+  .randomizer-card button { font-size: 0.65rem; min-height: 28px; }
+  .randomizer-card span { font-size: 0.7rem; }
 }
