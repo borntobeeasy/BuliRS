@@ -440,32 +440,12 @@ function renderRandomizerState() {
     : formatNumber(state.questionValue);
 }
 
-// ---- NEUE TICKER-FUNKTIONEN ----
-function renderPiecePoints() {
-  const container = document.getElementById('piecePointsDisplay');
-  if (!container) return;
-  let html = '';
-  SIDES.forEach(side => {
-    const label = side === 'white' ? '⚪' : '⚫';
-    const points = PIECES.map(p => {
-      const val = getPlayerScore(side, p.id);
-      const cls = getScoreTone(val);
-      const icon = p.id === 'rook' ? '♜' :
-                   p.id === 'bishop' ? '♝' :
-                   p.id === 'knight' ? '♞' :
-                   p.id === 'queen' ? '♛' : '♚';
-      return `<span class="piece-tag"><span class="icon">${icon}</span><span class="value ${cls}">${formatNumber(val)}</span></span>`;
-    }).join('');
-    html += `<span style="display:contents;"><span style="font-weight:700;margin-right:4px;">${label}</span>${points}</span>`;
-  });
-  container.innerHTML = html;
-}
-
+// ---- TICKER-FUNKTIONEN (nur Thesen & Randomizer) ----
 function renderThesisStatus() {
   const container = document.getElementById('thesisStatusDisplay');
   if (!container) return;
   const placed = state.assignments.filter(a => a.side && a.piece).length;
-  const total = state.assignments.length;
+  const total = 10; // fest auf 10, da 5 Figuren * 2 Seiten = 10 Plätze
   const evaluated = state.assignments.filter(a => a.polarity).length;
   container.innerHTML = `
     <span>📋 <strong>${placed}</strong> von <strong>${total}</strong> platziert</span>
@@ -492,8 +472,7 @@ function render() {
   renderTotals();
   renderRandomizerState();
   renderTeamLogos();
-  // Neue Ticker
-  renderPiecePoints();
+  // Ticker
   renderThesisStatus();
   renderRandomizerStatus();
   fitAllCardText();
@@ -632,6 +611,37 @@ function handleFigurePick(e) {
 }
 
 // ============================
+//  LOGO DRAG & DROP (Team-Logos)
+// ============================
+document.querySelectorAll('.team-logo-wrapper').forEach(wrapper => {
+  wrapper.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    wrapper.classList.add('drag-over');
+  });
+  wrapper.addEventListener('dragleave', (e) => {
+    wrapper.classList.remove('drag-over');
+  });
+  wrapper.addEventListener('drop', (e) => {
+    e.preventDefault();
+    wrapper.classList.remove('drag-over');
+    const team = wrapper.dataset.team;
+    const file = [...e.dataTransfer.files].find(f => f.type.startsWith('image/'));
+    if (file) {
+      handleLogoUpload(team, file);
+    } else {
+      const url = getDroppedImageUrl(e.dataTransfer);
+      if (url) {
+        // URL als Logo setzen (z.B. von extern)
+        teamLogos[team] = url;
+        saveTeamLogos();
+        renderTeamLogos();
+        renderTotals();
+      }
+    }
+  });
+});
+
+// ============================
 //  EXPORT / IMPORT
 // ============================
 function getFullExportPayload() {
@@ -751,7 +761,7 @@ function importAllData(file) {
 // ============================
 //  EVENT-LISTENER
 // ============================
-// Team-Logos
+// Team-Logos (Upload-Button + Remove)
 document.addEventListener('DOMContentLoaded', () => {
   loadTeamLogos();
   renderTeamLogos();

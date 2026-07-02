@@ -20,10 +20,10 @@
         </header>
 
         <div class="game-layout">
-          <!-- NEUES SCOREBOARD – Live‑Ticker‑Style (ohne Zeit & Trikot) -->
+          <!-- NEUES SCOREBOARD – angelehnt an Vorlage (ohne Zeit & Trikot) -->
           <section class="scoreboard" aria-label="Spielstand">
             <div class="scorebug">
-              <!-- 2. Bundesliga Logo oben rechts -->
+              <!-- 2. Bundesliga Logo jetzt links oben -->
               <div class="league-logo">
                 <img src="csm_2_bl_logo_RGB_pos_8b8a7d5210.png" alt="2. Bundesliga" />
               </div>
@@ -31,9 +31,8 @@
               <!-- Hauptzeile: Team – Ergebnis – Team -->
               <div class="score-row">
                 <div class="score-team score-team-white">
-                  <div class="team-logo-wrapper">
+                  <div class="team-logo-wrapper" data-team="white">
                     <img class="team-logo" id="whiteLogo" src="" alt="Weiß Logo" />
-                    <button class="logo-upload-btn" data-team="white" type="button" title="Logo hochladen">+</button>
                     <button class="remove-logo-btn" data-team="white" type="button" title="Logo entfernen">×</button>
                   </div>
                   <span class="team-name" id="whiteLabel">Spieler A</span>
@@ -47,21 +46,14 @@
 
                 <div class="score-team score-team-black">
                   <span class="team-name" id="blackLabel">Spieler B</span>
-                  <div class="team-logo-wrapper">
+                  <div class="team-logo-wrapper" data-team="black">
                     <img class="team-logo" id="blackLogo" src="" alt="Schwarz Logo" />
-                    <button class="logo-upload-btn" data-team="black" type="button" title="Logo hochladen">+</button>
                     <button class="remove-logo-btn" data-team="black" type="button" title="Logo entfernen">×</button>
                   </div>
                 </div>
               </div>
 
-              <!-- Ticker-Zeile: Figurenpunkte -->
-              <div class="ticker-row piece-points">
-                <span class="ticker-label">Figuren</span>
-                <div class="ticker-content" id="piecePointsDisplay"></div>
-              </div>
-
-              <!-- Ticker-Zeile: Thesen-Status -->
+              <!-- Ticker-Zeile: Thesen-Status (angepasst auf /10) -->
               <div class="ticker-row thesis-status">
                 <span class="ticker-label">Thesen</span>
                 <div class="ticker-content" id="thesisStatusDisplay"></div>
