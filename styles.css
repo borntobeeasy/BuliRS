@@ -225,16 +225,15 @@ input, select {
 
 .game-layout {
   display: grid;
-  grid-template-columns: minmax(0, auto) minmax(320px, 0.9fr);
+  grid-template-columns: 1fr;
   gap: 20px;
   align-items: stretch;
 }
 
 /* ============================================================
-   NEUES SCOREBOARD – angelehnt an Vorlage (ohne Zeit & Trikot)
+   NEUES SCOREBOARD – mit prominentem Logo links
    ============================================================ */
 .scoreboard {
-  grid-column: 1 / -1;
   display: flex;
   justify-content: center;
 }
@@ -242,38 +241,66 @@ input, select {
 .scorebug {
   display: flex;
   flex-direction: column;
-  width: min(920px, 100%);
+  width: 100%;
+  max-width: 920px;
   background: #1a1a1a;
   border-radius: 20px;
-  padding: 20px 28px 12px;
+  padding: 16px 24px 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
   position: relative;
   overflow: hidden;
 }
 
-/* 2. Bundesliga Logo – jetzt links oben */
-.league-logo {
-  width: 100%;
+.scoreboard-header {
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
   margin-bottom: 8px;
 }
-.league-logo img {
-  height: 42px;
-  width: auto;
+.league-logo-wrapper {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+.league-logo-wrapper img {
+  width: 44px;
+  height: auto;
   object-fit: contain;
   filter: brightness(1.1);
 }
+.scoreboard-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.scoreboard-title .live-badge {
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--bundesliga-red);
+  letter-spacing: 0.1em;
+}
+.scoreboard-title .season {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
 
-/* Hauptzeile: Team – Ergebnis – Team */
 .score-row {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   width: 100%;
-  gap: 16px;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .score-team {
@@ -285,7 +312,6 @@ input, select {
 .score-team-white { justify-content: flex-start; }
 .score-team-black { justify-content: flex-end; }
 
-/* Logo-Container mit Drag&Drop und Hover-Remove */
 .team-logo-wrapper {
   position: relative;
   display: inline-flex;
@@ -318,7 +344,6 @@ input, select {
   display: none;
 }
 
-/* Remove-Button – nur sichtbar bei Hover, wenn Logo vorhanden */
 .team-logo-wrapper .remove-logo-btn {
   position: absolute;
   top: -6px;
@@ -382,7 +407,7 @@ input, select {
   color: var(--muted);
 }
 
-/* Ticker-Zeilen (nur noch Thesen & Randomizer) */
+/* Ticker-Zeilen (nur Thesen & Randomizer) */
 .ticker-row {
   display: flex;
   align-items: center;
@@ -441,14 +466,25 @@ input, select {
 }
 
 /* ============================================================
-   SPIELFELD & THESEN (unverändert)
+   SPIELFELD & THESEN-PANEL
    ============================================================ */
+.field-thesis-wrapper {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 20px;
+  align-items: start;
+  width: 100%;
+}
 .field-wrap {
+  justify-self: start;
   position: relative;
   width: max-content;
   max-width: 100%;
+}
+.field-thesis-wrapper:has(.thesis-panel[hidden]) .field-wrap {
   justify-self: center;
 }
+
 .chess-grid {
   display: grid;
   grid-template-columns: repeat(5, var(--cell-size));
@@ -754,8 +790,11 @@ input, select {
 }
 
 /* ============================================================
-   THESIS PANEL & SETTINGS (unverändert)
+   THESIS PANEL (standardmäßig ausgeblendet)
    ============================================================ */
+.thesis-panel[hidden] {
+  display: none !important;
+}
 .thesis-panel {
   min-height: 528px;
   border: 1px solid rgba(211, 1, 12, 0.25);
@@ -774,23 +813,33 @@ input, select {
   gap: 8px;
   justify-content: flex-end;
 }
-#openSettingsButton {
+#openSettingsButton,
+#toggleThesisButton {
   min-height: 38px;
   border: 1px solid rgba(255, 255, 255, 0.26);
   border-radius: 6px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent 42%), var(--bundesliga-red);
-  color: var(--white);
   padding: 8px 12px;
   cursor: pointer;
-  box-shadow: 0 0 30px rgba(211, 1, 12, 0.25), 3px 3px 0 var(--bundesliga-gold);
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   transition: transform 140ms, box-shadow 140ms;
 }
+#openSettingsButton {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent 42%), var(--bundesliga-red);
+  color: var(--white);
+  box-shadow: 0 0 30px rgba(211, 1, 12, 0.25), 3px 3px 0 var(--bundesliga-gold);
+}
 #openSettingsButton:hover {
   box-shadow: 0 0 40px rgba(211, 1, 12, 0.4), 4px 5px 0 var(--bundesliga-gold);
   transform: translateY(-2px);
+}
+#toggleThesisButton {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+}
+#toggleThesisButton:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 .close-button {
   display: grid;
@@ -847,7 +896,7 @@ input, select {
 }
 
 /* ============================================================
-   SETTINGS DIALOG
+   SETTINGS DIALOG (unverändert)
    ============================================================ */
 .settings-dialog {
   width: min(980px, calc(100% - 28px));
@@ -1007,12 +1056,12 @@ input, select {
    RESPONSIVE
    ============================================================ */
 @media (max-width: 1120px) {
-  .game-layout {
+  .field-thesis-wrapper {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
   .field-wrap {
-    width: 100%;
-    overflow: visible;
+    justify-self: center;
   }
 }
 @media (max-width: 740px) {
@@ -1055,12 +1104,23 @@ input, select {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  /* Scoreboard mobil */
   .scorebug {
     padding: 14px 14px 10px;
     border-radius: 14px;
   }
-  .league-logo img { height: 30px; }
+  .league-logo-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+  .league-logo-wrapper img {
+    width: 32px;
+  }
+  .scoreboard-title .live-badge {
+    font-size: 0.6rem;
+  }
+  .scoreboard-title .season {
+    font-size: 0.65rem;
+  }
   .score-row { gap: 8px; }
   .team-logo-wrapper { width: 44px; height: 44px; }
   .team-logo-wrapper .remove-logo-btn { width: 20px; height: 20px; font-size: 12px; }

@@ -17,15 +17,25 @@
             <p class="eyebrow">2. Bundesliga Saison 26/27</p>
             <h1>Rasenschach</h1>
           </div>
+          <div class="action-buttons">
+            <button id="toggleThesisButton" type="button">Thesen einblenden</button>
+            <button id="openSettingsButton" type="button">Einstellungen</button>
+          </div>
         </header>
 
         <div class="game-layout">
-          <!-- NEUES SCOREBOARD – angelehnt an Vorlage (ohne Zeit & Trikot) -->
+          <!-- SCOREBOARD (komplett) -->
           <section class="scoreboard" aria-label="Spielstand">
             <div class="scorebug">
-              <!-- 2. Bundesliga Logo jetzt links oben -->
-              <div class="league-logo">
-                <img src="csm_2_bl_logo_RGB_pos_8b8a7d5210.png" alt="2. Bundesliga" />
+              <!-- 2. Bundesliga Logo – prominent links oben -->
+              <div class="scoreboard-header">
+                <div class="league-logo-wrapper">
+                  <img src="csm_2_bl_logo_RGB_pos_8b8a7d5210.png" alt="2. Bundesliga" />
+                </div>
+                <div class="scoreboard-title">
+                  <span class="live-badge">LIVE</span>
+                  <span class="season">Saison 26/27</span>
+                </div>
               </div>
 
               <!-- Hauptzeile: Team – Ergebnis – Team -->
@@ -53,13 +63,11 @@
                 </div>
               </div>
 
-              <!-- Ticker-Zeile: Thesen-Status (angepasst auf /10) -->
+              <!-- Ticker-Zeilen: Thesen & Randomizer (keine Figuren mehr) -->
               <div class="ticker-row thesis-status">
                 <span class="ticker-label">Thesen</span>
                 <div class="ticker-content" id="thesisStatusDisplay"></div>
               </div>
-
-              <!-- Ticker-Zeile: Randomizer -->
               <div class="ticker-row randomizer-status">
                 <span class="ticker-label">Randomizer</span>
                 <div class="ticker-content" id="randomizerStatusDisplay"></div>
@@ -67,33 +75,35 @@
 
               <!-- Footer -->
               <div class="ticker-footer">
-                <span>2. Bundesliga Saison 26/27</span>
+                <span>2. Bundesliga</span>
                 <span class="live-dot">●</span>
                 <span>LIVE</span>
               </div>
             </div>
           </section>
 
-          <section class="field-wrap">
-            <div class="chess-grid" id="pieceGrid" aria-label="Figuren und Thesenfelder"></div>
-          </section>
+          <!-- SPIELFELD + THESEN-PANEL (zusammen) -->
+          <div class="field-thesis-wrapper">
+            <section class="field-wrap">
+              <div class="chess-grid" id="pieceGrid" aria-label="Figuren und Thesenfelder"></div>
+            </section>
 
-          <section class="thesis-panel" aria-label="Thesen einordnen">
-            <div class="thesis-head">
-              <div>
-                <p class="eyebrow">Draft</p>
-                <h2>Pick Board</h2>
+            <!-- THESEN-PANEL (standardmäßig ausgeblendet) -->
+            <section class="thesis-panel" id="thesisPanel" aria-label="Thesen einordnen" hidden>
+              <div class="thesis-head">
+                <div>
+                  <p class="eyebrow">Draft</p>
+                  <h2>Pick Board</h2>
+                </div>
               </div>
-              <div class="action-buttons">
-                <button id="openSettingsButton" type="button">Einstellungen</button>
-              </div>
-            </div>
-            <div class="thesis-list" id="thesisList"></div>
-          </section>
+              <div class="thesis-list" id="thesisList"></div>
+            </section>
+          </div>
         </div>
       </section>
     </main>
 
+    <!-- SETTINGS-DIALOG (unverändert) -->
     <dialog class="settings-dialog" id="settingsDialog" aria-label="Auswertung eintragen">
       <div class="settings-shell">
         <header class="settings-head">

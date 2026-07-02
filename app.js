@@ -67,6 +67,8 @@ const exportAllBtn = $('#exportAllButton');
 const importAllBtn = $('#importAllButton');
 const importFileInput = $('#importFileInput');
 const importExportStatus = $('#importExportStatus');
+const toggleThesisBtn = $('#toggleThesisButton');
+const thesisPanel = $('#thesisPanel');
 
 let pointerDrag = null;
 
@@ -631,7 +633,6 @@ document.querySelectorAll('.team-logo-wrapper').forEach(wrapper => {
     } else {
       const url = getDroppedImageUrl(e.dataTransfer);
       if (url) {
-        // URL als Logo setzen (z.B. von extern)
         teamLogos[team] = url;
         saveTeamLogos();
         renderTeamLogos();
@@ -639,6 +640,22 @@ document.querySelectorAll('.team-logo-wrapper').forEach(wrapper => {
       }
     }
   });
+});
+
+// ============================
+//  THESEN-PANEL TOGGLE
+// ============================
+toggleThesisBtn.addEventListener('click', () => {
+  const isHidden = thesisPanel.hasAttribute('hidden');
+  if (isHidden) {
+    thesisPanel.removeAttribute('hidden');
+    toggleThesisBtn.textContent = 'Thesen ausblenden';
+  } else {
+    thesisPanel.setAttribute('hidden', '');
+    toggleThesisBtn.textContent = 'Thesen einblenden';
+  }
+  // Nach dem Einblenden Texte anpassen
+  if (!isHidden) fitAllCardText();
 });
 
 // ============================
