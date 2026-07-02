@@ -20,14 +20,15 @@
         </header>
 
         <div class="game-layout">
-          <!-- NEUES SCOREBOARD – Live‑Ticker‑Style -->
+          <!-- NEUES SCOREBOARD – Live‑Ticker‑Style (ohne Zeit & Trikot) -->
           <section class="scoreboard" aria-label="Spielstand">
             <div class="scorebug">
-              <!-- 2. Bundesliga Logo (oben rechts) -->
+              <!-- 2. Bundesliga Logo oben rechts -->
               <div class="league-logo">
                 <img src="csm_2_bl_logo_RGB_pos_8b8a7d5210.png" alt="2. Bundesliga" />
               </div>
-              <!-- Hauptzeile mit Team‑Logos + Ergebnis -->
+
+              <!-- Hauptzeile: Team – Ergebnis – Team -->
               <div class="score-row">
                 <div class="score-team score-team-white">
                   <div class="team-logo-wrapper">
@@ -52,6 +53,31 @@
                     <button class="remove-logo-btn" data-team="black" type="button" title="Logo entfernen">×</button>
                   </div>
                 </div>
+              </div>
+
+              <!-- Ticker-Zeile: Figurenpunkte -->
+              <div class="ticker-row piece-points">
+                <span class="ticker-label">Figuren</span>
+                <div class="ticker-content" id="piecePointsDisplay"></div>
+              </div>
+
+              <!-- Ticker-Zeile: Thesen-Status -->
+              <div class="ticker-row thesis-status">
+                <span class="ticker-label">Thesen</span>
+                <div class="ticker-content" id="thesisStatusDisplay"></div>
+              </div>
+
+              <!-- Ticker-Zeile: Randomizer -->
+              <div class="ticker-row randomizer-status">
+                <span class="ticker-label">Randomizer</span>
+                <div class="ticker-content" id="randomizerStatusDisplay"></div>
+              </div>
+
+              <!-- Footer -->
+              <div class="ticker-footer">
+                <span>2. Bundesliga Saison 26/27</span>
+                <span class="live-dot">●</span>
+                <span>LIVE</span>
               </div>
             </div>
           </section>

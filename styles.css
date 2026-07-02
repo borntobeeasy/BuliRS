@@ -230,42 +230,52 @@ input, select {
   align-items: stretch;
 }
 
-/* ========== SCOREBOARD ========== */
+/* ============================================================
+   NEUES SCOREBOARD – Live‑Ticker‑Style (ohne Zeit & Trikot)
+   ============================================================ */
 .scoreboard {
   grid-column: 1 / -1;
   display: flex;
   justify-content: center;
 }
+
 .scorebug {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: min(820px, 100%);
+  width: min(920px, 100%);
   background: #1a1a1a;
-  border-radius: 16px;
-  padding: 20px 24px 16px;
+  border-radius: 20px;
+  padding: 20px 28px 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
 }
+
+/* 2. Bundesliga Logo oben rechts */
 .league-logo {
   width: 100%;
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .league-logo img {
-  height: 40px;
+  height: 42px;
   width: auto;
   object-fit: contain;
   filter: brightness(1.1);
 }
+
+/* Hauptzeile: Team – Ergebnis – Team */
 .score-row {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   width: 100%;
   gap: 16px;
+  margin-bottom: 12px;
 }
+
 .score-team {
   display: flex;
   align-items: center;
@@ -280,8 +290,8 @@ input, select {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   flex-shrink: 0;
 }
 .team-logo {
@@ -302,11 +312,11 @@ input, select {
   position: absolute;
   top: -4px;
   right: -4px;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 900;
   line-height: 1;
   padding: 0;
@@ -333,7 +343,7 @@ input, select {
   background: rgba(0,0,0,0.8);
   color: white;
   display: none;
-  font-size: 15px;
+  font-size: 16px;
 }
 .team-logo-wrapper .remove-logo-btn.visible {
   display: grid;
@@ -343,7 +353,7 @@ input, select {
 }
 
 .team-name {
-  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  font-size: clamp(1.4rem, 2.4vw, 2.2rem);
   font-weight: 900;
   color: var(--white);
   text-transform: uppercase;
@@ -357,29 +367,106 @@ input, select {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   font-family: var(--headline-font);
   background: #0d0d0d;
-  padding: 0 32px;
-  border-radius: 12px;
-  min-height: 76px;
-  min-width: 150px;
+  padding: 0 36px;
+  border-radius: 14px;
+  min-height: 84px;
+  min-width: 160px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 .score-core strong {
-  font-size: clamp(3.2rem, 6vw, 4.8rem);
+  font-size: clamp(3.6rem, 7vw, 5.6rem);
   font-weight: 700;
   color: var(--white);
   text-shadow: 0 0 30px rgba(255, 255, 255, 0.06);
 }
 .score-separator {
-  font-size: clamp(3.2rem, 6vw, 4.8rem);
+  font-size: clamp(3.6rem, 7vw, 5.6rem);
   font-weight: 300;
   color: var(--muted);
 }
 
-/* ========== SPIELFELD ========== */
+/* ---- TICKER-ZEILEN ---- */
+.ticker-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 8px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 0.9rem;
+  color: var(--muted);
+  min-height: 36px;
+}
+.ticker-row:first-of-type {
+  border-top: 2px solid rgba(211,1,12,0.3);
+}
+.ticker-label {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--bundesliga-gold);
+  width: 90px;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+}
+.ticker-content {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-weight: 600;
+}
+.ticker-content .piece-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.06);
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.ticker-content .piece-tag .icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+.ticker-content .piece-tag .value {
+  font-weight: 900;
+}
+.value.positive { color: var(--green); }
+.value.negative { color: var(--red); }
+.value.neutral  { color: var(--zero); }
+
+.ticker-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 8px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+.live-dot {
+  color: var(--bundesliga-red);
+  font-size: 1.4rem;
+  line-height: 0.8;
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.7); }
+}
+
+/* ============================================================
+   SPIELFELD & THESEN (unverändert)
+   ============================================================ */
 .field-wrap {
   position: relative;
   width: max-content;
@@ -690,7 +777,9 @@ input, select {
   box-shadow: 0 0 30px rgba(211, 1, 12, 0.3);
 }
 
-/* ========== THESIS PANEL ========== */
+/* ============================================================
+   THESIS PANEL & SETTINGS (unverändert)
+   ============================================================ */
 .thesis-panel {
   min-height: 528px;
   border: 1px solid rgba(211, 1, 12, 0.25);
@@ -781,7 +870,9 @@ input, select {
   cursor: grabbing;
 }
 
-/* ========== SETTINGS DIALOG ========== */
+/* ============================================================
+   SETTINGS DIALOG
+   ============================================================ */
 .settings-dialog {
   width: min(980px, calc(100% - 28px));
   max-height: min(760px, calc(100vh - 28px));
@@ -936,7 +1027,9 @@ input, select {
   margin: 0;
 }
 
-/* ========== RESPONSIVE ========== */
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 1120px) {
   .game-layout {
     grid-template-columns: 1fr;
@@ -946,7 +1039,7 @@ input, select {
     overflow: visible;
   }
 }
-@media (max-width: 640px) {
+@media (max-width: 740px) {
   .app-shell {
     width: min(100% - 20px, 1440px);
     padding-top: 10px;
@@ -985,57 +1078,29 @@ input, select {
   .thesis-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  /* Scoreboard Mobile */
+
+  /* Scoreboard mobil */
   .scorebug {
-    padding: 12px 12px 10px;
-    border-radius: 12px;
+    padding: 14px 14px 10px;
+    border-radius: 14px;
   }
-  .league-logo img {
-    height: 28px;
-  }
-  .score-row {
-    gap: 8px;
-  }
-  .team-logo-wrapper {
-    width: 40px;
-    height: 40px;
-  }
+  .league-logo img { height: 30px; }
+  .score-row { gap: 8px; }
+  .team-logo-wrapper { width: 44px; height: 44px; }
   .team-logo-wrapper .logo-upload-btn,
-  .team-logo-wrapper .remove-logo-btn {
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
-  }
-  .team-name {
-    font-size: 0.9rem;
-    max-width: 80px;
-  }
-  .score-core {
-    min-height: 56px;
-    min-width: 100px;
-    padding: 0 14px;
-  }
-  .score-core strong,
-  .score-separator {
-    font-size: 2.6rem;
-  }
+  .team-logo-wrapper .remove-logo-btn { width: 20px; height: 20px; font-size: 11px; }
+  .team-name { font-size: 1rem; max-width: 80px; }
+  .score-core { min-height: 60px; min-width: 110px; padding: 0 16px; }
+  .score-core strong, .score-separator { font-size: 2.8rem; }
+  .ticker-row { font-size: 0.75rem; gap: 8px; flex-wrap: wrap; }
+  .ticker-label { width: 60px; font-size: 0.6rem; }
+  .ticker-content .piece-tag { font-size: 0.7rem; padding: 2px 6px; }
 }
 @media (max-width: 480px) {
-  .team-logo-wrapper {
-    width: 32px;
-    height: 32px;
-  }
-  .team-name {
-    font-size: 0.75rem;
-    max-width: 60px;
-  }
-  .score-core {
-    min-height: 44px;
-    min-width: 76px;
-    padding: 0 10px;
-  }
-  .score-core strong,
-  .score-separator {
-    font-size: 2rem;
-  }
+  .team-logo-wrapper { width: 34px; height: 34px; }
+  .team-name { font-size: 0.75rem; max-width: 60px; }
+  .score-core { min-height: 48px; min-width: 80px; padding: 0 10px; }
+  .score-core strong, .score-separator { font-size: 2rem; }
+  .ticker-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .ticker-label { width: auto; }
 }

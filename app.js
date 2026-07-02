@@ -31,9 +31,7 @@ const initialBonuses = {
 };
 
 const state = {
-  // Thesen-Texte (12 Stück)
   theses: Array.from({ length: 12 }, (_, i) => `These ${i + 1}`),
-  // Platzierungen
   assignments: Array.from({ length: 12 }, (_, i) => ({
     id: i + 1,
     side: null,
@@ -41,15 +39,11 @@ const state = {
     polarity: null,
     knightSwing: Math.random() > 0.5 ? 1 : -1,
   })),
-  // Ergebnisse pro Seite und Figur (eingestellte Basis-Punkte)
   results: cloneData(initialBonuses),
-  // Figurenfotos (Slot → dataURL)
   figureImages: {},
-  // Randomizer-Wert für Springer (null = noch nicht gewürfelt)
   questionValue: null,
 };
 
-// Team-Logos (getrennt im localStorage gespeichert)
 const teamLogos = { white: null, black: null };
 
 // DOM-Referenzen
@@ -74,7 +68,7 @@ const importAllBtn = $('#importAllButton');
 const importFileInput = $('#importFileInput');
 const importExportStatus = $('#importExportStatus');
 
-let pointerDrag = null;  // für Touch/Stift-Drag
+let pointerDrag = null;
 
 // ============================
 //  HILFSFUNKTIONEN
@@ -308,7 +302,6 @@ function renderFigureCell(cell, piece) {
     cell.innerHTML = `${scoreMarkup}${pieceImgMarkup}`;
   }
 
-  // Fallback falls SVG nicht lädt
   const icon = cell.querySelector('.piece-svg');
   if (icon) icon.addEventListener('error', () => icon.remove());
 }
@@ -447,6 +440,65 @@ function renderRandomizerState() {
     : formatNumber(state.questionValue);
 }
 
+// ---- NEUE TICKER-FUNKTIONEN ----
+function renderPiecePoints() {
+  const container = document.getElementById('piecePointsDisplay');
+  if (!container) return;
+  let html = '';
+  SIDES.forEach(side => {
+    const label = side === 'white' ? '⚪' : '⚫';
+    const points = PIECES.map(p => {
+      const val = getPlayerScore(side, p.id);
+      const cls = getScoreTone(val);
+      const icon = p.id === 'rook' ? '♜' :
+                   p.id === 'bishop' ? '♝' :
+                   p.id === 'knight' ? '♞' :
+                   p.id === 'queen' ? '♛' : '♚';
+      return `<span class="piece-tag"><span class="icon">${icon}</span><span class="value ${cls}">${formatNumber(val)}</span></span>`;
+    }).join('');
+    html += `<span style="display:contents;"><span style="font-weight:700;margin-right:4px;">${label}</span>${points}</span>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderThesisStatus() {
+  const container = document.getElementById('thesisStatusDisplay');
+  if (!container) return;
+  const placed = state.assignments.filter(a => a.side && a.piece).length;
+  const total = state.assignments.length;
+  const evaluated = state.assignments.filter(a => a.polarity).length;
+  container.innerHTML = `
+    <span>📋 <strong>${placed}</strong> von <strong>${total}</strong> platziert</span>
+    <span>•</span>
+    <span>🔍 <strong>${evaluated}</strong> bewertet</span>
+  `;
+}
+
+function renderRandomizerStatus() {
+  const container = document.getElementById('randomizerStatusDisplay');
+  if (!container) return;
+  const val = state.questionValue;
+  const text = val !== null ? formatNumber(val) : '❓ noch nicht gewürfelt';
+  const cls = val !== null ? getScoreTone(val) : 'neutral';
+  container.innerHTML = `<span class="value ${cls}">🎲 ${text}</span>`;
+}
+
+// ---- Haupt-Render ----
+function render() {
+  createBoard();
+  createThesisList();
+  createEvaluationList();
+  renderPlacements();
+  renderTotals();
+  renderRandomizerState();
+  renderTeamLogos();
+  // Neue Ticker
+  renderPiecePoints();
+  renderThesisStatus();
+  renderRandomizerStatus();
+  fitAllCardText();
+}
+
 function fitAllCardText() {
   requestAnimationFrame(() => {
     document.querySelectorAll('.thesis-card .fit-text, .placed-chip .fit-text').forEach(el => {
@@ -462,17 +514,6 @@ function fitAllCardText() {
       }
     });
   });
-}
-
-function render() {
-  createBoard();
-  createThesisList();
-  createEvaluationList();
-  renderPlacements();
-  renderTotals();
-  renderRandomizerState();
-  renderTeamLogos();
-  fitAllCardText();
 }
 
 // ============================
@@ -504,7 +545,7 @@ function handleDrop(e) {
 }
 
 // ============================
-//  DRAG & DROP (Touch / Stift via Pointer Events)
+//  DRAG & DROP (Touch / Stift)
 // ============================
 function handlePointerDragStart(e) {
   if (e.target.closest('button')) return;
