@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rasenschach</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Sora:wght@400;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=20260702" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="board-panel" aria-label="Rasenschach Spielfeld">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">2. Bundesliga Saison 26/27</p>
+            <h1>Rasenschach</h1>
+          </div>
+          <div class="match-controls top-name-controls" hidden>
+            <label>
+              Weiß
+              <input id="oldWhiteName" value="Spieler A" />
+            </label>
+            <label>
+              Schwarz
+              <input id="oldBlackName" value="Spieler B" />
+            </label>
+          </div>
+        </header>
+
+        <div class="game-layout">
+          <!-- NEUES SCOREBOARD – Live‑Ticker‑Style -->
+          <section class="scoreboard" aria-label="Spielstand">
+            <div class="scorebug">
+              <!-- 2. Bundesliga Logo (oben rechts) -->
+              <div class="league-logo">
+                <img src="csm_2_bl_logo_RGB_pos_8b8a7d5210.png" alt="2. Bundesliga" />
+              </div>
+              <!-- Hauptzeile mit Team‑Logos + Ergebnis -->
+              <div class="score-row">
+                <div class="score-team score-team-white">
+                  <div class="team-logo-wrapper">
+                    <img class="team-logo" id="whiteLogo" src="" alt="Weiß Logo" />
+                    <button class="logo-upload-btn" data-team="white" type="button" title="Logo hochladen">+</button>
+                    <button class="remove-logo-btn" data-team="white" type="button" title="Logo entfernen">×</button>
+                  </div>
+                  <span class="team-name" id="whiteLabel">Spieler A</span>
+                </div>
+
+                <div class="score-core">
+                  <strong id="whiteTotal">0</strong>
+                  <span class="score-separator">:</span>
+                  <strong id="blackTotal">0</strong>
+                </div>
+
+                <div class="score-team score-team-black">
+                  <span class="team-name" id="blackLabel">Spieler B</span>
+                  <div class="team-logo-wrapper">
+                    <img class="team-logo" id="blackLogo" src="" alt="Schwarz Logo" />
+                    <button class="logo-upload-btn" data-team="black" type="button" title="Logo hochladen">+</button>
+                    <button class="remove-logo-btn" data-team="black" type="button" title="Logo entfernen">×</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="field-wrap">
+            <div class="chess-grid" id="pieceGrid" aria-label="Figuren und Thesenfelder"></div>
+          </section>
+
+          <section class="thesis-panel" aria-label="Thesen einordnen">
+            <div class="thesis-head">
+              <div>
+                <p class="eyebrow">Draft</p>
+                <h2>Pick Board</h2>
+              </div>
+              <div class="action-buttons">
+                <button id="openSettingsButton" type="button">Einstellungen</button>
+              </div>
+            </div>
+            <div class="thesis-list" id="thesisList"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="settings-dialog" id="settingsDialog" aria-label="Auswertung eintragen">
+      <div class="settings-shell">
+        <header class="settings-head">
+          <div>
+            <p class="eyebrow">Auswertung</p>
+            <h2>Eintragen</h2>
+          </div>
+          <button class="close-button" id="closeSettingsButton" type="button" aria-label="Popup schließen">×</button>
+        </header>
+
+        <section class="results-panel" aria-label="Teamnamen einstellen">
+          <div>
+            <p class="eyebrow">Teams</p>
+            <h2>Spielanzeige</h2>
+          </div>
+          <div class="match-controls">
+            <label>
+              Weiß
+              <input id="whiteName" value="Spieler A" />
+            </label>
+            <label>
+              Schwarz
+              <input id="blackName" value="Spieler B" />
+            </label>
+          </div>
+        </section>
+
+        <section class="results-panel" aria-label="Thesen auswerten">
+          <div>
+            <p class="eyebrow">Thesen</p>
+            <h2>Positiv oder negativ</h2>
+          </div>
+          <div class="evaluation-list" id="evaluationList"></div>
+        </section>
+
+        <section class="results-panel" aria-label="Ergebnisse eingeben">
+          <div>
+            <p class="eyebrow">Ergebnisse</p>
+            <h2>Werte eingeben</h2>
+          </div>
+          <div class="results-grid" id="resultsGrid"></div>
+        </section>
+
+        <section class="results-panel" aria-label="Randomizer">
+          <div>
+            <p class="eyebrow">Randomizer</p>
+            <h2>Zufall festlegen</h2>
+          </div>
+          <div class="randomizer-grid">
+            <article class="randomizer-card">
+              <div>
+                <strong>? Feld</strong>
+                <span id="questionValueLabel">noch nicht gewürfelt</span>
+              </div>
+              <button id="randomQuestionButton" type="button">-3 bis +3 ohne 0 würfeln</button>
+            </article>
+          </div>
+        </section>
+
+        <section class="results-panel" aria-label="Datei-Export und Import">
+          <div>
+            <p class="eyebrow">Datei</p>
+            <h2>Export &amp; Import</h2>
+          </div>
+          <div class="import-export-grid">
+            <article class="storage-card">
+              <strong>Gesamter Spielstand</strong>
+              <span>Thesen, Brett, Namen, Ergebnisse, Randomizer und Fotos in einer Datei</span>
+              <div class="import-export-actions">
+                <button id="exportAllButton" type="button">Als Datei exportieren</button>
+                <button id="importAllButton" type="button">Datei importieren</button>
+              </div>
+            </article>
+          </div>
+          <input id="importFileInput" type="file" accept="application/json,.json" hidden />
+          <p class="storage-status" id="importExportStatus" aria-live="polite"></p>
+        </section>
+      </div>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
