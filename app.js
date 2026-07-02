@@ -69,6 +69,7 @@ const importFileInput = $('#importFileInput');
 const importExportStatus = $('#importExportStatus');
 const toggleThesisBtn = $('#toggleThesisButton');
 const thesisPanel = $('#thesisPanel');
+const fieldThesisWrapper = $('#fieldThesisWrapper');
 
 let pointerDrag = null;
 
@@ -394,14 +395,17 @@ function createEvaluationList() {
   state.assignments.forEach(a => {
     const card = document.createElement('article');
     card.className = 'evaluation-card';
-    const isActive = (val) => a.polarity === val ? 'active' : '';
+    // Aktive Klassen für die Buttons
+    const neutralActive = !a.polarity ? 'active' : '';
+    const positiveActive = a.polarity === 'positive' ? 'active' : '';
+    const negativeActive = a.polarity === 'negative' ? 'active' : '';
     card.innerHTML = `
       <strong>These ${a.id}</strong>
       <input aria-label="These ${a.id} Titel" data-id="${a.id}" data-field="thesis-text" value="${escapeHtml(state.theses[a.id - 1])}" />
       <div class="evaluation-controls" aria-label="These ${a.id} auswerten">
-        <button class="neutral-button ${!a.polarity ? 'active' : ''}" data-id="${a.id}" data-polarity="" type="button">unausgewertet</button>
-        <button class="polarity-button ${a.polarity === 'positive' ? 'active' : ''}" data-id="${a.id}" data-polarity="positive" type="button">+</button>
-        <button class="polarity-button ${a.polarity === 'negative' ? 'active' : ''}" data-id="${a.id}" data-polarity="negative" type="button">-</button>
+        <button class="neutral-button ${neutralActive}" data-id="${a.id}" data-polarity="" type="button">unausgewertet</button>
+        <button class="polarity-button ${positiveActive}" data-id="${a.id}" data-polarity="positive" type="button">+</button>
+        <button class="polarity-button ${negativeActive}" data-id="${a.id}" data-polarity="negative" type="button">-</button>
       </div>
     `;
     evaluationList.appendChild(card);
@@ -643,18 +647,20 @@ document.querySelectorAll('.team-logo-wrapper').forEach(wrapper => {
 });
 
 // ============================
-//  THESEN-PANEL TOGGLE
+//  THESEN-PANEL TOGGLE (mit Klasse für Zentrierung)
 // ============================
 toggleThesisBtn.addEventListener('click', () => {
   const isHidden = thesisPanel.hasAttribute('hidden');
   if (isHidden) {
     thesisPanel.removeAttribute('hidden');
     toggleThesisBtn.textContent = 'Thesen ausblenden';
+    fieldThesisWrapper.classList.remove('thesis-hidden');
   } else {
     thesisPanel.setAttribute('hidden', '');
     toggleThesisBtn.textContent = 'Thesen einblenden';
+    fieldThesisWrapper.classList.add('thesis-hidden');
   }
-  // Nach dem Einblenden Texte anpassen
+  // Nach dem Einblenden Texte anpassen (falls nötig)
   if (!isHidden) fitAllCardText();
 });
 

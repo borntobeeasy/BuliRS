@@ -24,10 +24,9 @@
         </header>
 
         <div class="game-layout">
-          <!-- SCOREBOARD (komplett) -->
+          <!-- SCOREBOARD -->
           <section class="scoreboard" aria-label="Spielstand">
             <div class="scorebug">
-              <!-- 2. Bundesliga Logo – prominent links oben -->
               <div class="scoreboard-header">
                 <div class="league-logo-wrapper">
                   <img src="csm_2_bl_logo_RGB_pos_8b8a7d5210.png" alt="2. Bundesliga" />
@@ -38,7 +37,6 @@
                 </div>
               </div>
 
-              <!-- Hauptzeile: Team – Ergebnis – Team -->
               <div class="score-row">
                 <div class="score-team score-team-white">
                   <div class="team-logo-wrapper" data-team="white">
@@ -63,7 +61,6 @@
                 </div>
               </div>
 
-              <!-- Ticker-Zeilen: Thesen & Randomizer (keine Figuren mehr) -->
               <div class="ticker-row thesis-status">
                 <span class="ticker-label">Thesen</span>
                 <div class="ticker-content" id="thesisStatusDisplay"></div>
@@ -73,7 +70,6 @@
                 <div class="ticker-content" id="randomizerStatusDisplay"></div>
               </div>
 
-              <!-- Footer -->
               <div class="ticker-footer">
                 <span>2. Bundesliga</span>
                 <span class="live-dot">●</span>
@@ -82,13 +78,12 @@
             </div>
           </section>
 
-          <!-- SPIELFELD + THESEN-PANEL (zusammen) -->
-          <div class="field-thesis-wrapper">
+          <!-- SPIELFELD + THESEN-PANEL -->
+          <div class="field-thesis-wrapper" id="fieldThesisWrapper">
             <section class="field-wrap">
               <div class="chess-grid" id="pieceGrid" aria-label="Figuren und Thesenfelder"></div>
             </section>
 
-            <!-- THESEN-PANEL (standardmäßig ausgeblendet) -->
             <section class="thesis-panel" id="thesisPanel" aria-label="Thesen einordnen" hidden>
               <div class="thesis-head">
                 <div>
@@ -103,7 +98,7 @@
       </section>
     </main>
 
-    <!-- SETTINGS-DIALOG (unverändert) -->
+    <!-- SETTINGS-DIALOG -->
     <dialog class="settings-dialog" id="settingsDialog" aria-label="Auswertung eintragen">
       <div class="settings-shell">
         <header class="settings-head">

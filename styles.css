@@ -231,7 +231,7 @@ input, select {
 }
 
 /* ============================================================
-   NEUES SCOREBOARD – mit prominentem Logo links
+   SCOREBOARD
    ============================================================ */
 .scoreboard {
   display: flex;
@@ -407,7 +407,6 @@ input, select {
   color: var(--muted);
 }
 
-/* Ticker-Zeilen (nur Thesen & Randomizer) */
 .ticker-row {
   display: flex;
   align-items: center;
@@ -474,15 +473,20 @@ input, select {
   gap: 20px;
   align-items: start;
   width: 100%;
+  transition: grid-template-columns 0.3s ease;
 }
+.field-thesis-wrapper.thesis-hidden {
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+.field-thesis-wrapper.thesis-hidden .field-wrap {
+  justify-self: center;
+}
+
 .field-wrap {
-  justify-self: start;
   position: relative;
   width: max-content;
   max-width: 100%;
-}
-.field-thesis-wrapper:has(.thesis-panel[hidden]) .field-wrap {
-  justify-self: center;
 }
 
 .chess-grid {
@@ -790,7 +794,7 @@ input, select {
 }
 
 /* ============================================================
-   THESIS PANEL (standardmäßig ausgeblendet)
+   THESIS PANEL
    ============================================================ */
 .thesis-panel[hidden] {
   display: none !important;
@@ -807,6 +811,7 @@ input, select {
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 22px 44px rgba(0, 0, 0, 0.34);
 }
+
 .action-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -896,7 +901,7 @@ input, select {
 }
 
 /* ============================================================
-   SETTINGS DIALOG (unverändert)
+   SETTINGS DIALOG
    ============================================================ */
 .settings-dialog {
   width: min(980px, calc(100% - 28px));
@@ -946,6 +951,55 @@ input, select {
 }
 .evaluation-card input {
   width: 100%;
+}
+
+.evaluation-controls {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.evaluation-controls button {
+  flex: 1;
+  min-height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0 8px;
+  font-size: 0.85rem;
+}
+.evaluation-controls button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+/* Aktive Zustände */
+.evaluation-controls .neutral-button.active {
+  background: var(--bundesliga-gold);
+  color: var(--bundesliga-black);
+  border-color: var(--bundesliga-gold);
+}
+.evaluation-controls .polarity-button.active[data-polarity="positive"] {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+}
+.evaluation-controls .polarity-button.active[data-polarity="negative"] {
+  background: var(--bundesliga-red);
+  color: white;
+  border-color: var(--bundesliga-red);
+}
+.evaluation-controls .polarity-button.active[data-polarity=""] {
+  background: var(--bundesliga-gold);
+  color: var(--bundesliga-black);
+  border-color: var(--bundesliga-gold);
+}
+.evaluation-controls .polarity-button:not(.active) {
+  opacity: 0.6;
+}
+.evaluation-controls .neutral-button:not(.active) {
+  opacity: 0.6;
 }
 
 .results-grid {
@@ -1058,7 +1112,10 @@ input, select {
 @media (max-width: 1120px) {
   .field-thesis-wrapper {
     grid-template-columns: 1fr;
-    gap: 14px;
+    justify-items: center;
+  }
+  .field-thesis-wrapper.thesis-hidden {
+    grid-template-columns: 1fr;
   }
   .field-wrap {
     justify-self: center;
