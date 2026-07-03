@@ -232,69 +232,49 @@ body .app-shell::after {
   display: flex;
   flex-direction: column;
   width: 100%;
-  background: #0d0d0d;
-  border-radius: 20px;
-  padding: 14px 24px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  max-width: 900px;
   position: relative;
-  overflow: hidden;
 }
 
-.scoreboard-header {
+/* ---- Haupt-Anzeigetafel: Liga-Badge + Team – Ergebnis – Team ---- */
+.scorebug-main {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 2px;
+  align-items: stretch;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
 }
-.league-logo-wrapper {
+
+.league-badge {
   flex-shrink: 0;
-  width: 34px;
-  height: 34px;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 50%;
+  width: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #0a0a0a;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
-.league-logo-wrapper img {
-  width: 26px;
+.league-badge img {
+  width: 34px;
   height: auto;
   object-fit: contain;
-  filter: brightness(1.1);
-}
-.scoreboard-title {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-.scoreboard-title .live-badge {
-  font-size: 0.5rem;
-  font-weight: 900;
-  text-transform: uppercase;
-  color: var(--bundesliga-red);
-  letter-spacing: 0.12em;
-}
-.scoreboard-title .season {
-  font-size: 0.5rem;
-  font-weight: 700;
-  color: var(--muted);
-  letter-spacing: 0.06em;
 }
 
-.score-row {
+.scoreline {
+  flex: 1;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 16px;
-  padding: 4px 0 2px;
+  gap: 14px;
+  background: #f4f2ee;
+  padding: 10px 22px;
+  min-width: 0;
 }
 
 .score-team {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
 .score-team-white { justify-content: flex-start; }
@@ -302,26 +282,26 @@ body .app-shell::after {
 
 .team-logo-wrapper {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
   border-radius: 50%;
-  border: 2px dashed rgba(255, 255, 255, 0.08);
+  border: 2px dashed rgba(0, 0, 0, 0.15);
   transition: border-color 0.2s;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(0, 0, 0, 0.03);
 }
 .team-logo-wrapper.drag-over {
   border-color: var(--bundesliga-red);
-  background: rgba(211,1,12,0.12);
+  background: rgba(211, 1, 12, 0.1);
 }
 .team-logo-wrapper .team-logo {
   width: 100%;
   height: 100%;
   object-fit: contain;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   transition: all 0.2s ease;
 }
 .team-logo-wrapper .team-logo:not([src]),
@@ -358,45 +338,82 @@ body .app-shell::after {
 }
 
 .team-name {
-  font-size: clamp(1.8rem, 4.5vw, 4.8rem);
-  font-weight: 900;
-  color: var(--white);
+  font-size: clamp(1rem, 2.1vw, 1.7rem);
+  font-weight: 800;
+  color: #16171a;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: var(--headline-font);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
-  max-width: 42vw;
+  max-width: 32vw;
 }
 
 .score-core {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   font-family: var(--headline-font);
-  background: rgba(0, 0, 0, 0.4);
-  padding: 0 20px;
-  border-radius: 12px;
-  min-height: 72px;
-  min-width: 120px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(180deg, var(--bundesliga-red) 0%, var(--bundesliga-red-dark) 100%);
+  padding: 6px 18px;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(211, 1, 12, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 .score-core span {
-  font-size: clamp(3.6rem, 8vw, 7.2rem);
+  font-size: clamp(1.3rem, 2.6vw, 2.1rem);
   font-weight: 700;
-  color: var(--white);
+  color: #ffffff;
   line-height: 1;
-  text-shadow: 0 2px 20px rgba(255, 255, 255, 0.04);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 .score-separator {
-  font-weight: 300;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0 1px;
+}
+
+/* ---- LIVE-Chip rechts an der Hauptleiste ---- */
+.live-chip {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+.live-chip .live-dot {
+  color: var(--bundesliga-red);
+  font-size: 0.7rem;
+  line-height: 0.6;
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+/* ---- Meta-/Ticker-Zeile unterhalb der Anzeigetafel ---- */
+.scorebug-meta {
+  margin-top: 8px;
+  padding: 6px 14px 2px;
+}
+.meta-season {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
   color: var(--muted);
-  opacity: 0.4;
-  padding: 0 2px;
+  margin-bottom: 4px;
+}
+.meta-dot {
+  color: var(--bundesliga-red);
+  opacity: 0.7;
 }
 
 .ticker-row {
@@ -433,27 +450,6 @@ body .app-shell::after {
 .ticker-content .value.positive { color: var(--green); }
 .ticker-content .value.negative { color: var(--red); }
 .ticker-content .value.neutral  { color: var(--zero); }
-
-.ticker-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding-top: 4px;
-  margin-top: 2px;
-  border-top: 1px solid rgba(255,255,255,0.03);
-  font-size: 0.45rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted);
-  opacity: 0.5;
-}
-.live-dot {
-  color: var(--bundesliga-red);
-  font-size: 0.8rem;
-  line-height: 0.6;
-  animation: pulse-dot 1.2s ease-in-out infinite;
-}
 
 /* ============================================================
    LAYOUT: Scoreboard oben (volle Breite) + Feld + Thesen nebeneinander
@@ -1134,14 +1130,14 @@ body .app-shell::after {
   .field-wrap { justify-self: center; }
   .thesis-panel { width: 100%; min-height: 300px; }
 
-  .scorebug { padding: 12px 18px 10px; border-radius: 16px; }
-  .score-row { gap: 12px; padding: 2px 0; }
-  .team-name { font-size: clamp(1.6rem, 3.5vw, 2.8rem); max-width: 35vw; }
-  .score-core { min-height: 60px; min-width: 100px; padding: 0 16px; }
-  .score-core span { font-size: clamp(2.8rem, 6vw, 4.4rem); }
-  .team-logo-wrapper { width: 34px; height: 34px; }
-  .league-logo-wrapper { width: 30px; height: 30px; }
-  .league-logo-wrapper img { width: 22px; }
+  .scoreline { padding: 8px 16px; gap: 10px; }
+  .team-name { font-size: clamp(0.85rem, 1.9vw, 1.4rem); max-width: 30vw; }
+  .score-core { padding: 5px 14px; }
+  .score-core span { font-size: clamp(1.1rem, 2.2vw, 1.7rem); }
+  .team-logo-wrapper { width: 30px; height: 30px; }
+  .league-badge { width: 46px; }
+  .league-badge img { width: 28px; }
+  .live-chip { padding: 0 12px; font-size: 0.55rem; }
   .ticker-row { font-size: 0.55rem; min-height: 20px; gap: 8px; }
   .ticker-label { width: 50px; font-size: 0.35rem; }
 
@@ -1171,22 +1167,20 @@ body .app-shell::after {
   .topbar { flex-direction: column; align-items: stretch; gap: 8px; }
   .topbar .action-buttons { justify-content: flex-start; }
 
-  .scorebug { padding: 10px 14px 8px; border-radius: 14px; }
-  .score-row { gap: 8px; }
-  .team-name { font-size: clamp(1.2rem, 2.8vw, 2rem); max-width: 30vw; }
-  .score-core { min-height: 48px; min-width: 76px; padding: 0 10px; }
-  .score-core span { font-size: clamp(2rem, 5vw, 3.2rem); }
-  .team-logo-wrapper { width: 28px; height: 28px; }
+  .scoreline { padding: 7px 12px; gap: 6px; }
+  .team-name { font-size: clamp(0.65rem, 2.4vw, 1.1rem); max-width: 26vw; }
+  .score-core { padding: 4px 10px; border-radius: 6px; }
+  .score-core span { font-size: clamp(0.9rem, 4vw, 1.4rem); }
+  .team-logo-wrapper { width: 24px; height: 24px; }
   .team-logo-wrapper .remove-logo-btn { width: 14px; height: 14px; font-size: 8px; top: -4px; right: -4px; }
-  .league-logo-wrapper { width: 24px; height: 24px; }
-  .league-logo-wrapper img { width: 18px; }
-  .scoreboard-title .live-badge { font-size: 0.4rem; }
-  .scoreboard-title .season { font-size: 0.4rem; }
+  .league-badge { width: 38px; }
+  .league-badge img { width: 22px; }
+  .live-chip { padding: 0 8px; font-size: 0.5rem; }
 
+  .meta-season { font-size: 0.5rem; }
   .ticker-row { font-size: 0.5rem; gap: 6px; flex-wrap: wrap; min-height: 18px; }
   .ticker-label { width: 40px; font-size: 0.3rem; }
   .ticker-content { font-size: 0.5rem; gap: 2px 8px; }
-  .ticker-footer { font-size: 0.4rem; gap: 4px; }
   .live-dot { font-size: 0.6rem; }
 
   .chess-grid { --cell-size: clamp(44px, calc((100vw - 40px) / 5), 72px); }
@@ -1213,24 +1207,22 @@ body .app-shell::after {
 @media (max-width: 480px) {
   .app-shell { padding: 6px 0 12px; width: calc(100% - 8px); }
   .board-panel { padding: 6px; }
-  .scorebug { padding: 8px 10px 6px; border-radius: 10px; }
-  .score-row { gap: 4px; }
-  .team-name { font-size: clamp(0.8rem, 2.4vw, 1.2rem); max-width: 40vw; }
-  .score-core { min-height: 34px; min-width: 52px; padding: 0 6px; border-radius: 8px; }
-  .score-core span { font-size: clamp(1.4rem, 4.2vw, 2.2rem); }
+  .scoreline { padding: 6px 8px; gap: 4px; }
+  .team-name { font-size: clamp(0.55rem, 2.6vw, 0.9rem); max-width: 24vw; }
+  .score-core { padding: 3px 7px; border-radius: 6px; }
+  .score-core span { font-size: clamp(0.75rem, 4.4vw, 1.15rem); }
   .score-separator { padding: 0 1px; }
-  .team-logo-wrapper { width: 20px; height: 20px; }
+  .team-logo-wrapper { width: 18px; height: 18px; }
   .team-logo-wrapper .remove-logo-btn { width: 12px; height: 12px; font-size: 7px; top: -3px; right: -3px; }
-  .league-logo-wrapper { width: 18px; height: 18px; }
-  .league-logo-wrapper img { width: 14px; }
-  .scoreboard-title .live-badge { font-size: 0.35rem; }
-  .scoreboard-title .season { font-size: 0.35rem; }
+  .league-badge { width: 30px; }
+  .league-badge img { width: 18px; }
+  .live-chip { padding: 0 6px; font-size: 0.4rem; gap: 3px; }
 
+  .scorebug-meta { padding: 5px 6px 2px; }
+  .meta-season { font-size: 0.4rem; gap: 5px; }
   .ticker-row { flex-direction: column; align-items: flex-start; gap: 2px; font-size: 0.45rem; padding: 2px 4px; min-height: 16px; }
   .ticker-label { width: auto; font-size: 0.3rem; }
   .ticker-content { font-size: 0.45rem; }
-  .ticker-footer { font-size: 0.35rem; gap: 3px; padding-top: 2px; }
-  .live-dot { font-size: 0.5rem; }
 
   .chess-grid { --cell-size: clamp(32px, calc((100vw - 24px) / 5), 50px); }
   .grid-cell { padding: 2px; }
