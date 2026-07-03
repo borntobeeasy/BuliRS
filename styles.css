@@ -65,6 +65,10 @@ body::after {
   pointer-events: none;
 }
 
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
 @supports (backdrop-filter: blur(18px)) {
   .board-panel,
   .thesis-panel,
@@ -170,6 +174,28 @@ body .app-shell::after {
   margin-bottom: 12px;
   flex-wrap: wrap;
 }
+/* ============================================================
+   GLOBAL: Eyebrow-Label & Section-Headline (Basis für alle Panels)
+   ============================================================ */
+.eyebrow {
+  margin: 0 0 3px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--bundesliga-gold);
+  opacity: 0.9;
+}
+h2 {
+  margin: 0;
+  font-family: var(--headline-font);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
 .topbar .eyebrow {
   margin: 0 0 2px;
   font-size: 0.55rem;
@@ -841,34 +867,55 @@ body .app-shell::after {
   grid-auto-rows: var(--cell-size);
 }
 .thesis-card {
+  position: relative;
   display: grid;
   place-items: center;
   height: var(--cell-size);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 3px solid var(--bundesliga-red);
   border-radius: 6px;
   background:
-    radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.08), transparent 34%),
-    linear-gradient(135deg, rgba(211, 1, 12, 0.12), transparent 45%),
-    rgba(255, 255, 255, 0.06);
+    radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.08), transparent 40%),
+    linear-gradient(150deg, rgba(211, 1, 12, 0.18), transparent 55%),
+    rgba(255, 255, 255, 0.05);
   color: var(--white);
-  padding: 6px;
+  padding: 14px 8px 6px;
   cursor: grab;
-  font-weight: 900;
+  font-weight: 800;
   font-size: 0.8rem;
   user-select: none;
   touch-action: none;
-  transition: transform 140ms, border-color 140ms, box-shadow 140ms;
+  transition: transform 140ms, border-color 140ms, box-shadow 140ms, background 140ms;
+  overflow: hidden;
+}
+.thesis-card::before {
+  content: "T" attr(data-id);
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-family: var(--headline-font);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--bundesliga-gold);
+  opacity: 0.9;
 }
 .thesis-card:hover {
   border-color: var(--bundesliga-red);
-  box-shadow: 0 0 30px rgba(211, 1, 12, 0.2), 0 16px 30px rgba(0, 0, 0, 0.28);
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.1), transparent 40%),
+    linear-gradient(150deg, rgba(211, 1, 12, 0.3), transparent 55%),
+    rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 30px rgba(211, 1, 12, 0.25), 0 16px 30px rgba(0, 0, 0, 0.3);
   transform: translateY(-4px) scale(1.02);
 }
 .thesis-card .thesis-title {
   width: 100%;
   text-align: center;
   font-size: 0.85rem;
-  line-height: 1.15;
+  line-height: 1.2;
+  font-family: var(--headline-font);
+  letter-spacing: 0.01em;
 }
 .thesis-card:active,
 .placed-chip:active {
@@ -901,6 +948,72 @@ body .app-shell::after {
   max-height: calc(100vh - 32px);
   overflow: auto;
   padding: 18px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bundesliga-red) rgba(255, 255, 255, 0.05);
+}
+.settings-shell::-webkit-scrollbar {
+  width: 8px;
+}
+.settings-shell::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+}
+.settings-shell::-webkit-scrollbar-thumb {
+  background: var(--bundesliga-red);
+  border-radius: 8px;
+}
+
+/* ---- Dialog-Kopfzeile (Titel + Schließen-Button) ---- */
+.settings-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid rgba(211, 1, 12, 0.3);
+}
+.settings-head h2 {
+  font-size: 1.5rem;
+}
+
+/* ---- Einheitliche Eingabefelder im Dialog ---- */
+.settings-shell input {
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--white);
+  font-family: var(--event-font);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: border-color 0.15s, background 0.15s;
+}
+.settings-shell input:focus {
+  outline: none;
+  border-color: var(--bundesliga-red);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ---- Team-Namen (Weiß/Schwarz) ---- */
+.match-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.match-controls label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.match-controls input {
+  min-height: 36px;
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
 /* ×-Button zum Schließen des Dialogs */
@@ -926,7 +1039,30 @@ body .app-shell::after {
 
 .results-panel {
   display: grid;
-  gap: 10px;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background:
+    linear-gradient(160deg, rgba(211, 1, 12, 0.06), transparent 45%),
+    rgba(255, 255, 255, 0.03);
+}
+.results-panel > div:first-child {
+  position: relative;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.results-panel > div:first-child::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 34px;
+  height: 2px;
+  background: var(--bundesliga-red);
+}
+.results-panel h2 {
+  font-size: 1.1rem;
 }
 
 .evaluation-list {
