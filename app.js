@@ -68,9 +68,10 @@ const importAllBtn = $('#importAllButton');
 const importFileInput = $('#importFileInput');
 const importExportStatus = $('#importExportStatus');
 const toggleThesisBtn = $('#toggleThesisButton');
+const toggleRemoveBtn = $('#toggleRemoveButtons');
+const appShell = document.querySelector('.app-shell');
 const thesisPanel = $('#thesisPanel');
 const fieldThesisWrapper = $('#fieldThesisWrapper');
-const toggleRemoveBtn = $('#toggleRemoveButtons');
 
 let pointerDrag = null;
 
@@ -138,16 +139,19 @@ function saveTeamLogos() {
 function renderTeamLogos() {
   SIDES.forEach(side => {
     const img = $(`#${side}Logo`);
+    const wrapper = document.querySelector(`.team-logo-wrapper[data-team="${side}"]`);
     const removeBtn = document.querySelector(`.remove-logo-btn[data-team="${side}"]`);
     if (!img) return;
     if (teamLogos[side]) {
       img.src = teamLogos[side];
       img.style.display = 'block';
       if (removeBtn) removeBtn.classList.add('visible');
+      if (wrapper) wrapper.classList.add('has-logo');
     } else {
       img.src = '';
       img.style.display = 'none';
       if (removeBtn) removeBtn.classList.remove('visible');
+      if (wrapper) wrapper.classList.remove('has-logo');
     }
   });
 }
@@ -330,7 +334,7 @@ function createBoard() {
         cell.addEventListener('dragover', handleFigureDragOver);
         cell.addEventListener('dragleave', handleFigureDragLeave);
         cell.addEventListener('drop', handleFigureDrop);
-        cell.addEventListener('dblclick', handleFigurePick);
+        cell.addEventListener('click', handleFigurePick);
       } else {
         cell.classList.add('drop-cell');
         cell.dataset.side = row;
@@ -396,6 +400,7 @@ function createEvaluationList() {
   state.assignments.forEach(a => {
     const card = document.createElement('article');
     card.className = 'evaluation-card';
+    // Aktive Klassen für die Buttons
     const neutralActive = !a.polarity ? 'active' : '';
     const positiveActive = a.polarity === 'positive' ? 'active' : '';
     const negativeActive = a.polarity === 'negative' ? 'active' : '';
@@ -446,11 +451,12 @@ function renderRandomizerState() {
     : formatNumber(state.questionValue);
 }
 
+// ---- TICKER-FUNKTIONEN (nur Thesen & Randomizer) ----
 function renderThesisStatus() {
   const container = document.getElementById('thesisStatusDisplay');
   if (!container) return;
   const placed = state.assignments.filter(a => a.side && a.piece).length;
-  const total = 10;
+  const total = 10; // fest auf 10, da 5 Figuren * 2 Seiten = 10 Plätze
   const evaluated = state.assignments.filter(a => a.polarity).length;
   container.innerHTML = `
     <span>📋 <strong>${placed}</strong> von <strong>${total}</strong> platziert</span>
@@ -468,6 +474,7 @@ function renderRandomizerStatus() {
   container.innerHTML = `<span class="value ${cls}">🎲 ${text}</span>`;
 }
 
+// ---- Haupt-Render ----
 function render() {
   createBoard();
   createThesisList();
@@ -476,6 +483,7 @@ function render() {
   renderTotals();
   renderRandomizerState();
   renderTeamLogos();
+  // Ticker
   renderThesisStatus();
   renderRandomizerStatus();
   fitAllCardText();
@@ -644,6 +652,15 @@ document.querySelectorAll('.team-logo-wrapper').forEach(wrapper => {
 });
 
 // ============================
+//  BEARBEITEN-MODUS (Tablet): alle ×-Buttons ein-/ausblenden (Button jetzt im Dialog)
+// ============================
+toggleRemoveBtn?.addEventListener('click', () => {
+  const isActive = appShell.classList.toggle('show-remove-buttons');
+  toggleRemoveBtn.setAttribute('aria-pressed', String(isActive));
+  toggleRemoveBtn.textContent = isActive ? '× ausblenden' : '× anzeigen';
+});
+
+// ============================
 //  THESEN-PANEL TOGGLE (Button jetzt im Dialog)
 // ============================
 toggleThesisBtn.addEventListener('click', () => {
@@ -657,22 +674,8 @@ toggleThesisBtn.addEventListener('click', () => {
     toggleThesisBtn.textContent = 'Thesen einblenden';
     fieldThesisWrapper.classList.add('thesis-hidden');
   }
+  // Nach dem Einblenden Texte anpassen (falls nötig)
   if (!isHidden) fitAllCardText();
-});
-
-// ============================
-//  ×‑BUTTONS TOGGLE (Button jetzt im Dialog)
-// ============================
-let removeButtonsVisible = false;
-toggleRemoveBtn.addEventListener('click', () => {
-  removeButtonsVisible = !removeButtonsVisible;
-  if (removeButtonsVisible) {
-    document.body.classList.add('show-remove-buttons');
-    toggleRemoveBtn.textContent = '× ausblenden';
-  } else {
-    document.body.classList.remove('show-remove-buttons');
-    toggleRemoveBtn.textContent = '× anzeigen';
-  }
 });
 
 // ============================
@@ -727,9 +730,11 @@ function importAllData(file) {
       const parsed = JSON.parse(reader.result);
       if (parsed?.app !== 'rasenschach') throw new Error('Kein Rasenschach-Speicherstand.');
       const data = parsed.data || {};
+      // Thesen
       if (Array.isArray(data.theses)) {
         data.theses.forEach((t, i) => { if (i < state.theses.length) state.theses[i] = t; });
       }
+      // Positionen
       if (Array.isArray(data.positions)) {
         data.positions.forEach(p => {
           const a = state.assignments.find(item => item.id === p.id);
@@ -740,10 +745,12 @@ function importAllData(file) {
           if (p.polarity === null || POLARITIES.includes(p.polarity)) a.polarity = p.polarity || null;
         });
       }
+      // Namen
       if (data.names) {
         if (data.names.white) nameInputs.white.value = data.names.white;
         if (data.names.black) nameInputs.black.value = data.names.black;
       }
+      // Ergebnisse
       if (data.results) {
         const next = cloneData(initialBonuses);
         SIDES.forEach(side => {
@@ -757,10 +764,12 @@ function importAllData(file) {
         });
         state.results = next;
       }
+      // Randomizer
       if (data.questionValue !== undefined) {
         const val = data.questionValue;
         if (val === null || QUESTION_VALUES.includes(val)) state.questionValue = val ?? null;
       }
+      // Figurenbilder
       if (data.figureImages && typeof data.figureImages === 'object') {
         const safe = {};
         Object.entries(data.figureImages).forEach(([slot, url]) => {
@@ -768,6 +777,7 @@ function importAllData(file) {
         });
         state.figureImages = safe;
       }
+      // Team-Logos
       if (data.teamLogos) {
         if (isImageUrl(data.teamLogos.white)) teamLogos.white = data.teamLogos.white;
         if (isImageUrl(data.teamLogos.black)) teamLogos.black = data.teamLogos.black;
@@ -788,6 +798,7 @@ function importAllData(file) {
 // ============================
 //  EVENT-LISTENER
 // ============================
+// Team-Logos (Upload-Button + Remove)
 document.addEventListener('DOMContentLoaded', () => {
   loadTeamLogos();
   renderTeamLogos();
@@ -811,6 +822,7 @@ document.querySelectorAll('.remove-logo-btn').forEach(btn => {
   });
 });
 
+// Evaluation: Polarität setzen
 evaluationList.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-polarity]');
   if (!btn) return;
@@ -820,6 +832,7 @@ evaluationList.addEventListener('click', (e) => {
   render();
 });
 
+// Evaluation: Thesentext ändern
 evaluationList.addEventListener('input', (e) => {
   const inp = e.target;
   if (!inp.matches('[data-field="thesis-text"]')) return;
@@ -830,6 +843,7 @@ evaluationList.addEventListener('input', (e) => {
   fitAllCardText();
 });
 
+// Ergebnisseingaben
 resultsGrid.addEventListener('input', (e) => {
   const inp = e.target;
   if (!inp.matches('[data-side][data-piece]')) return;
@@ -842,12 +856,17 @@ resultsGrid.addEventListener('input', (e) => {
   fitAllCardText();
 });
 
+// Teamnamen ändern
 Object.values(nameInputs).forEach(inp => inp.addEventListener('input', renderTotals));
+
+// Fenster-Resize: Texte anpassen
 window.addEventListener('resize', fitAllCardText);
 
+// Settings-Dialog
 openSettingsBtn.addEventListener('click', () => settingsDialog.showModal?.() || settingsDialog.setAttribute('open', ''));
 closeSettingsBtn.addEventListener('click', () => settingsDialog.close?.() || settingsDialog.removeAttribute('open'));
 
+// Export / Import
 exportAllBtn.addEventListener('click', exportAllData);
 importAllBtn.addEventListener('click', () => importFileInput.click());
 importFileInput.addEventListener('change', () => {
@@ -855,10 +874,14 @@ importFileInput.addEventListener('change', () => {
   importFileInput.value = '';
 });
 
+// Randomizer
 randomQuestionBtn.addEventListener('click', () => {
   state.questionValue = QUESTION_VALUES[Math.floor(Math.random() * QUESTION_VALUES.length)];
   render();
 });
 
+// ============================
+//  INIT
+// ============================
 render();
 createResultSettings();
