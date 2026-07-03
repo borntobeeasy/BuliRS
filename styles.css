@@ -1,3 +1,7 @@
+/* ============================================================
+   KOMPLETTE styles.css – NUR HINTERGRUND ÜBERARBEITET
+   ============================================================ */
+
 :root {
   color-scheme: dark;
   --bundesliga-red: #D3010C;
@@ -8,9 +12,9 @@
 
   --paper: #0a0a0a;
   --ink: var(--bundesliga-white);
-  --muted: #aab5d8;
-  --line: rgba(255, 255, 255, 0.18);
-  --grid: rgba(255, 255, 255, 0.075);
+  --muted: #a0a8b8;
+  --line: rgba(255, 255, 255, 0.12);
+  --grid: rgba(255, 255, 255, 0.05);
   --accent: var(--bundesliga-red);
   --yellow: var(--bundesliga-gold);
   --green: #00843d;
@@ -25,45 +29,159 @@
   box-sizing: border-box;
 }
 
+/* ============================================================
+   NEUER HINTERGRUND – 2. Bundesliga TV-Stil
+   ============================================================ */
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse at 30% 20%, rgba(211, 1, 12, 0.15), transparent 40%),
-    radial-gradient(ellipse at 70% 15%, rgba(211, 1, 12, 0.10), transparent 35%),
-    radial-gradient(ellipse at 50% 100%, rgba(245, 197, 24, 0.08), transparent 30%),
-    linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 50%, #0d0d0d 100%);
+  background-color: #0a0a0a;
+  background-image:
+    linear-gradient(145deg, rgba(211, 1, 12, 0.18) 0%, transparent 45%),
+    linear-gradient(215deg, rgba(211, 1, 12, 0.08) 0%, transparent 35%),
+    repeating-linear-gradient(45deg,
+      rgba(255, 255, 255, 0.015) 0px,
+      rgba(255, 255, 255, 0.015) 1px,
+      transparent 1px,
+      transparent 24px
+    ),
+    radial-gradient(ellipse at 10% 5%, rgba(255, 255, 255, 0.04) 0%, transparent 45%),
+    radial-gradient(ellipse at 90% 95%, rgba(211, 1, 12, 0.08) 0%, transparent 40%),
+    #0a0a0a;
   color: var(--ink);
   font-family: var(--event-font);
 }
+
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -2;
-  background:
-    repeating-linear-gradient(90deg,
-      rgba(0, 80, 40, 0.08) 0px,
-      rgba(0, 100, 50, 0.12) 4px,
-      rgba(0, 80, 40, 0.06) 8px,
-      rgba(0, 110, 55, 0.14) 12px
-    ),
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: auto, 40px 40px, 40px 40px;
+  z-index: -3;
   pointer-events: none;
+  background: repeating-linear-gradient(45deg,
+      transparent 0px,
+      transparent 120px,
+      rgba(255, 255, 255, 0.012) 120px,
+      rgba(255, 255, 255, 0.012) 121px,
+      transparent 121px,
+      transparent 180px
+    );
 }
+
 body::after {
+  content: "2. BUNDESLIGA 26/27";
+  position: fixed;
+  bottom: -8vh;
+  right: -4vw;
+  z-index: -3;
+  font-family: var(--headline-font);
+  font-size: min(28vw, 18rem);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.025);
+  white-space: nowrap;
+  pointer-events: none;
+  transform: rotate(-8deg);
+  text-shadow: 0 0 60px rgba(211, 1, 12, 0.04);
+}
+
+body .app-shell {
+  isolation: isolate;
+  position: relative;
+}
+
+body .app-shell::before {
   content: "";
   position: fixed;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(ellipse at 50% -20%, rgba(255, 255, 255, 0.06), transparent 50%),
-    radial-gradient(ellipse at 20% 80%, rgba(211, 1, 12, 0.05), transparent 30%),
-    radial-gradient(ellipse at 80% 80%, rgba(211, 1, 12, 0.05), transparent 30%);
+  top: 10vh;
+  right: -10vw;
+  z-index: -2;
+  width: 60vw;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(211, 1, 12, 0.2), transparent);
+  transform: rotate(12deg);
   pointer-events: none;
+  animation: beamMove 12s ease-in-out infinite alternate;
 }
+
+body .app-shell::after {
+  content: "";
+  position: fixed;
+  bottom: 15vh;
+  left: -8vw;
+  z-index: -2;
+  width: 50vw;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  transform: rotate(-6deg);
+  pointer-events: none;
+  animation: beamMove 14s ease-in-out infinite alternate-reverse;
+}
+
+.board-panel::before {
+  content: "";
+  position: absolute;
+  top: -12vh;
+  right: -8vw;
+  z-index: 0;
+  width: 45vw;
+  height: 45vw;
+  background: radial-gradient(ellipse at 70% 30%, rgba(211, 1, 12, 0.06), transparent 60%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: glowPulse 8s ease-in-out infinite alternate;
+}
+
+.board-panel::after {
+  content: "";
+  position: absolute;
+  bottom: -10vh;
+  left: -6vw;
+  z-index: 0;
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(ellipse at 30% 70%, rgba(211, 1, 12, 0.04), transparent 50%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: glowPulse 10s ease-in-out infinite alternate-reverse;
+}
+
+.game-layout::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 39px,
+      rgba(255, 255, 255, 0.015) 39px,
+      rgba(255, 255, 255, 0.015) 40px
+    ),
+    repeating-linear-gradient(90deg,
+      transparent,
+      transparent 39px,
+      rgba(255, 255, 255, 0.015) 39px,
+      rgba(255, 255, 255, 0.015) 40px
+    );
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+@keyframes beamMove {
+  0% { transform: translateX(0) rotate(12deg); opacity: 0.3; }
+  100% { transform: translateX(8vw) rotate(12deg); opacity: 0.8; }
+}
+
+@keyframes glowPulse {
+  0% { opacity: 0.3; transform: scale(0.95); }
+  100% { opacity: 0.7; transform: scale(1.05); }
+}
+
+/* ============================================================
+   ALLE BESTEHENDEN LAYOUT- & KOMPONENTEN-STYLES
+   (unverändert übernommen)
+   ============================================================ */
 
 body:has(dialog[open]) {
   overflow: hidden;
@@ -78,11 +196,6 @@ body:has(dialog[open]) {
   }
 }
 
-@keyframes stadiumSweep {
-  0% { transform: translateX(-22%) rotate(-10deg); opacity: 0.24; }
-  50% { opacity: 0.5; }
-  100% { transform: translateX(22%) rotate(-10deg); opacity: 0.24; }
-}
 @keyframes cardIn {
   from { opacity: 0; transform: translateY(10px) scale(0.96); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -94,37 +207,6 @@ body:has(dialog[open]) {
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.2; transform: scale(0.6); }
-}
-
-body .app-shell {
-  isolation: isolate;
-}
-body .app-shell::before {
-  content: "";
-  position: fixed;
-  top: -25vh;
-  left: 4vw;
-  z-index: -1;
-  width: 92vw;
-  height: 58vh;
-  background:
-    linear-gradient(82deg, transparent, rgba(211, 1, 12, 0.12), transparent 58%),
-    linear-gradient(103deg, transparent, rgba(245, 197, 24, 0.08), transparent 64%);
-  filter: blur(10px);
-  animation: stadiumSweep 8s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-body .app-shell::after {
-  content: "26/27";
-  position: fixed;
-  right: -4vw;
-  bottom: -8vh;
-  z-index: -1;
-  color: rgba(255, 255, 255, 0.035);
-  font-family: var(--headline-font);
-  font-size: min(42vw, 34rem);
-  line-height: 0.8;
-  pointer-events: none;
 }
 
 .app-shell {
@@ -144,19 +226,6 @@ body .app-shell::after {
   box-shadow: var(--shadow), 0 0 60px rgba(211, 1, 12, 0.05);
   padding: 20px;
   border-radius: 8px;
-}
-.board-panel::before {
-  content: "26/27";
-  position: absolute;
-  top: -38px;
-  right: clamp(12px, 4vw, 48px);
-  z-index: 1;
-  color: rgba(255, 255, 255, 0.06);
-  font-family: var(--headline-font);
-  font-size: clamp(7rem, 18vw, 18rem);
-  font-weight: 950;
-  line-height: 0.8;
-  pointer-events: none;
 }
 .board-panel > * {
   position: relative;
@@ -568,6 +637,7 @@ h2 {
   grid-template-columns: 1fr;
   gap: 20px;
   align-items: start;
+  position: relative;
 }
 
 .field-thesis-wrapper {
