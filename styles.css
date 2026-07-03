@@ -241,6 +241,17 @@ h2 {
 #openSettingsButton:hover {
   background: var(--bundesliga-red-dark);
 }
+#undoButton {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+#undoButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+}
+#undoButton:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
 
 /* ============================================================
    SCOREBOARD
@@ -302,7 +313,6 @@ h2 {
 .score-team-white { justify-content: flex-start; }
 .score-team-black { justify-content: flex-end; }
 
-/* ---- Team-Logo-Container ---- */
 .team-logo-wrapper {
   position: relative;
   width: clamp(1.8rem, 3vw, 3.5rem);
@@ -322,8 +332,6 @@ h2 {
   border-color: var(--bundesliga-red);
   background: rgba(211, 1, 12, 0.1);
 }
-
-/* Platzhalter-Plus (nur sichtbar, wenn kein Logo vorhanden) */
 .team-logo-wrapper::after {
   content: "+";
   position: absolute;
@@ -338,10 +346,8 @@ h2 {
   transition: opacity 140ms;
 }
 .team-logo-wrapper.has-logo::after {
-  content: none;  /* ausgeblendet, sobald Logo da ist */
+  content: none;
 }
-
-/* PC/Maus: Rahmen & "+"-Hinweis nur bei Hover sichtbar */
 @media (hover: hover) and (pointer: fine) {
   .team-logo-wrapper:not(.has-logo):not(.drag-over) {
     border-color: transparent;
@@ -371,7 +377,6 @@ h2 {
   display: none;
 }
 
-/* ---- Upload-Button (Plus) – echter Button, immer klickbar ---- */
 .team-logo-wrapper .logo-upload-btn {
   position: absolute;
   bottom: -4px;
@@ -396,7 +401,6 @@ h2 {
   background: var(--bundesliga-red-dark);
   transform: scale(1.1);
 }
-/* Auf Touch-Geräten immer sichtbar, auf PC nur bei Hover */
 @media (hover: hover) and (pointer: fine) {
   .team-logo-wrapper .logo-upload-btn {
     opacity: 0;
@@ -406,7 +410,6 @@ h2 {
     opacity: 1;
   }
 }
-/* Wenn Logo vorhanden: Button bleibt sichtbar, aber dezenter */
 .team-logo-wrapper.has-logo .logo-upload-btn {
   background: rgba(0,0,0,0.6);
 }
@@ -414,7 +417,6 @@ h2 {
   background: var(--bundesliga-red);
 }
 
-/* ---- Remove-Button (×) ---- */
 .team-logo-wrapper .remove-logo-btn {
   position: absolute;
   top: -6px;
@@ -559,18 +561,18 @@ h2 {
 .ticker-content .value.neutral  { color: var(--zero); }
 
 /* ============================================================
-   LAYOUT
+   LAYOUT: Scoreboard oben, darunter Feld + Thesen nebeneinander (Desktop)
    ============================================================ */
 .game-layout {
   display: grid;
   grid-template-columns: 1fr;
   gap: 20px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .field-thesis-wrapper {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr;
   gap: 20px;
   align-items: start;
   width: 100%;
@@ -588,6 +590,16 @@ h2 {
   position: relative;
   width: max-content;
   max-width: 100%;
+}
+
+/* Desktop: Feld + Thesen nebeneinander */
+@media (min-width: 1201px) {
+  .field-thesis-wrapper {
+    grid-template-columns: auto 1fr;
+  }
+  .field-thesis-wrapper.thesis-hidden {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ============================================================
@@ -716,7 +728,6 @@ h2 {
   opacity: 0;
   pointer-events: none;
 }
-
 @media (hover: hover) and (pointer: fine) {
   .piece-cell::after {
     opacity: 0;
@@ -1390,15 +1401,6 @@ h2 {
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media (min-width: 1201px) {
-  .field-thesis-wrapper {
-    grid-template-columns: auto 1fr;
-  }
-  .field-thesis-wrapper.thesis-hidden {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 1200px) {
   .app-shell { padding: 16px 0 24px; }
   .board-panel { padding: 14px; }
