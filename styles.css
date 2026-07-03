@@ -65,10 +65,6 @@ body::after {
   pointer-events: none;
 }
 
-body:has(dialog[open]) {
-  overflow: hidden;
-}
-
 @supports (backdrop-filter: blur(18px)) {
   .board-panel,
   .thesis-panel,
@@ -164,7 +160,7 @@ body .app-shell::after {
 }
 
 /* ============================================================
-   TOPBAR – kompakt
+   TOPBAR – mit Toggle-Button für X
    ============================================================ */
 .topbar {
   display: flex;
@@ -174,28 +170,6 @@ body .app-shell::after {
   margin-bottom: 12px;
   flex-wrap: wrap;
 }
-/* ============================================================
-   GLOBAL: Eyebrow-Label & Section-Headline (Basis für alle Panels)
-   ============================================================ */
-.eyebrow {
-  margin: 0 0 3px;
-  font-size: 0.6rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--bundesliga-gold);
-  opacity: 0.9;
-}
-h2 {
-  margin: 0;
-  font-family: var(--headline-font);
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: var(--white);
-}
-
 .topbar .eyebrow {
   margin: 0 0 2px;
   font-size: 0.55rem;
@@ -244,6 +218,13 @@ h2 {
 #openSettingsButton:hover {
   background: var(--bundesliga-red-dark);
 }
+#toggleRemoveButtons {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+#toggleRemoveButtons:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
 
 /* ============================================================
    SCOREBOARD – VOLLE BREITE (Stadion-Anzeigetafel)
@@ -258,49 +239,69 @@ h2 {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 900px;
+  background: #0d0d0d;
+  border-radius: 20px;
+  padding: 14px 24px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   position: relative;
-}
-
-/* ---- Haupt-Anzeigetafel: Liga-Badge + Team – Ergebnis – Team ---- */
-.scorebug-main {
-  display: flex;
-  align-items: stretch;
-  border-radius: 999px;
   overflow: hidden;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
 }
 
-.league-badge {
+.scoreboard-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+.league-logo-wrapper {
   flex-shrink: 0;
-  width: 68px;
+  width: 34px;
+  height: 34px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0a0a0a;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
-.league-badge img {
-  width: 44px;
+.league-logo-wrapper img {
+  width: 26px;
   height: auto;
   object-fit: contain;
+  filter: brightness(1.1);
+}
+.scoreboard-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.scoreboard-title .live-badge {
+  font-size: 0.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--bundesliga-red);
+  letter-spacing: 0.12em;
+}
+.scoreboard-title .season {
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.06em;
 }
 
-.scoreline {
-  flex: 1;
+.score-row {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 14px;
-  background: #f4f2ee;
-  padding: 10px 22px;
-  min-width: 0;
+  gap: 16px;
+  padding: 4px 0 2px;
 }
 
 .score-team {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
 }
 .score-team-white { justify-content: flex-start; }
@@ -308,62 +309,26 @@ h2 {
 
 .team-logo-wrapper {
   position: relative;
-  width: 52px;
-  height: 52px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
   border-radius: 50%;
-  border: 2px dashed rgba(0, 0, 0, 0.18);
-  transition: border-color 0.2s, opacity 0.2s;
+  border: 2px dashed rgba(255, 255, 255, 0.08);
+  transition: border-color 0.2s;
   cursor: pointer;
-  background: rgba(0, 0, 0, 0.03);
-}
-.team-logo-wrapper.has-logo {
-  border-color: transparent;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.02);
 }
 .team-logo-wrapper.drag-over {
   border-color: var(--bundesliga-red);
-  background: rgba(211, 1, 12, 0.1);
-}
-.team-logo-wrapper::after {
-  content: "+";
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-family: var(--headline-font);
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: rgba(0, 0, 0, 0.35);
-  pointer-events: none;
-  transition: opacity 140ms;
-}
-.team-logo-wrapper.has-logo::after {
-  content: none;
-}
-
-/* PC/Maus: Rahmen & "+"-Hinweis nur bei Hover sichtbar */
-@media (hover: hover) and (pointer: fine) {
-  .team-logo-wrapper:not(.has-logo):not(.drag-over) {
-    border-color: transparent;
-  }
-  .team-logo-wrapper:not(.has-logo):not(.drag-over)::after {
-    opacity: 0;
-  }
-  .team-logo-wrapper:not(.has-logo):hover {
-    border-color: rgba(0, 0, 0, 0.18);
-  }
-  .team-logo-wrapper:not(.has-logo):hover::after {
-    opacity: 1;
-  }
+  background: rgba(211,1,12,0.12);
 }
 .team-logo-wrapper .team-logo {
   width: 100%;
   height: 100%;
   object-fit: contain;
   border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   transition: all 0.2s ease;
 }
 .team-logo-wrapper .team-logo:not([src]),
@@ -372,7 +337,7 @@ h2 {
   display: none;
 }
 
-/* ---- ×-Button zum Entfernen des Team-Logos (nur bei Hover sichtbar) ---- */
+/* ---- ×‑Button für Team‑Logos (standardmäßig ausgeblendet) ---- */
 .team-logo-wrapper .remove-logo-btn {
   position: absolute;
   top: -6px;
@@ -391,91 +356,91 @@ h2 {
   display: none;
   place-items: center;
   z-index: 2;
-}
-.team-logo-wrapper:hover .remove-logo-btn.visible {
-  display: grid;
+  transition: background 0.2s, transform 0.15s;
 }
 .team-logo-wrapper .remove-logo-btn:hover {
   background: var(--bundesliga-red);
+  transform: scale(1.1);
+}
+
+/* PC: nur bei Hover sichtbar (wenn Logo vorhanden und Klasse .visible) */
+.team-logo-wrapper:hover .remove-logo-btn.visible {
+  display: grid;
+}
+
+/* ---- ×‑Button für Figuren‑Fotos (standardmäßig ausgeblendet) ---- */
+.remove-player-photo {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  display: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--white);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+  transition: background 0.2s, transform 0.15s;
+}
+.remove-player-photo:hover {
+  background: var(--bundesliga-red);
+  transform: scale(1.1);
+}
+.piece-cell.has-player-image:hover .remove-player-photo {
+  display: grid;
+}
+
+/* ---- Globale Klasse zum dauerhaften Einblenden aller ×‑Buttons ---- */
+body.show-remove-buttons .remove-logo-btn,
+body.show-remove-buttons .remove-player-photo {
+  display: grid !important;
 }
 
 .team-name {
-  font-size: clamp(1rem, 2.1vw, 1.7rem);
-  font-weight: 800;
-  color: #16171a;
+  font-size: clamp(1.8rem, 4.5vw, 4.8rem);
+  font-weight: 900;
+  color: var(--white);
   text-transform: uppercase;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.04em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: var(--headline-font);
-  max-width: 32vw;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  max-width: 42vw;
 }
 
 .score-core {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   font-family: var(--headline-font);
-  background: linear-gradient(180deg, var(--bundesliga-red) 0%, var(--bundesliga-red-dark) 100%);
-  padding: 6px 18px;
-  border-radius: 8px;
-  box-shadow: 0 4px 14px rgba(211, 1, 12, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0 20px;
+  border-radius: 12px;
+  min-height: 72px;
+  min-width: 120px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.5);
 }
 .score-core span {
-  font-size: clamp(1.3rem, 2.6vw, 2.1rem);
+  font-size: clamp(3.6rem, 8vw, 7.2rem);
   font-weight: 700;
-  color: #ffffff;
+  color: var(--white);
   line-height: 1;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  text-shadow: 0 2px 20px rgba(255, 255, 255, 0.04);
 }
 .score-separator {
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.6);
-  padding: 0 1px;
-}
-
-/* ---- LIVE-Chip rechts an der Hauptleiste ---- */
-.live-chip {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 16px;
-  background: #0a0a0a;
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 0.65rem;
-  letter-spacing: 0.1em;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
-}
-.live-chip .live-dot {
-  color: var(--bundesliga-red);
-  font-size: 0.7rem;
-  line-height: 0.6;
-  animation: pulse-dot 1.2s ease-in-out infinite;
-}
-
-/* ---- Meta-/Ticker-Zeile unterhalb der Anzeigetafel ---- */
-.scorebug-meta {
-  margin-top: 8px;
-  padding: 6px 14px 2px;
-}
-.meta-season {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.6rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
+  font-weight: 300;
   color: var(--muted);
-  margin-bottom: 4px;
-}
-.meta-dot {
-  color: var(--bundesliga-red);
-  opacity: 0.7;
+  opacity: 0.4;
+  padding: 0 2px;
 }
 
 .ticker-row {
@@ -513,8 +478,29 @@ h2 {
 .ticker-content .value.negative { color: var(--red); }
 .ticker-content .value.neutral  { color: var(--zero); }
 
+.ticker-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-top: 4px;
+  margin-top: 2px;
+  border-top: 1px solid rgba(255,255,255,0.03);
+  font-size: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  opacity: 0.5;
+}
+.live-dot {
+  color: var(--bundesliga-red);
+  font-size: 0.8rem;
+  line-height: 0.6;
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
 /* ============================================================
-   LAYOUT: Scoreboard oben (volle Breite) + Feld + Thesen nebeneinander
+   LAYOUT: Scoreboard oben, Feld + Thesen nebeneinander (Desktop)
    ============================================================ */
 .game-layout {
   display: grid;
@@ -586,7 +572,6 @@ h2 {
   color: var(--bundesliga-white);
   font-weight: 800;
   isolation: isolate;
-  cursor: pointer;
   transition: outline-color 140ms, background-color 140ms, transform 140ms;
 }
 .piece-cell.light {
@@ -649,7 +634,7 @@ h2 {
 }
 
 .piece-cell::after {
-  content: "Foto wählen";
+  content: "Foto ablegen";
   position: absolute;
   left: 10px;
   right: 10px;
@@ -662,27 +647,16 @@ h2 {
   font-size: 0.6rem;
   font-weight: 800;
   line-height: 1;
-  opacity: 0.75;
+  opacity: 0;
   padding: 4px 8px;
   text-align: center;
+  transform: translateY(4px);
   transition: opacity 140ms, transform 140ms;
 }
-.piece-cell.has-player-image::after {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* PC/Maus: Hinweis standardmäßig ausgeblendet, nur bei Hover sichtbar */
-@media (hover: hover) and (pointer: fine) {
-  .piece-cell::after {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  .piece-cell:hover::after,
-  .piece-cell.image-drop-over::after {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.piece-cell:hover::after,
+.piece-cell.image-drop-over::after {
+  opacity: 1;
+  transform: translateY(0);
 }
 .piece-cell.image-drop-over {
   outline: 4px solid var(--accent);
@@ -701,28 +675,6 @@ h2 {
   object-fit: contain;
   object-position: center bottom;
   padding: 4px;
-}
-/* ×-Button zum Entfernen des Figurenfotos */
-.remove-player-photo {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.7);
-  color: var(--white);
-  cursor: pointer;
-  font-size: 0.85rem;
-  padding: 0;
-  transition: background 0.2s;
-}
-.remove-player-photo:hover {
-  background: var(--bundesliga-red);
 }
 
 .drop-cell {
@@ -915,55 +867,34 @@ h2 {
   grid-auto-rows: var(--cell-size);
 }
 .thesis-card {
-  position: relative;
   display: grid;
   place-items: center;
   height: var(--cell-size);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-left: 3px solid var(--bundesliga-red);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 6px;
   background:
-    radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.08), transparent 40%),
-    linear-gradient(150deg, rgba(211, 1, 12, 0.18), transparent 55%),
-    rgba(255, 255, 255, 0.05);
+    radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.08), transparent 34%),
+    linear-gradient(135deg, rgba(211, 1, 12, 0.12), transparent 45%),
+    rgba(255, 255, 255, 0.06);
   color: var(--white);
-  padding: 14px 8px 6px;
+  padding: 6px;
   cursor: grab;
-  font-weight: 800;
+  font-weight: 900;
   font-size: 0.8rem;
   user-select: none;
   touch-action: none;
-  transition: transform 140ms, border-color 140ms, box-shadow 140ms, background 140ms;
-  overflow: hidden;
-}
-.thesis-card::before {
-  content: "T" attr(data-id);
-  position: absolute;
-  top: 6px;
-  left: 8px;
-  font-family: var(--headline-font);
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--bundesliga-gold);
-  opacity: 0.9;
+  transition: transform 140ms, border-color 140ms, box-shadow 140ms;
 }
 .thesis-card:hover {
   border-color: var(--bundesliga-red);
-  background:
-    radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.1), transparent 40%),
-    linear-gradient(150deg, rgba(211, 1, 12, 0.3), transparent 55%),
-    rgba(255, 255, 255, 0.07);
-  box-shadow: 0 0 30px rgba(211, 1, 12, 0.25), 0 16px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 30px rgba(211, 1, 12, 0.2), 0 16px 30px rgba(0, 0, 0, 0.28);
   transform: translateY(-4px) scale(1.02);
 }
 .thesis-card .thesis-title {
   width: 100%;
   text-align: center;
   font-size: 0.85rem;
-  line-height: 1.2;
-  font-family: var(--headline-font);
-  letter-spacing: 0.01em;
+  line-height: 1.15;
 }
 .thesis-card:active,
 .placed-chip:active {
@@ -996,75 +927,8 @@ h2 {
   max-height: calc(100vh - 32px);
   overflow: auto;
   padding: 18px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--bundesliga-red) rgba(255, 255, 255, 0.05);
-}
-.settings-shell::-webkit-scrollbar {
-  width: 8px;
-}
-.settings-shell::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 8px;
-}
-.settings-shell::-webkit-scrollbar-thumb {
-  background: var(--bundesliga-red);
-  border-radius: 8px;
 }
 
-/* ---- Dialog-Kopfzeile (Titel + Schließen-Button) ---- */
-.settings-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding-bottom: 14px;
-  border-bottom: 2px solid rgba(211, 1, 12, 0.3);
-}
-.settings-head h2 {
-  font-size: 1.5rem;
-}
-
-/* ---- Einheitliche Eingabefelder im Dialog ---- */
-.settings-shell input {
-  min-height: 32px;
-  padding: 0 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--white);
-  font-family: var(--event-font);
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: border-color 0.15s, background 0.15s;
-}
-.settings-shell input:focus {
-  outline: none;
-  border-color: var(--bundesliga-red);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* ---- Team-Namen (Weiß/Schwarz) ---- */
-.match-controls {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-.match-controls label {
-  display: grid;
-  gap: 6px;
-  font-size: 0.65rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-}
-.match-controls input {
-  min-height: 36px;
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-/* ×-Button zum Schließen des Dialogs */
 .close-button {
   display: grid;
   place-items: center;
@@ -1087,30 +951,7 @@ h2 {
 
 .results-panel {
   display: grid;
-  gap: 12px;
-  padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  background:
-    linear-gradient(160deg, rgba(211, 1, 12, 0.06), transparent 45%),
-    rgba(255, 255, 255, 0.03);
-}
-.results-panel > div:first-child {
-  position: relative;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-.results-panel > div:first-child::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -1px;
-  width: 34px;
-  height: 2px;
-  background: var(--bundesliga-red);
-}
-.results-panel h2 {
-  font-size: 1.1rem;
+  gap: 10px;
 }
 
 .evaluation-list {
@@ -1156,7 +997,6 @@ h2 {
 .evaluation-controls button:hover {
   background: rgba(255, 255, 255, 0.15);
 }
-/* Aktive Zustände für die Bewertungsbuttons */
 .evaluation-controls .neutral-button.active {
   background: var(--bundesliga-gold);
   color: var(--bundesliga-black);
@@ -1290,9 +1130,9 @@ h2 {
 }
 
 /* ============================================================
-   RESPONSIVE – speziell für Tablets & Handys
+   RESPONSIVE – Desktop / Tablet / Handy
    ============================================================ */
-@media (min-width: 1201px) {
+@media (min-width: 1025px) {
   .field-thesis-wrapper {
     grid-template-columns: auto 1fr;
   }
@@ -1301,7 +1141,7 @@ h2 {
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
   .app-shell { padding: 16px 0 24px; }
   .board-panel { padding: 14px; }
   .game-layout { gap: 16px; }
@@ -1314,14 +1154,14 @@ h2 {
   .field-wrap { justify-self: center; }
   .thesis-panel { width: 100%; min-height: 300px; }
 
-  .scoreline { padding: 8px 16px; gap: 10px; }
-  .team-name { font-size: clamp(0.85rem, 1.9vw, 1.4rem); max-width: 30vw; }
-  .score-core { padding: 5px 14px; }
-  .score-core span { font-size: clamp(1.1rem, 2.2vw, 1.7rem); }
-  .team-logo-wrapper { width: 42px; height: 42px; }
-  .league-badge { width: 58px; }
-  .league-badge img { width: 36px; }
-  .live-chip { padding: 0 12px; font-size: 0.55rem; }
+  .scorebug { padding: 12px 18px 10px; border-radius: 16px; }
+  .score-row { gap: 12px; padding: 2px 0; }
+  .team-name { font-size: clamp(1.6rem, 3.5vw, 2.8rem); max-width: 35vw; }
+  .score-core { min-height: 60px; min-width: 100px; padding: 0 16px; }
+  .score-core span { font-size: clamp(2.8rem, 6vw, 4.4rem); }
+  .team-logo-wrapper { width: 34px; height: 34px; }
+  .league-logo-wrapper { width: 30px; height: 30px; }
+  .league-logo-wrapper img { width: 22px; }
   .ticker-row { font-size: 0.55rem; min-height: 20px; gap: 8px; }
   .ticker-label { width: 50px; font-size: 0.35rem; }
 
@@ -1343,6 +1183,29 @@ h2 {
   .settings-shell { padding: 14px; gap: 12px; }
   .evaluation-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .results-grid { grid-template-columns: 1fr; }
+
+  /* Tablet: ×‑Buttons per Toggle steuern – Standard: ausgeblendet */
+  .team-logo-wrapper .remove-logo-btn,
+  .remove-player-photo {
+    display: none !important;
+  }
+  .team-logo-wrapper:hover .remove-logo-btn.visible {
+    display: none !important;
+  }
+  .piece-cell.has-player-image:hover .remove-player-photo {
+    display: none !important;
+  }
+  /* Wenn Toggle aktiv ist, werden sie sichtbar */
+  body.show-remove-buttons .remove-logo-btn,
+  body.show-remove-buttons .remove-player-photo {
+    display: grid !important;
+  }
+  body.show-remove-buttons .team-logo-wrapper:hover .remove-logo-btn.visible {
+    display: grid !important;
+  }
+  body.show-remove-buttons .piece-cell.has-player-image:hover .remove-player-photo {
+    display: grid !important;
+  }
 }
 
 @media (max-width: 820px) {
@@ -1351,20 +1214,22 @@ h2 {
   .topbar { flex-direction: column; align-items: stretch; gap: 8px; }
   .topbar .action-buttons { justify-content: flex-start; }
 
-  .scoreline { padding: 7px 12px; gap: 6px; }
-  .team-name { font-size: clamp(0.65rem, 2.4vw, 1.1rem); max-width: 26vw; }
-  .score-core { padding: 4px 10px; border-radius: 6px; }
-  .score-core span { font-size: clamp(0.9rem, 4vw, 1.4rem); }
-  .team-logo-wrapper { width: 32px; height: 32px; }
+  .scorebug { padding: 10px 14px 8px; border-radius: 14px; }
+  .score-row { gap: 8px; }
+  .team-name { font-size: clamp(1.2rem, 2.8vw, 2rem); max-width: 30vw; }
+  .score-core { min-height: 48px; min-width: 76px; padding: 0 10px; }
+  .score-core span { font-size: clamp(2rem, 5vw, 3.2rem); }
+  .team-logo-wrapper { width: 28px; height: 28px; }
   .team-logo-wrapper .remove-logo-btn { width: 14px; height: 14px; font-size: 8px; top: -4px; right: -4px; }
-  .league-badge { width: 46px; }
-  .league-badge img { width: 28px; }
-  .live-chip { padding: 0 8px; font-size: 0.5rem; }
+  .league-logo-wrapper { width: 24px; height: 24px; }
+  .league-logo-wrapper img { width: 18px; }
+  .scoreboard-title .live-badge { font-size: 0.4rem; }
+  .scoreboard-title .season { font-size: 0.4rem; }
 
-  .meta-season { font-size: 0.5rem; }
   .ticker-row { font-size: 0.5rem; gap: 6px; flex-wrap: wrap; min-height: 18px; }
   .ticker-label { width: 40px; font-size: 0.3rem; }
   .ticker-content { font-size: 0.5rem; gap: 2px 8px; }
+  .ticker-footer { font-size: 0.4rem; gap: 4px; }
   .live-dot { font-size: 0.6rem; }
 
   .chess-grid { --cell-size: clamp(44px, calc((100vw - 40px) / 5), 72px); }
@@ -1391,22 +1256,24 @@ h2 {
 @media (max-width: 480px) {
   .app-shell { padding: 6px 0 12px; width: calc(100% - 8px); }
   .board-panel { padding: 6px; }
-  .scoreline { padding: 6px 8px; gap: 4px; }
-  .team-name { font-size: clamp(0.55rem, 2.6vw, 0.9rem); max-width: 24vw; }
-  .score-core { padding: 3px 7px; border-radius: 6px; }
-  .score-core span { font-size: clamp(0.75rem, 4.4vw, 1.15rem); }
+  .scorebug { padding: 8px 10px 6px; border-radius: 10px; }
+  .score-row { gap: 4px; }
+  .team-name { font-size: clamp(0.8rem, 2.4vw, 1.2rem); max-width: 40vw; }
+  .score-core { min-height: 34px; min-width: 52px; padding: 0 6px; border-radius: 8px; }
+  .score-core span { font-size: clamp(1.4rem, 4.2vw, 2.2rem); }
   .score-separator { padding: 0 1px; }
-  .team-logo-wrapper { width: 24px; height: 24px; }
+  .team-logo-wrapper { width: 20px; height: 20px; }
   .team-logo-wrapper .remove-logo-btn { width: 12px; height: 12px; font-size: 7px; top: -3px; right: -3px; }
-  .league-badge { width: 36px; }
-  .league-badge img { width: 22px; }
-  .live-chip { padding: 0 6px; font-size: 0.4rem; gap: 3px; }
+  .league-logo-wrapper { width: 18px; height: 18px; }
+  .league-logo-wrapper img { width: 14px; }
+  .scoreboard-title .live-badge { font-size: 0.35rem; }
+  .scoreboard-title .season { font-size: 0.35rem; }
 
-  .scorebug-meta { padding: 5px 6px 2px; }
-  .meta-season { font-size: 0.4rem; gap: 5px; }
   .ticker-row { flex-direction: column; align-items: flex-start; gap: 2px; font-size: 0.45rem; padding: 2px 4px; min-height: 16px; }
   .ticker-label { width: auto; font-size: 0.3rem; }
   .ticker-content { font-size: 0.45rem; }
+  .ticker-footer { font-size: 0.35rem; gap: 3px; padding-top: 2px; }
+  .live-dot { font-size: 0.5rem; }
 
   .chess-grid { --cell-size: clamp(32px, calc((100vw - 24px) / 5), 50px); }
   .grid-cell { padding: 2px; }
