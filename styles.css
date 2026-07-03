@@ -1,7 +1,3 @@
-/* ============================================================
-   KOMPLETTE styles.css – NUR HINTERGRUND ÜBERARBEITET
-   ============================================================ */
-
 :root {
   color-scheme: dark;
   --bundesliga-red: #D3010C;
@@ -178,11 +174,6 @@ body .app-shell::after {
   100% { opacity: 0.7; transform: scale(1.05); }
 }
 
-/* ============================================================
-   ALLE BESTEHENDEN LAYOUT- & KOMPONENTEN-STYLES
-   (unverändert übernommen)
-   ============================================================ */
-
 body:has(dialog[open]) {
   overflow: hidden;
 }
@@ -233,7 +224,7 @@ body:has(dialog[open]) {
 }
 
 /* ============================================================
-   TOPBAR
+   TOPBAR – unverändert
    ============================================================ */
 .topbar {
   display: flex;
@@ -323,7 +314,7 @@ h2 {
 }
 
 /* ============================================================
-   SCOREBOARD
+   SCOREBOARD – unverändert
    ============================================================ */
 .scoreboard {
   display: flex;
@@ -630,7 +621,7 @@ h2 {
 .ticker-content .value.neutral  { color: var(--zero); }
 
 /* ============================================================
-   LAYOUT: Scoreboard oben, darunter Feld + Thesen nebeneinander (Desktop)
+   LAYOUT – unverändert
    ============================================================ */
 .game-layout {
   display: grid;
@@ -662,7 +653,6 @@ h2 {
   max-width: 100%;
 }
 
-/* Desktop: Feld + Thesen nebeneinander */
 @media (min-width: 1201px) {
   .field-thesis-wrapper {
     grid-template-columns: auto 1fr;
@@ -673,7 +663,7 @@ h2 {
 }
 
 /* ============================================================
-   SPIELFELD
+   SCHACHBRETT – KOMPLETT ÜBERARBEITET (clean, symmetrisch, 2. Liga)
    ============================================================ */
 .chess-grid {
   display: grid;
@@ -681,74 +671,105 @@ h2 {
   grid-template-rows: repeat(4, var(--cell-size));
   width: calc(var(--cell-size) * 5);
   height: calc(var(--cell-size) * 4);
-  border: 3px solid var(--bundesliga-red);
-  outline: 1px solid rgba(255, 255, 255, 0.12);
-  background:
-    repeating-linear-gradient(90deg,
-      rgba(0, 70, 35, 0.6) 0px,
-      rgba(0, 90, 45, 0.7) 6px,
-      rgba(0, 70, 35, 0.5) 12px
-    ),
-    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.08), transparent 60%),
-    linear-gradient(180deg, #0d2a1a 0%, #1a3d25 100%);
+  /* Hochwertiger Rahmen – dünner roter Glow, Metall-Optik */
+  border: 2px solid rgba(211, 1, 12, 0.5);
+  border-radius: 6px;
+  outline: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow:
-    0 0 0 7px rgba(255, 255, 255, 0.04),
-    0 0 60px rgba(211, 1, 12, 0.15),
+    0 0 0 3px rgba(10, 10, 10, 0.9),
+    0 0 30px rgba(211, 1, 12, 0.15),
+    inset 0 0 30px rgba(0, 0, 0, 0.4),
     var(--shadow);
-}
-.grid-cell {
-  position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 6px;
+  background: #1a1a1a; /* einheitlicher dunkler Hintergrund */
   overflow: hidden;
 }
 
+.grid-cell {
+  position: relative;
+  border: none; /* keine sichtbaren Linien zwischen den Zellen */
+  padding: 0;
+  overflow: hidden;
+  background: #1f1f1f; /* Basis – wird von Kind-Elementen überschrieben */
+}
+
+/* ===== Figuren-Felder (obere & untere Reihe) ===== */
 .piece-cell {
   display: grid;
   place-items: center;
-  background:
-    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.06), transparent 34%),
-    linear-gradient(145deg, rgba(211, 1, 12, 0.15), transparent 50%),
-    var(--bundesliga-black);
+  background: #181818;
   color: var(--bundesliga-white);
   font-weight: 800;
   isolation: isolate;
   cursor: pointer;
-  transition: outline-color 140ms, background-color 140ms, transform 140ms;
-}
-.piece-cell.light {
-  background:
-    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.15), transparent 34%),
-    linear-gradient(145deg, rgba(245, 197, 24, 0.15), transparent 48%),
-    rgba(255, 255, 255, 0.85);
-  color: #05070e;
-}
-.piece-cell.has-player-image {
-  background: #141414;
+  transition: background 0.15s ease, transform 0.15s ease;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
+.piece-cell.light {
+  background: #242424;
+}
+
+/* sanfter Hover-Effekt für Figuren-Felder */
+.piece-cell:hover {
+  background: #2a2a2a;
+  transform: scale(1.01);
+  z-index: 1;
+}
+
+/* ===== Drop-Felder (mittlere Reihen) ===== */
+.drop-cell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 2px;
+  background: #1a1a1a;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Leichte Unterscheidung der Seiten (weiß/schwarz) nur über Rahmen */
+.drop-cell[data-side="white"] {
+  border-top: 2px solid rgba(255, 255, 255, 0.08);
+}
+.drop-cell[data-side="black"] {
+  border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+/* Hover / Drag-Over – roter Glow */
+.drop-cell.drag-over {
+  background: rgba(211, 1, 12, 0.08);
+  box-shadow: inset 0 0 30px rgba(211, 1, 12, 0.12), 0 0 20px rgba(211, 1, 12, 0.06);
+  animation: dragGlow 0.5s ease-in-out;
+}
+
+@keyframes dragGlow {
+  0% { box-shadow: inset 0 0 10px rgba(211, 1, 12, 0); }
+  100% { box-shadow: inset 0 0 30px rgba(211, 1, 12, 0.12), 0 0 20px rgba(211, 1, 12, 0.06); }
+}
+
+/* ===== Wasserzeichen-Punkte auf Figuren-Feldern (Score) ===== */
 .field-watermark {
   position: absolute;
-  right: clamp(5px, calc(var(--cell-size) * 0.06), 10px);
-  bottom: clamp(5px, calc(var(--cell-size) * 0.06), 10px);
+  right: clamp(4px, calc(var(--cell-size) * 0.06), 8px);
+  bottom: clamp(4px, calc(var(--cell-size) * 0.06), 8px);
   z-index: 4;
-  color: var(--zero);
-  font-size: clamp(1rem, calc(var(--cell-size) * 0.22), 2rem);
+  color: rgba(255, 255, 255, 0.12);
+  font-size: clamp(0.8rem, calc(var(--cell-size) * 0.18), 1.6rem);
   font-weight: 900;
   line-height: 1;
-  opacity: 0.72;
+  opacity: 0.6;
   pointer-events: none;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65), 0 0 12px rgba(255, 255, 255, 0.58);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  transition: opacity 0.15s;
 }
-.field-watermark.positive { color: var(--green); }
-.field-watermark.negative { color: var(--red); }
-.field-watermark.neutral { color: var(--zero); }
-.piece-cell:not(.light) .field-watermark.neutral,
-.piece-cell.has-player-image .field-watermark.neutral {
-  color: rgba(255, 255, 255, 0.72);
-  opacity: 0.48;
+.field-watermark.positive { color: rgba(0, 200, 80, 0.5); }
+.field-watermark.negative { color: rgba(211, 1, 12, 0.5); }
+.field-watermark.neutral { color: rgba(255, 255, 255, 0.12); }
+
+.piece-cell:hover .field-watermark {
+  opacity: 1;
 }
 
+/* ===== Schachfiguren-SVG ===== */
 .piece-svg {
   position: relative;
   z-index: 1;
@@ -756,92 +777,67 @@ h2 {
   width: 60%;
   max-width: 70px;
   height: auto;
-  filter: drop-shadow(0 0 9px rgba(255, 255, 255, 0.26)) drop-shadow(0 10px 10px rgba(0, 0, 0, 0.42));
+  filter:
+    drop-shadow(0 0 6px rgba(255, 255, 255, 0.08))
+    drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
+  opacity: 0.95;
+  transition: transform 0.15s ease;
 }
 .piece-cell:not(.light) .piece-svg {
-  filter: invert(1) drop-shadow(0 0 10px rgba(211, 1, 12, 0.3)) drop-shadow(0 12px 10px rgba(0, 0, 0, 0.45));
+  filter:
+    invert(1)
+    drop-shadow(0 0 6px rgba(211, 1, 12, 0.15))
+    drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
 }
+.piece-cell:hover .piece-svg {
+  transform: scale(1.04);
+}
+
+/* kleines Bild in der Ecke (Spielerfoto) */
 .piece-corner {
   position: absolute;
-  top: 6px;
-  left: 6px;
+  top: 4px;
+  left: 4px;
   z-index: 2;
-  width: 24%;
-  max-width: 32px;
-  padding: 3px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.82);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.14);
+  width: 20%;
+  max-width: 28px;
+  padding: 2px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   filter: none !important;
 }
 
-.piece-cell::after {
-  content: "Foto wählen";
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: 9px;
-  z-index: 2;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.62);
-  color: var(--white);
-  font-size: 0.6rem;
-  font-weight: 800;
-  line-height: 1;
-  opacity: 0.75;
-  padding: 4px 8px;
-  text-align: center;
-  transition: opacity 140ms, transform 140ms;
-}
-.piece-cell.has-player-image::after {
-  opacity: 0;
-  pointer-events: none;
-}
-@media (hover: hover) and (pointer: fine) {
-  .piece-cell::after {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  .piece-cell:hover::after,
-  .piece-cell.image-drop-over::after {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.piece-cell.image-drop-over {
-  outline: 4px solid var(--accent);
-  outline-offset: -8px;
-  transform: scale(0.985);
-}
-
+/* ===== Spielerfoto auf Figuren-Feld ===== */
 .player-photo {
   position: absolute;
-  inset: 6px;
+  inset: 5px;
   z-index: 1;
-  width: calc(100% - 12px);
-  height: calc(100% - 12px);
-  border-radius: 8px;
-  background: radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.4), transparent 34%), rgba(255, 255, 255, 0.08);
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.3);
   object-fit: contain;
   object-position: center bottom;
-  padding: 4px;
+  padding: 3px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
+/* ×-Button zum Entfernen des Fotos (nur bei Hover oder Bearbeiten-Modus) */
 .remove-player-photo {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 4px;
+  right: 4px;
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.7);
   color: #ffffff;
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 700;
   line-height: 1;
   padding: 0;
@@ -864,50 +860,44 @@ h2 {
   }
 }
 
-.drop-cell {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 4px;
-  border-top: 3px solid var(--bundesliga-red);
-  border-bottom: 3px solid var(--bundesliga-red-dark);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.06), transparent 26%),
-    linear-gradient(135deg, rgba(0, 70, 35, 0.2), transparent 32%),
-    linear-gradient(225deg, rgba(211, 1, 12, 0.1), transparent 34%),
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    rgba(6, 18, 12, 0.8);
-  background-size: 18px 18px;
-  isolation: isolate;
-}
-.drop-cell[data-side="white"] { border-top-color: var(--bundesliga-white); }
-.drop-cell[data-side="black"] { border-bottom-color: var(--bundesliga-black); }
-.drop-cell.drag-over {
-  background:
-    radial-gradient(circle at 50% 50%, rgba(211, 1, 12, 0.25), transparent 38%),
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    rgba(20, 8, 8, 0.9);
-  background-size: 18px 18px;
-  animation: pulseGlow 900ms ease-in-out infinite;
-}
-
-.cell-head {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 6px;
-  min-width: 0;
-}
-.cell-value {
+/* ===== "Foto wählen"-Hinweis (nur bei Hover sichtbar) ===== */
+.piece-cell::after {
+  content: "Foto wählen";
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 2;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.65);
   color: var(--white);
-  font-family: var(--headline-font);
-  font-size: clamp(0.8rem, calc(var(--cell-size) * 0.15), 1.4rem);
+  font-size: 0.5rem;
   font-weight: 700;
-  line-height: 1;
-  text-shadow: 0 0 12px rgba(211, 1, 12, 0.3);
+  padding: 2px 10px;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  pointer-events: none;
+}
+.piece-cell.has-player-image::after {
+  content: "";
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .piece-cell:hover::after,
+  .piece-cell.image-drop-over::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+.piece-cell.image-drop-over {
+  outline: 2px solid var(--bundesliga-red);
+  outline-offset: -4px;
+  transform: scale(0.98);
 }
 
+/* ===== Platzierte Thesen-Chips ===== */
 .placed-list {
   position: absolute;
   inset: 0;
@@ -915,10 +905,11 @@ h2 {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   grid-auto-rows: minmax(0, 1fr);
-  gap: 3px;
-  padding: 3px;
+  gap: 2px;
+  padding: 2px;
   pointer-events: none;
 }
+
 .placed-chip {
   position: relative;
   display: grid;
@@ -926,32 +917,37 @@ h2 {
   place-items: center;
   width: 100%;
   height: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background:
-    linear-gradient(180deg, rgba(245, 197, 24, 0.15), transparent 45%),
-    rgba(255, 255, 255, 0.92);
-  color: #05070e;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0a0a0a;
   cursor: grab;
-  font-size: clamp(0.45rem, 0.6vw, 0.6rem);
-  font-weight: 800;
+  font-size: clamp(0.4rem, 0.55vw, 0.55rem);
+  font-weight: 700;
   line-height: 1.05;
   overflow-wrap: anywhere;
-  padding: clamp(10px, calc(var(--cell-size) * 0.1), 18px) 6px 6px;
+  padding: clamp(8px, calc(var(--cell-size) * 0.08), 14px) 4px 4px;
   text-align: center;
   pointer-events: auto;
   isolation: isolate;
   animation: cardIn 180ms ease-out;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.24);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s;
 }
+.placed-chip:hover {
+  transform: scale(1.02);
+  z-index: 3;
+}
+
 .chip-score {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 2px;
+  right: 2px;
   z-index: 2;
-  min-width: 18px;
-  min-height: 16px;
+  min-width: 16px;
+  min-height: 14px;
   padding: 1px 4px;
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   border: 1px solid currentColor;
   border-radius: 999px;
   background: var(--white);
@@ -967,14 +963,14 @@ h2 {
 
 .chip-watermark {
   position: absolute;
-  top: 5px;
-  left: 7px;
+  top: 3px;
+  left: 5px;
   z-index: 0;
   color: var(--zero);
-  font-size: clamp(1rem, calc(var(--cell-size) * 0.22), 2.2rem);
+  font-size: clamp(0.8rem, calc(var(--cell-size) * 0.18), 1.8rem);
   font-weight: 900;
   line-height: 1;
-  opacity: 0.22;
+  opacity: 0.15;
   pointer-events: none;
 }
 .placed-chip.positive .chip-watermark { color: var(--green); }
@@ -989,6 +985,7 @@ h2 {
   overflow-wrap: anywhere;
 }
 
+/* ===== Drag-Ghost (Thesen-Vorschau beim Ziehen) ===== */
 .drag-ghost {
   position: fixed;
   z-index: 50;
@@ -1010,7 +1007,7 @@ h2 {
 }
 
 /* ============================================================
-   THESIS PANEL
+   THESIS PANEL – unverändert
    ============================================================ */
 .thesis-panel[hidden] {
   display: none !important;
@@ -1110,7 +1107,7 @@ h2 {
 }
 
 /* ============================================================
-   SETTINGS DIALOG
+   SETTINGS DIALOG – unverändert
    ============================================================ */
 .settings-dialog {
   width: min(920px, calc(100% - 28px));
@@ -1469,7 +1466,7 @@ h2 {
 }
 
 /* ============================================================
-   RESPONSIVE
+   RESPONSIVE – unverändert
    ============================================================ */
 @media (max-width: 1200px) {
   .app-shell { padding: 16px 0 24px; }
@@ -1497,7 +1494,7 @@ h2 {
   .ticker-label { width: 50px; font-size: 0.35rem; }
 
   .chess-grid { --cell-size: clamp(56px, min(7vw, 14vh), 90px); }
-  .grid-cell { padding: 4px; }
+  .grid-cell { padding: 0; }
   .piece-svg { max-width: 50px; }
   .placed-chip { font-size: clamp(0.4rem, 0.5vw, 0.55rem); padding: 8px 4px 4px; }
   .chip-score { font-size: 0.45rem; min-width: 14px; min-height: 12px; padding: 1px 3px; }
@@ -1542,7 +1539,7 @@ h2 {
   .live-dot { font-size: 0.6rem; }
 
   .chess-grid { --cell-size: clamp(44px, calc((100vw - 40px) / 5), 72px); }
-  .grid-cell { padding: 3px; }
+  .grid-cell { padding: 0; }
   .piece-svg { max-width: 36px; }
   .placed-chip { font-size: clamp(0.35rem, 0.4vw, 0.45rem); padding: 6px 3px 3px; }
   .chip-score { font-size: 0.35rem; min-width: 12px; min-height: 10px; padding: 0 2px; }
@@ -1585,7 +1582,7 @@ h2 {
   .ticker-content { font-size: 0.45rem; }
 
   .chess-grid { --cell-size: clamp(32px, calc((100vw - 24px) / 5), 50px); }
-  .grid-cell { padding: 2px; }
+  .grid-cell { padding: 0; }
   .piece-svg { max-width: 28px; }
   .placed-chip { font-size: clamp(0.3rem, 0.35vw, 0.4rem); padding: 4px 2px 2px; border-radius: 3px; }
   .chip-score { font-size: 0.3rem; min-width: 10px; min-height: 8px; padding: 0 2px; top: 2px; right: 2px; }
