@@ -644,7 +644,7 @@ document.querySelectorAll('.team-logo-wrapper').forEach(wrapper => {
 });
 
 // ============================
-//  THESEN-PANEL TOGGLE
+//  THESEN-PANEL TOGGLE (Button jetzt im Dialog)
 // ============================
 toggleThesisBtn.addEventListener('click', () => {
   const isHidden = thesisPanel.hasAttribute('hidden');
@@ -661,7 +661,7 @@ toggleThesisBtn.addEventListener('click', () => {
 });
 
 // ============================
-//  ×‑BUTTONS TOGGLE (für Tablets)
+//  ×‑BUTTONS TOGGLE (Button jetzt im Dialog)
 // ============================
 let removeButtonsVisible = false;
 toggleRemoveBtn.addEventListener('click', () => {

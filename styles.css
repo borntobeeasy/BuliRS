@@ -160,7 +160,7 @@ body .app-shell::after {
 }
 
 /* ============================================================
-   TOPBAR – mit Toggle-Button für X
+   TOPBAR – nur noch Einstellungen-Button
    ============================================================ */
 .topbar {
   display: flex;
@@ -218,16 +218,9 @@ body .app-shell::after {
 #openSettingsButton:hover {
   background: var(--bundesliga-red-dark);
 }
-#toggleRemoveButtons {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-#toggleRemoveButtons:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
 
 /* ============================================================
-   SCOREBOARD – VOLLE BREITE (Stadion-Anzeigetafel)
+   SCOREBOARD – Stadion-Anzeigetafel
    ============================================================ */
 .scoreboard {
   display: flex;
@@ -307,10 +300,11 @@ body .app-shell::after {
 .score-team-white { justify-content: flex-start; }
 .score-team-black { justify-content: flex-end; }
 
+/* Team-Logos – jetzt etwa so groß wie die Schrift */
 .team-logo-wrapper {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: clamp(2rem, 3vw, 4rem);
+  height: clamp(2rem, 3vw, 4rem);
   flex-shrink: 0;
   border-radius: 50%;
   border: 2px dashed rgba(255, 255, 255, 0.08);
@@ -337,7 +331,7 @@ body .app-shell::after {
   display: none;
 }
 
-/* ---- ×‑Button für Team‑Logos (standardmäßig ausgeblendet) ---- */
+/* ×‑Button für Team‑Logos (standardmäßig ausgeblendet) */
 .team-logo-wrapper .remove-logo-btn {
   position: absolute;
   top: -6px;
@@ -368,7 +362,7 @@ body .app-shell::after {
   display: grid;
 }
 
-/* ---- ×‑Button für Figuren‑Fotos (standardmäßig ausgeblendet) ---- */
+/* ×‑Button für Figuren‑Fotos (standardmäßig ausgeblendet) */
 .remove-player-photo {
   position: absolute;
   top: 6px;
@@ -395,7 +389,7 @@ body .app-shell::after {
   display: grid;
 }
 
-/* ---- Globale Klasse zum dauerhaften Einblenden aller ×‑Buttons ---- */
+/* Globale Klasse zum dauerhaften Einblenden aller ×‑Buttons */
 body.show-remove-buttons .remove-logo-btn,
 body.show-remove-buttons .remove-player-photo {
   display: grid !important;
@@ -902,7 +896,7 @@ body.show-remove-buttons .remove-player-photo {
 }
 
 /* ============================================================
-   SETTINGS DIALOG
+   SETTINGS DIALOG (inkl. neuer View-Buttons)
    ============================================================ */
 .settings-dialog {
   width: min(920px, calc(100% - 28px));
@@ -952,6 +946,43 @@ body.show-remove-buttons .remove-player-photo {
 .results-panel {
   display: grid;
   gap: 10px;
+}
+
+.view-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.view-controls button {
+  flex: 1;
+  min-width: 120px;
+  min-height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.view-controls button:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+#toggleThesisButton {
+  background: var(--bundesliga-red);
+  border-color: var(--bundesliga-red);
+}
+#toggleThesisButton:hover {
+  background: var(--bundesliga-red-dark);
+}
+#toggleRemoveButtons {
+  background: rgba(255, 255, 255, 0.12);
+}
+#toggleRemoveButtons:hover {
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .evaluation-list {
@@ -1159,7 +1190,7 @@ body.show-remove-buttons .remove-player-photo {
   .team-name { font-size: clamp(1.6rem, 3.5vw, 2.8rem); max-width: 35vw; }
   .score-core { min-height: 60px; min-width: 100px; padding: 0 16px; }
   .score-core span { font-size: clamp(2.8rem, 6vw, 4.4rem); }
-  .team-logo-wrapper { width: 34px; height: 34px; }
+  .team-logo-wrapper { width: clamp(1.8rem, 2.5vw, 3rem); height: clamp(1.8rem, 2.5vw, 3rem); }
   .league-logo-wrapper { width: 30px; height: 30px; }
   .league-logo-wrapper img { width: 22px; }
   .ticker-row { font-size: 0.55rem; min-height: 20px; gap: 8px; }
@@ -1183,6 +1214,8 @@ body.show-remove-buttons .remove-player-photo {
   .settings-shell { padding: 14px; gap: 12px; }
   .evaluation-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .results-grid { grid-template-columns: 1fr; }
+  .view-controls { flex-direction: column; }
+  .view-controls button { width: 100%; }
 
   /* Tablet: ×‑Buttons per Toggle steuern – Standard: ausgeblendet */
   .team-logo-wrapper .remove-logo-btn,
@@ -1195,7 +1228,6 @@ body.show-remove-buttons .remove-player-photo {
   .piece-cell.has-player-image:hover .remove-player-photo {
     display: none !important;
   }
-  /* Wenn Toggle aktiv ist, werden sie sichtbar */
   body.show-remove-buttons .remove-logo-btn,
   body.show-remove-buttons .remove-player-photo {
     display: grid !important;
@@ -1219,7 +1251,7 @@ body.show-remove-buttons .remove-player-photo {
   .team-name { font-size: clamp(1.2rem, 2.8vw, 2rem); max-width: 30vw; }
   .score-core { min-height: 48px; min-width: 76px; padding: 0 10px; }
   .score-core span { font-size: clamp(2rem, 5vw, 3.2rem); }
-  .team-logo-wrapper { width: 28px; height: 28px; }
+  .team-logo-wrapper { width: clamp(1.6rem, 2.2vw, 2.4rem); height: clamp(1.6rem, 2.2vw, 2.4rem); }
   .team-logo-wrapper .remove-logo-btn { width: 14px; height: 14px; font-size: 8px; top: -4px; right: -4px; }
   .league-logo-wrapper { width: 24px; height: 24px; }
   .league-logo-wrapper img { width: 18px; }
@@ -1262,7 +1294,7 @@ body.show-remove-buttons .remove-player-photo {
   .score-core { min-height: 34px; min-width: 52px; padding: 0 6px; border-radius: 8px; }
   .score-core span { font-size: clamp(1.4rem, 4.2vw, 2.2rem); }
   .score-separator { padding: 0 1px; }
-  .team-logo-wrapper { width: 20px; height: 20px; }
+  .team-logo-wrapper { width: clamp(1.2rem, 2vw, 1.6rem); height: clamp(1.2rem, 2vw, 1.6rem); }
   .team-logo-wrapper .remove-logo-btn { width: 12px; height: 12px; font-size: 7px; top: -3px; right: -3px; }
   .league-logo-wrapper { width: 18px; height: 18px; }
   .league-logo-wrapper img { width: 14px; }
@@ -1301,4 +1333,5 @@ body.show-remove-buttons .remove-player-photo {
   .import-export-actions button { font-size: 0.6rem; min-height: 24px; }
   .randomizer-card button { font-size: 0.65rem; min-height: 28px; }
   .randomizer-card span { font-size: 0.7rem; }
+  .view-controls button { font-size: 0.65rem; min-height: 30px; }
 }
