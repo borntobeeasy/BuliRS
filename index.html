@@ -23,10 +23,9 @@
         </header>
 
         <div class="game-layout">
-          <!-- SCOREBOARD – wie eine Stadion-Anzeigetafel -->
+          <!-- SCOREBOARD -->
           <section class="scoreboard" aria-label="Spielstand">
             <div class="scorebug">
-              <!-- Hauptleiste: Liga-Badge – Team – Ergebnis – Team (Bundesliga Live-Ticker Stil) -->
               <div class="scorebug-main">
                 <div class="league-badge">
                   <img src="csm_2_bl_logo_RGB_pos_8b8a7d5210.png" alt="2. Bundesliga" />
@@ -36,6 +35,7 @@
                   <div class="score-team score-team-white">
                     <div class="team-logo-wrapper" data-team="white">
                       <img class="team-logo" id="whiteLogo" src="" alt="Weiß Logo" />
+                      <button class="logo-upload-btn" data-team="white" type="button" title="Logo hochladen">+</button>
                       <button class="remove-logo-btn" data-team="white" type="button" title="Logo entfernen">×</button>
                     </div>
                     <span class="team-name" id="whiteLabel">Spieler A</span>
@@ -51,6 +51,7 @@
                     <span class="team-name" id="blackLabel">Spieler B</span>
                     <div class="team-logo-wrapper" data-team="black">
                       <img class="team-logo" id="blackLogo" src="" alt="Schwarz Logo" />
+                      <button class="logo-upload-btn" data-team="black" type="button" title="Logo hochladen">+</button>
                       <button class="remove-logo-btn" data-team="black" type="button" title="Logo entfernen">×</button>
                     </div>
                   </div>
@@ -62,7 +63,6 @@
                 </div>
               </div>
 
-              <!-- Zusätzliche Ticker-Infos (dezent, unterhalb der Haupt-Anzeige) -->
               <div class="scorebug-meta">
                 <div class="meta-season">
                   <span>2. Bundesliga</span>
@@ -81,7 +81,7 @@
             </div>
           </section>
 
-          <!-- SPIELFELD + THESEN-PANEL (unverändert) -->
+          <!-- SPIELFELD + THESEN-PANEL -->
           <div class="field-thesis-wrapper" id="fieldThesisWrapper">
             <section class="field-wrap">
               <div class="chess-grid" id="pieceGrid" aria-label="Figuren und Thesenfelder"></div>
@@ -101,7 +101,7 @@
       </section>
     </main>
 
-    <!-- SETTINGS-DIALOG (mit neuem Bereich "Ansicht") -->
+    <!-- SETTINGS-DIALOG -->
     <dialog class="settings-dialog" id="settingsDialog" aria-label="Auswertung eintragen">
       <div class="settings-shell">
         <header class="settings-head">
@@ -161,7 +161,7 @@
           </div>
         </section>
 
-        <!-- NEU: Ansicht – Buttons für Thesen und × -->
+        <!-- Ansicht: Thesen & ×-Buttons -->
         <section class="results-panel" aria-label="Ansicht">
           <div>
             <p class="eyebrow">Ansicht</p>

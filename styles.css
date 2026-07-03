@@ -164,7 +164,7 @@ body .app-shell::after {
 }
 
 /* ============================================================
-   TOPBAR – nur noch Einstellungen-Button
+   TOPBAR
    ============================================================ */
 .topbar {
   display: flex;
@@ -174,9 +174,6 @@ body .app-shell::after {
   margin-bottom: 12px;
   flex-wrap: wrap;
 }
-/* ============================================================
-   GLOBAL: Eyebrow-Label & Section-Headline (Basis für alle Panels)
-   ============================================================ */
 .eyebrow {
   margin: 0 0 3px;
   font-size: 0.6rem;
@@ -246,7 +243,7 @@ h2 {
 }
 
 /* ============================================================
-   SCOREBOARD – VOLLE BREITE (Stadion-Anzeigetafel)
+   SCOREBOARD
    ============================================================ */
 .scoreboard {
   display: flex;
@@ -262,7 +259,6 @@ h2 {
   position: relative;
 }
 
-/* ---- Haupt-Anzeigetafel: Liga-Badge + Team – Ergebnis – Team ---- */
 .scorebug-main {
   display: flex;
   align-items: stretch;
@@ -306,7 +302,7 @@ h2 {
 .score-team-white { justify-content: flex-start; }
 .score-team-black { justify-content: flex-end; }
 
-/* Team-Logos – jetzt etwa so groß wie die Schrift */
+/* ---- Team-Logo-Container mit Upload- und Remove-Button ---- */
 .team-logo-wrapper {
   position: relative;
   width: clamp(1.8rem, 3vw, 3.5rem);
@@ -373,7 +369,51 @@ h2 {
   display: none;
 }
 
-/* ---- ×-Button zum Entfernen des Team-Logos ---- */
+/* ---- Upload-Button (Plus) ---- */
+.team-logo-wrapper .logo-upload-btn {
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: var(--bundesliga-red);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  z-index: 3;
+  transition: transform 0.15s, background 0.15s;
+}
+.team-logo-wrapper .logo-upload-btn:hover {
+  background: var(--bundesliga-red-dark);
+  transform: scale(1.1);
+}
+/* Auf Touch-Geräten immer sichtbar, auf PC nur bei Hover */
+@media (hover: hover) and (pointer: fine) {
+  .team-logo-wrapper .logo-upload-btn {
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .team-logo-wrapper:hover .logo-upload-btn {
+    opacity: 1;
+  }
+}
+.team-logo-wrapper.has-logo .logo-upload-btn {
+  bottom: -6px;
+  right: -6px;
+  background: rgba(0,0,0,0.6);
+}
+.team-logo-wrapper.has-logo .logo-upload-btn:hover {
+  background: var(--bundesliga-red);
+}
+
+/* ---- Remove-Button (×) für Team-Logos ---- */
 .team-logo-wrapper .remove-logo-btn {
   position: absolute;
   top: -6px;
@@ -396,11 +436,9 @@ h2 {
 .team-logo-wrapper .remove-logo-btn:hover {
   background: var(--bundesliga-red);
 }
-/* Touch/Tablet: sichtbar sobald Bearbeiten-Modus aktiv ist */
 .app-shell.show-remove-buttons .team-logo-wrapper .remove-logo-btn.visible {
   display: grid;
 }
-/* PC/Maus: nur beim Hovern des Logos sichtbar */
 @media (hover: hover) and (pointer: fine) {
   .team-logo-wrapper:hover .remove-logo-btn.visible {
     display: grid;
@@ -444,7 +482,6 @@ h2 {
   padding: 0 1px;
 }
 
-/* ---- LIVE-Chip rechts an der Hauptleiste ---- */
 .live-chip {
   flex-shrink: 0;
   display: flex;
@@ -465,7 +502,6 @@ h2 {
   animation: pulse-dot 1.2s ease-in-out infinite;
 }
 
-/* ---- Meta-/Ticker-Zeile unterhalb der Anzeigetafel ---- */
 .scorebug-meta {
   margin-top: 8px;
   padding: 6px 14px 2px;
@@ -522,7 +558,7 @@ h2 {
 .ticker-content .value.neutral  { color: var(--zero); }
 
 /* ============================================================
-   LAYOUT: Scoreboard oben (volle Breite) + Feld + Thesen nebeneinander
+   LAYOUT: Scoreboard oben, Feld + Thesen nebeneinander
    ============================================================ */
 .game-layout {
   display: grid;
@@ -680,7 +716,6 @@ h2 {
   pointer-events: none;
 }
 
-/* PC/Maus: Hinweis standardmäßig ausgeblendet, nur bei Hover sichtbar */
 @media (hover: hover) and (pointer: fine) {
   .piece-cell::after {
     opacity: 0;
@@ -710,7 +745,8 @@ h2 {
   object-position: center bottom;
   padding: 4px;
 }
-/* ×-Button zum Entfernen des Figurenfotos */
+
+/* ---- ×-Button für Figuren-Bilder (jetzt immer mit weißem ×) ---- */
 .remove-player-photo {
   position: absolute;
   top: 6px;
@@ -723,10 +759,12 @@ h2 {
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.7);
-  color: var(--white);
-  cursor: pointer;
-  font-size: 0.85rem;
+  color: #ffffff;  /* explizit weiß */
+  font-size: 1rem; /* groß genug, damit das × gut lesbar ist */
+  font-weight: 700;
+  line-height: 1;
   padding: 0;
+  cursor: pointer;
   opacity: 0;
   pointer-events: none;
   transition: background 0.2s, opacity 0.15s;
@@ -734,12 +772,12 @@ h2 {
 .remove-player-photo:hover {
   background: var(--bundesliga-red);
 }
-/* Touch/Tablet: Standardmäßig sichtbar, sobald Bearbeiten-Modus aktiv ist */
+/* Touch/Tablet: sichtbar im Bearbeiten-Modus */
 .app-shell.show-remove-buttons .remove-player-photo {
   opacity: 1;
   pointer-events: auto;
 }
-/* PC/Maus: nur beim Hovern der Zelle sichtbar */
+/* PC/Maus: nur bei Hover */
 @media (hover: hover) and (pointer: fine) {
   .piece-cell:hover .remove-player-photo {
     opacity: 1;
@@ -1033,7 +1071,6 @@ h2 {
   border-radius: 8px;
 }
 
-/* ---- Dialog-Kopfzeile (Titel + Schließen-Button) ---- */
 .settings-head {
   display: flex;
   align-items: flex-start;
@@ -1046,7 +1083,6 @@ h2 {
   font-size: 1.5rem;
 }
 
-/* ---- Einheitliche Eingabefelder im Dialog ---- */
 .settings-shell input {
   min-height: 32px;
   padding: 0 10px;
@@ -1065,7 +1101,6 @@ h2 {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* ---- Team-Namen (Weiß/Schwarz) ---- */
 .match-controls {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1086,7 +1121,7 @@ h2 {
   font-weight: 700;
 }
 
-/* ---- NEU: View-Buttons (Thesen & ×) ---- */
+/* ---- View-Buttons (Thesen & ×) ---- */
 .view-controls {
   display: flex;
   gap: 10px;
@@ -1132,7 +1167,6 @@ h2 {
   background: var(--bundesliga-gold);
 }
 
-/* ×-Button zum Schließen des Dialogs */
 .close-button {
   display: grid;
   place-items: center;
@@ -1224,7 +1258,6 @@ h2 {
 .evaluation-controls button:hover {
   background: rgba(255, 255, 255, 0.15);
 }
-/* Aktive Zustände für die Bewertungsbuttons */
 .evaluation-controls .neutral-button.active {
   background: var(--bundesliga-gold);
   color: var(--bundesliga-black);
@@ -1358,7 +1391,7 @@ h2 {
 }
 
 /* ============================================================
-   RESPONSIVE – Desktop / Tablet / Handy
+   RESPONSIVE
    ============================================================ */
 @media (min-width: 1201px) {
   .field-thesis-wrapper {
@@ -1387,6 +1420,7 @@ h2 {
   .score-core { padding: 5px 14px; }
   .score-core span { font-size: clamp(1.1rem, 2.2vw, 1.7rem); }
   .team-logo-wrapper { width: clamp(1.6rem, 2.6vw, 3rem); height: clamp(1.6rem, 2.6vw, 3rem); }
+  .team-logo-wrapper .logo-upload-btn { width: 18px; height: 18px; font-size: 12px; }
   .league-badge { width: 58px; }
   .league-badge img { width: 36px; }
   .live-chip { padding: 0 12px; font-size: 0.55rem; }
@@ -1426,6 +1460,7 @@ h2 {
   .score-core { padding: 4px 10px; border-radius: 6px; }
   .score-core span { font-size: clamp(0.9rem, 4vw, 1.4rem); }
   .team-logo-wrapper { width: clamp(1.4rem, 2.2vw, 2.4rem); height: clamp(1.4rem, 2.2vw, 2.4rem); }
+  .team-logo-wrapper .logo-upload-btn { width: 16px; height: 16px; font-size: 11px; bottom: -4px; right: -4px; }
   .team-logo-wrapper .remove-logo-btn { width: 14px; height: 14px; font-size: 8px; top: -4px; right: -4px; }
   .league-badge { width: 46px; }
   .league-badge img { width: 28px; }
@@ -1468,6 +1503,7 @@ h2 {
   .score-core span { font-size: clamp(0.75rem, 4.4vw, 1.15rem); }
   .score-separator { padding: 0 1px; }
   .team-logo-wrapper { width: clamp(1.2rem, 2.2vw, 1.6rem); height: clamp(1.2rem, 2.2vw, 1.6rem); }
+  .team-logo-wrapper .logo-upload-btn { width: 14px; height: 14px; font-size: 10px; bottom: -3px; right: -3px; }
   .team-logo-wrapper .remove-logo-btn { width: 12px; height: 12px; font-size: 7px; top: -3px; right: -3px; }
   .league-badge { width: 36px; }
   .league-badge img { width: 22px; }
