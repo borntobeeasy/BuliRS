@@ -312,8 +312,8 @@ h2 {
   height: 52px;
   flex-shrink: 0;
   border-radius: 50%;
-  border: 2px dashed rgba(0, 0, 0, 0.15);
-  transition: border-color 0.2s;
+  border: 2px dashed rgba(0, 0, 0, 0.18);
+  transition: border-color 0.2s, opacity 0.2s;
   cursor: pointer;
   background: rgba(0, 0, 0, 0.03);
 }
@@ -324,6 +324,38 @@ h2 {
 .team-logo-wrapper.drag-over {
   border-color: var(--bundesliga-red);
   background: rgba(211, 1, 12, 0.1);
+}
+.team-logo-wrapper::after {
+  content: "+";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--headline-font);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  transition: opacity 140ms;
+}
+.team-logo-wrapper.has-logo::after {
+  content: none;
+}
+
+/* PC/Maus: Rahmen & "+"-Hinweis nur bei Hover sichtbar */
+@media (hover: hover) and (pointer: fine) {
+  .team-logo-wrapper:not(.has-logo):not(.drag-over) {
+    border-color: transparent;
+  }
+  .team-logo-wrapper:not(.has-logo):not(.drag-over)::after {
+    opacity: 0;
+  }
+  .team-logo-wrapper:not(.has-logo):hover {
+    border-color: rgba(0, 0, 0, 0.18);
+  }
+  .team-logo-wrapper:not(.has-logo):hover::after {
+    opacity: 1;
+  }
 }
 .team-logo-wrapper .team-logo {
   width: 100%;
@@ -635,14 +667,22 @@ h2 {
   text-align: center;
   transition: opacity 140ms, transform 140ms;
 }
-.piece-cell:hover::after,
-.piece-cell.image-drop-over::after {
-  opacity: 1;
-  transform: translateY(0);
-}
 .piece-cell.has-player-image::after {
   opacity: 0;
   pointer-events: none;
+}
+
+/* PC/Maus: Hinweis standardmäßig ausgeblendet, nur bei Hover sichtbar */
+@media (hover: hover) and (pointer: fine) {
+  .piece-cell::after {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  .piece-cell:hover::after,
+  .piece-cell.image-drop-over::after {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .piece-cell.image-drop-over {
   outline: 4px solid var(--accent);
