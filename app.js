@@ -23,7 +23,7 @@ const PIECE_SVG_URLS = {
 };
 
 // ============================
-//  ZUSTAND
+//  ZUSTAND & UNDO-STACK
 // ============================
 const initialBonuses = {
   white: { rook: 0, bishop: 0, knight: 0, queen: 0, king: 0 },
@@ -46,7 +46,65 @@ const state = {
 
 const teamLogos = { white: null, black: null };
 
-// DOM-Referenzen
+// Undo-Stack
+const undoStack = [];
+const MAX_UNDO = 20;
+let isUndoing = false;
+
+function pushUndo() {
+  if (isUndoing) return;
+  const snapshot = {
+    theses: [...state.theses],
+    assignments: state.assignments.map(a => ({ ...a })),
+    results: cloneData(state.results),
+    figureImages: { ...state.figureImages },
+    questionValue: state.questionValue,
+    teamLogos: { ...teamLogos },
+    teamNames: {
+      white: nameInputs.white.value,
+      black: nameInputs.black.value,
+    }
+  };
+  undoStack.push(snapshot);
+  if (undoStack.length > MAX_UNDO) undoStack.shift();
+  updateUndoButtonState();
+}
+
+function undoLastAction() {
+  if (undoStack.length === 0) return;
+  isUndoing = true;
+  const snapshot = undoStack.pop();
+  state.theses = snapshot.theses;
+  state.assignments = snapshot.assignments.map(a => ({ ...a }));
+  state.results = cloneData(snapshot.results);
+  state.figureImages = { ...snapshot.figureImages };
+  state.questionValue = snapshot.questionValue;
+  teamLogos.white = snapshot.teamLogos.white;
+  teamLogos.black = snapshot.teamLogos.black;
+  if (snapshot.teamNames) {
+    nameInputs.white.value = snapshot.teamNames.white;
+    nameInputs.black.value = snapshot.teamNames.black;
+  }
+  render();
+  createResultSettings();
+  renderTeamLogos();
+  saveTeamLogos();
+  isUndoing = false;
+  updateUndoButtonState();
+}
+
+function updateUndoButtonState() {
+  const btn = document.getElementById('undoButton');
+  if (btn) {
+    btn.style.opacity = undoStack.length > 0 ? '1' : '0.4';
+    btn.style.cursor = undoStack.length > 0 ? 'pointer' : 'default';
+    btn.disabled = undoStack.length === 0;
+  }
+}
+
+// ============================
+//  DOM-REFERENZEN
+// ============================
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
@@ -72,6 +130,7 @@ const toggleRemoveBtn = $('#toggleRemoveButtons');
 const appShell = document.querySelector('.app-shell');
 const thesisPanel = $('#thesisPanel');
 const fieldThesisWrapper = $('#fieldThesisWrapper');
+const undoBtn = $('#undoButton');
 
 let pointerDrag = null;
 
@@ -163,6 +222,7 @@ function handleLogoUpload(team, file) {
     saveTeamLogos();
     renderTeamLogos();
     renderTotals();
+    pushUndo();
   };
   if (file.size > 500 * 1024) {
     compressImage(file, process);
@@ -178,6 +238,7 @@ function removeTeamLogo(team) {
   saveTeamLogos();
   renderTeamLogos();
   renderTotals();
+  pushUndo();
 }
 
 // ============================
@@ -208,7 +269,7 @@ function compressImage(file, callback) {
 }
 
 // ============================
-//  FIGUREN-BILDER (auf dem Feld)
+//  FIGUREN-BILDER
 // ============================
 function handleFigureImageUpload(file, cell) {
   if (!file) return;
@@ -216,6 +277,7 @@ function handleFigureImageUpload(file, cell) {
     state.figureImages[cell.dataset.figureSlot] = dataUrl;
     const piece = getPieceById(cell.dataset.figureSlot.split('-')[1]);
     renderFigureCell(cell, piece);
+    pushUndo();
   };
   if (file.size > 500 * 1024) {
     compressImage(file, process);
@@ -253,7 +315,7 @@ function getAssignmentScore(assignment) {
       return (assignment.polarity === 'positive') ? piece.base : 0;
     case 'rook':
       return piece.base * sign * -1;
-    default: // king
+    default:
       return piece.base * sign;
   }
 }
@@ -303,6 +365,7 @@ function renderFigureCell(cell, piece) {
       e.stopPropagation();
       delete state.figureImages[slot];
       renderFigureCell(cell, piece);
+      pushUndo();
     });
   } else {
     if (image) delete state.figureImages[slot];
@@ -400,7 +463,6 @@ function createEvaluationList() {
   state.assignments.forEach(a => {
     const card = document.createElement('article');
     card.className = 'evaluation-card';
-    // Aktive Klassen für die Buttons
     const neutralActive = !a.polarity ? 'active' : '';
     const positiveActive = a.polarity === 'positive' ? 'active' : '';
     const negativeActive = a.polarity === 'negative' ? 'active' : '';
@@ -451,12 +513,11 @@ function renderRandomizerState() {
     : formatNumber(state.questionValue);
 }
 
-// ---- TICKER-FUNKTIONEN (nur Thesen & Randomizer) ----
 function renderThesisStatus() {
   const container = document.getElementById('thesisStatusDisplay');
   if (!container) return;
   const placed = state.assignments.filter(a => a.side && a.piece).length;
-  const total = 10; // fest auf 10, da 5 Figuren * 2 Seiten = 10 Plätze
+  const total = 10;
   const evaluated = state.assignments.filter(a => a.polarity).length;
   container.innerHTML = `
     <span>📋 <strong>${placed}</strong> von <strong>${total}</strong> platziert</span>
@@ -474,7 +535,6 @@ function renderRandomizerStatus() {
   container.innerHTML = `<span class="value ${cls}">🎲 ${text}</span>`;
 }
 
-// ---- Haupt-Render ----
 function render() {
   createBoard();
   createThesisList();
@@ -483,10 +543,10 @@ function render() {
   renderTotals();
   renderRandomizerState();
   renderTeamLogos();
-  // Ticker
   renderThesisStatus();
   renderRandomizerStatus();
   fitAllCardText();
+  updateUndoButtonState();
 }
 
 function fitAllCardText() {
@@ -507,7 +567,7 @@ function fitAllCardText() {
 }
 
 // ============================
-//  DRAG & DROP (Maus)
+//  DRAG & DROP
 // ============================
 function handleDragStart(e) {
   const id = e.currentTarget.dataset.id;
@@ -529,14 +589,14 @@ function handleDrop(e) {
   const cell = e.currentTarget;
   cell.classList.remove('drag-over');
   if (!assignment) return;
+  const oldSide = assignment.side;
+  const oldPiece = assignment.piece;
   assignment.side = cell.dataset.side;
   assignment.piece = cell.dataset.piece;
   render();
+  if (oldSide !== assignment.side || oldPiece !== assignment.piece) pushUndo();
 }
 
-// ============================
-//  DRAG & DROP (Touch / Stift)
-// ============================
 function handlePointerDragStart(e) {
   if (e.target.closest('button')) return;
   const id = Number(e.currentTarget.dataset.id);
@@ -566,15 +626,20 @@ function handlePointerDragEnd(e) {
   if (!pointerDrag) return;
   const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.drop-cell');
   const assignment = state.assignments.find(a => a.id === pointerDrag.id);
+  let changed = false;
   if (target && assignment) {
+    const oldSide = assignment.side;
+    const oldPiece = assignment.piece;
     assignment.side = target.dataset.side;
     assignment.piece = target.dataset.piece;
+    if (oldSide !== assignment.side || oldPiece !== assignment.piece) changed = true;
   }
   pointerDrag.ghost.remove();
   pointerDrag = null;
   window.removeEventListener('pointermove', handlePointerDragMove);
   document.querySelectorAll('.drop-cell.drag-over').forEach(c => c.classList.remove('drag-over'));
   render();
+  if (changed) pushUndo();
 }
 
 function movePointerGhost(x, y) {
@@ -607,6 +672,7 @@ function handleFigureDrop(e) {
     state.figureImages[cell.dataset.figureSlot] = url;
     const piece = getPieceById(cell.dataset.figureSlot.split('-')[1]);
     renderFigureCell(cell, piece);
+    pushUndo();
   }
 }
 
@@ -622,7 +688,7 @@ function handleFigurePick(e) {
 }
 
 // ============================
-//  LOGO DRAG & DROP (Team-Logos)
+//  LOGO DRAG & DROP
 // ============================
 document.querySelectorAll('.team-logo-wrapper').forEach(wrapper => {
   wrapper.addEventListener('dragover', (e) => {
@@ -646,13 +712,14 @@ document.querySelectorAll('.team-logo-wrapper').forEach(wrapper => {
         saveTeamLogos();
         renderTeamLogos();
         renderTotals();
+        pushUndo();
       }
     }
   });
 });
 
 // ============================
-//  BEARBEITEN-MODUS (Tablet): alle ×-Buttons ein-/ausblenden (Button jetzt im Dialog)
+//  TOGGLES
 // ============================
 toggleRemoveBtn?.addEventListener('click', () => {
   const isActive = appShell.classList.toggle('show-remove-buttons');
@@ -660,9 +727,6 @@ toggleRemoveBtn?.addEventListener('click', () => {
   toggleRemoveBtn.textContent = isActive ? '× ausblenden' : '× anzeigen';
 });
 
-// ============================
-//  THESEN-PANEL TOGGLE (Button jetzt im Dialog)
-// ============================
 toggleThesisBtn.addEventListener('click', () => {
   const isHidden = thesisPanel.hasAttribute('hidden');
   if (isHidden) {
@@ -674,12 +738,16 @@ toggleThesisBtn.addEventListener('click', () => {
     toggleThesisBtn.textContent = 'Thesen einblenden';
     fieldThesisWrapper.classList.add('thesis-hidden');
   }
-  // Nach dem Einblenden Texte anpassen (falls nötig)
   if (!isHidden) fitAllCardText();
 });
 
 // ============================
-//  EXPORT / IMPORT
+//  UNDO
+// ============================
+undoBtn?.addEventListener('click', undoLastAction);
+
+// ============================
+//  EXPORT / IMPORT (JSON)
 // ============================
 function getFullExportPayload() {
   return {
@@ -730,11 +798,9 @@ function importAllData(file) {
       const parsed = JSON.parse(reader.result);
       if (parsed?.app !== 'rasenschach') throw new Error('Kein Rasenschach-Speicherstand.');
       const data = parsed.data || {};
-      // Thesen
       if (Array.isArray(data.theses)) {
         data.theses.forEach((t, i) => { if (i < state.theses.length) state.theses[i] = t; });
       }
-      // Positionen
       if (Array.isArray(data.positions)) {
         data.positions.forEach(p => {
           const a = state.assignments.find(item => item.id === p.id);
@@ -745,12 +811,10 @@ function importAllData(file) {
           if (p.polarity === null || POLARITIES.includes(p.polarity)) a.polarity = p.polarity || null;
         });
       }
-      // Namen
       if (data.names) {
         if (data.names.white) nameInputs.white.value = data.names.white;
         if (data.names.black) nameInputs.black.value = data.names.black;
       }
-      // Ergebnisse
       if (data.results) {
         const next = cloneData(initialBonuses);
         SIDES.forEach(side => {
@@ -764,12 +828,10 @@ function importAllData(file) {
         });
         state.results = next;
       }
-      // Randomizer
       if (data.questionValue !== undefined) {
         const val = data.questionValue;
         if (val === null || QUESTION_VALUES.includes(val)) state.questionValue = val ?? null;
       }
-      // Figurenbilder
       if (data.figureImages && typeof data.figureImages === 'object') {
         const safe = {};
         Object.entries(data.figureImages).forEach(([slot, url]) => {
@@ -777,7 +839,6 @@ function importAllData(file) {
         });
         state.figureImages = safe;
       }
-      // Team-Logos
       if (data.teamLogos) {
         if (isImageUrl(data.teamLogos.white)) teamLogos.white = data.teamLogos.white;
         if (isImageUrl(data.teamLogos.black)) teamLogos.black = data.teamLogos.black;
@@ -786,6 +847,8 @@ function importAllData(file) {
       render();
       createResultSettings();
       renderTeamLogos();
+      undoStack.length = 0;
+      pushUndo();
       setImportExportStatus('Import erfolgreich!');
     } catch (err) {
       setImportExportStatus(`Import fehlgeschlagen: ${err.message}`);
@@ -798,7 +861,6 @@ function importAllData(file) {
 // ============================
 //  EVENT-LISTENER
 // ============================
-// Team-Logos (Upload-Button + Remove)
 document.addEventListener('DOMContentLoaded', () => {
   loadTeamLogos();
   renderTeamLogos();
@@ -822,51 +884,53 @@ document.querySelectorAll('.remove-logo-btn').forEach(btn => {
   });
 });
 
-// Evaluation: Polarität setzen
 evaluationList.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-polarity]');
   if (!btn) return;
   const a = state.assignments.find(item => item.id === Number(btn.dataset.id));
   if (!a) return;
+  const oldPolarity = a.polarity;
   a.polarity = btn.dataset.polarity || null;
   render();
+  if (oldPolarity !== a.polarity) pushUndo();
 });
 
-// Evaluation: Thesentext ändern
 evaluationList.addEventListener('input', (e) => {
   const inp = e.target;
   if (!inp.matches('[data-field="thesis-text"]')) return;
   const idx = Number(inp.dataset.id) - 1;
+  const oldText = state.theses[idx];
   state.theses[idx] = inp.value;
   createThesisList();
   renderPlacements();
   fitAllCardText();
+  if (oldText !== state.theses[idx]) pushUndo();
 });
 
-// Ergebnisseingaben
 resultsGrid.addEventListener('input', (e) => {
   const inp = e.target;
   if (!inp.matches('[data-side][data-piece]')) return;
   const { side, piece } = inp.dataset;
   if (!SIDES.includes(side) || !PIECE_IDS.includes(piece)) return;
+  const oldVal = state.results[side][piece];
   state.results[side][piece] = Number(inp.value) || 0;
   createBoard();
   renderPlacements();
   renderTotals();
   fitAllCardText();
+  if (oldVal !== state.results[side][piece]) pushUndo();
 });
 
-// Teamnamen ändern
-Object.values(nameInputs).forEach(inp => inp.addEventListener('input', renderTotals));
+Object.values(nameInputs).forEach(inp => inp.addEventListener('input', () => {
+  renderTotals();
+  pushUndo();
+}));
 
-// Fenster-Resize: Texte anpassen
 window.addEventListener('resize', fitAllCardText);
 
-// Settings-Dialog
 openSettingsBtn.addEventListener('click', () => settingsDialog.showModal?.() || settingsDialog.setAttribute('open', ''));
 closeSettingsBtn.addEventListener('click', () => settingsDialog.close?.() || settingsDialog.removeAttribute('open'));
 
-// Export / Import
 exportAllBtn.addEventListener('click', exportAllData);
 importAllBtn.addEventListener('click', () => importFileInput.click());
 importFileInput.addEventListener('change', () => {
@@ -874,10 +938,11 @@ importFileInput.addEventListener('change', () => {
   importFileInput.value = '';
 });
 
-// Randomizer
 randomQuestionBtn.addEventListener('click', () => {
+  const oldVal = state.questionValue;
   state.questionValue = QUESTION_VALUES[Math.floor(Math.random() * QUESTION_VALUES.length)];
   render();
+  if (oldVal !== state.questionValue) pushUndo();
 });
 
 // ============================
@@ -885,3 +950,4 @@ randomQuestionBtn.addEventListener('click', () => {
 // ============================
 render();
 createResultSettings();
+pushUndo();
