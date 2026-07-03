@@ -13,7 +13,6 @@ const SIDES = ['white', 'black'];
 const POLARITIES = ['positive', 'negative'];
 const QUESTION_VALUES = [-3, -2, -1, 1, 2, 3];
 
-// Wikimedia Commons Cburnett chess piece SVGs
 const PIECE_SVG_URLS = {
   rook:   'https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg',
   bishop: 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Chess_blt45.svg',
@@ -46,7 +45,6 @@ const state = {
 
 const teamLogos = { white: null, black: null };
 
-// Undo-Stack
 const undoStack = [];
 const MAX_UNDO = 20;
 let isUndoing = false;
@@ -402,15 +400,31 @@ function createBoard() {
         cell.classList.add('drop-cell');
         cell.dataset.side = row;
         cell.dataset.piece = piece.id;
-        const displayVal = (piece.id === 'knight' && state.questionValue !== null)
+
+        // Thesen-Summe auf diesem Feld berechnen
+        let thesisTotal = 0;
+        state.assignments.forEach(a => {
+          if (a.side === row && a.piece === piece.id) {
+            thesisTotal += getAssignmentScore(a);
+          }
+        });
+
+        // Figurenwert (fest) – je nach Springer-Sonderfall
+        let figureValue = (piece.id === 'knight' && state.questionValue !== null)
           ? formatNumber(state.questionValue)
           : piece.value;
-        cell.innerHTML = `
-          <div class="cell-head">
-            <div class="cell-value">${displayVal}</div>
-          </div>
-          <div class="placed-list" data-slot="${row}-${piece.id}"></div>
-        `;
+
+        let html = `<div class="drop-value">${figureValue}</div>`;
+
+        if (thesisTotal !== 0) {
+          html += `<div class="drop-total">${formatNumber(thesisTotal)}</div>`;
+          cell.classList.add('has-theses');
+        }
+
+        html += `<div class="placed-list" data-slot="${row}-${piece.id}"></div>`;
+
+        cell.innerHTML = html;
+
         cell.addEventListener('dragover', handleDragOver);
         cell.addEventListener('dragleave', handleDragLeave);
         cell.addEventListener('drop', handleDrop);
@@ -426,17 +440,16 @@ function renderPlacements() {
     if (!a.side || !a.piece) return;
     const slot = document.querySelector(`[data-slot="${a.side}-${a.piece}"]`);
     if (!slot) return;
-    const score = getAssignmentScore(a);
     const chip = document.createElement('span');
-    chip.className = `placed-chip ${getScoreTone(score)}`;
+    chip.className = `placed-chip`;
     chip.draggable = true;
     chip.dataset.id = a.id;
+    // Kein chip-score mehr – nur der Thesentext
     chip.innerHTML = `
-      <strong class="chip-watermark">${formatNumber(score)}</strong>
+      <strong class="chip-watermark"></strong>
       <span class="fit-text">${escapeHtml(state.theses[a.id - 1])}</span>
-      <strong class="chip-score">${formatNumber(score)}</strong>
     `;
-    chip.title = `${state.theses[a.id - 1]} ${a.polarity || 'unbewertet'} ${formatNumber(score)}`;
+    chip.title = `${state.theses[a.id - 1]} ${a.polarity || 'unbewertet'}`;
     chip.addEventListener('dragstart', handleDragStart);
     chip.addEventListener('pointerdown', handlePointerDragStart);
     slot.appendChild(chip);
@@ -567,7 +580,7 @@ function fitAllCardText() {
 }
 
 // ============================
-//  DRAG & DROP
+//  DRAG & DROP (Maus + Touch)
 // ============================
 function handleDragStart(e) {
   const id = e.currentTarget.dataset.id;

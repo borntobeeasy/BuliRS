@@ -224,7 +224,7 @@ body:has(dialog[open]) {
 }
 
 /* ============================================================
-   TOPBAR – unverändert
+   TOPBAR
    ============================================================ */
 .topbar {
   display: flex;
@@ -314,7 +314,7 @@ h2 {
 }
 
 /* ============================================================
-   SCOREBOARD – unverändert
+   SCOREBOARD
    ============================================================ */
 .scoreboard {
   display: flex;
@@ -621,7 +621,7 @@ h2 {
 .ticker-content .value.neutral  { color: var(--zero); }
 
 /* ============================================================
-   LAYOUT – unverändert
+   LAYOUT
    ============================================================ */
 .game-layout {
   display: grid;
@@ -663,7 +663,7 @@ h2 {
 }
 
 /* ============================================================
-   SCHACHBRETT – KOMPLETT ÜBERARBEITET (clean, symmetrisch, 2. Liga)
+   SCHACHBRETT
    ============================================================ */
 .chess-grid {
   display: grid;
@@ -671,7 +671,6 @@ h2 {
   grid-template-rows: repeat(4, var(--cell-size));
   width: calc(var(--cell-size) * 5);
   height: calc(var(--cell-size) * 4);
-  /* Hochwertiger Rahmen – dünner roter Glow, Metall-Optik */
   border: 2px solid rgba(211, 1, 12, 0.5);
   border-radius: 6px;
   outline: 1px solid rgba(255, 255, 255, 0.06);
@@ -680,19 +679,19 @@ h2 {
     0 0 30px rgba(211, 1, 12, 0.15),
     inset 0 0 30px rgba(0, 0, 0, 0.4),
     var(--shadow);
-  background: #1a1a1a; /* einheitlicher dunkler Hintergrund */
+  background: #1a1a1a;
   overflow: hidden;
 }
 
 .grid-cell {
   position: relative;
-  border: none; /* keine sichtbaren Linien zwischen den Zellen */
+  border: none;
   padding: 0;
   overflow: hidden;
-  background: #1f1f1f; /* Basis – wird von Kind-Elementen überschrieben */
+  background: #1f1f1f;
 }
 
-/* ===== Figuren-Felder (obere & untere Reihe) ===== */
+/* ===== Figuren-Felder ===== */
 .piece-cell {
   display: grid;
   place-items: center;
@@ -704,37 +703,31 @@ h2 {
   transition: background 0.15s ease, transform 0.15s ease;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
-
 .piece-cell.light {
   background: #242424;
 }
-
-/* sanfter Hover-Effekt für Figuren-Felder */
 .piece-cell:hover {
   background: #2a2a2a;
   transform: scale(1.01);
   z-index: 1;
 }
 
-/* ===== Drop-Felder (mittlere Reihen) ===== */
+/* ===== Drop-Felder ===== */
 .drop-cell {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
   background: #1a1a1a;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
   transition: background 0.2s ease, box-shadow 0.2s ease;
 }
-
-/* Leichte Unterscheidung der Seiten (weiß/schwarz) nur über Rahmen */
 .drop-cell[data-side="white"] {
   border-top: 2px solid rgba(255, 255, 255, 0.08);
 }
 .drop-cell[data-side="black"] {
   border-bottom: 2px solid rgba(0, 0, 0, 0.3);
 }
-
-/* Hover / Drag-Over – roter Glow */
 .drop-cell.drag-over {
   background: rgba(211, 1, 12, 0.08);
   box-shadow: inset 0 0 30px rgba(211, 1, 12, 0.12), 0 0 20px rgba(211, 1, 12, 0.06);
@@ -746,7 +739,44 @@ h2 {
   100% { box-shadow: inset 0 0 30px rgba(211, 1, 12, 0.12), 0 0 20px rgba(211, 1, 12, 0.06); }
 }
 
-/* ===== Wasserzeichen-Punkte auf Figuren-Feldern (Score) ===== */
+/* Figurenwert (zentriert, standard) */
+.drop-value {
+  font-size: clamp(1.2rem, calc(var(--cell-size) * 0.25), 2rem);
+  font-weight: 900;
+  font-family: var(--headline-font);
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+  transition: all 0.2s;
+  pointer-events: none;
+}
+
+/* Wenn Thesen auf dem Feld liegen */
+.drop-cell.has-theses .drop-value {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: clamp(0.7rem, calc(var(--cell-size) * 0.14), 1.2rem);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Summe der Thesen (rechts unten) – nur sichtbar wenn Thesen vorhanden */
+.drop-total {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: clamp(1.2rem, calc(var(--cell-size) * 0.25), 2rem);
+  font-weight: 900;
+  font-family: var(--headline-font);
+  color: rgba(255, 255, 255, 0.2);
+  text-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  display: none;
+}
+.drop-cell.has-theses .drop-total {
+  display: block;
+}
+
+/* ===== Wasserzeichen auf Figuren-Feldern ===== */
 .field-watermark {
   position: absolute;
   right: clamp(4px, calc(var(--cell-size) * 0.06), 8px);
@@ -764,10 +794,7 @@ h2 {
 .field-watermark.positive { color: rgba(0, 200, 80, 0.5); }
 .field-watermark.negative { color: rgba(211, 1, 12, 0.5); }
 .field-watermark.neutral { color: rgba(255, 255, 255, 0.12); }
-
-.piece-cell:hover .field-watermark {
-  opacity: 1;
-}
+.piece-cell:hover .field-watermark { opacity: 1; }
 
 /* ===== Schachfiguren-SVG ===== */
 .piece-svg {
@@ -789,11 +816,8 @@ h2 {
     drop-shadow(0 0 6px rgba(211, 1, 12, 0.15))
     drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
 }
-.piece-cell:hover .piece-svg {
-  transform: scale(1.04);
-}
+.piece-cell:hover .piece-svg { transform: scale(1.04); }
 
-/* kleines Bild in der Ecke (Spielerfoto) */
 .piece-corner {
   position: absolute;
   top: 4px;
@@ -823,7 +847,7 @@ h2 {
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
-/* ×-Button zum Entfernen des Fotos (nur bei Hover oder Bearbeiten-Modus) */
+/* ×-Button zum Entfernen des Fotos */
 .remove-player-photo {
   position: absolute;
   top: 4px;
@@ -846,9 +870,7 @@ h2 {
   pointer-events: none;
   transition: background 0.2s, opacity 0.15s;
 }
-.remove-player-photo:hover {
-  background: var(--bundesliga-red);
-}
+.remove-player-photo:hover { background: var(--bundesliga-red); }
 .app-shell.show-remove-buttons .remove-player-photo {
   opacity: 1;
   pointer-events: auto;
@@ -860,7 +882,7 @@ h2 {
   }
 }
 
-/* ===== "Foto wählen"-Hinweis (nur bei Hover sichtbar) ===== */
+/* "Foto wählen"-Hinweis */
 .piece-cell::after {
   content: "Foto wählen";
   position: absolute;
@@ -880,10 +902,7 @@ h2 {
   transition: opacity 0.15s, transform 0.15s;
   pointer-events: none;
 }
-.piece-cell.has-player-image::after {
-  content: "";
-  display: none;
-}
+.piece-cell.has-player-image::after { content: ""; display: none; }
 @media (hover: hover) and (pointer: fine) {
   .piece-cell:hover::after,
   .piece-cell.image-drop-over::after {
@@ -909,7 +928,6 @@ h2 {
   padding: 2px;
   pointer-events: none;
 }
-
 .placed-chip {
   position: relative;
   display: grid;
@@ -934,48 +952,7 @@ h2 {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: transform 0.1s;
 }
-.placed-chip:hover {
-  transform: scale(1.02);
-  z-index: 3;
-}
-
-.chip-score {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  z-index: 2;
-  min-width: 16px;
-  min-height: 14px;
-  padding: 1px 4px;
-  font-size: 0.5rem;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  background: var(--white);
-  font-weight: 900;
-  line-height: 1;
-  white-space: nowrap;
-  display: inline-grid;
-  place-items: center;
-}
-.chip-score.positive { color: var(--green); }
-.chip-score.negative { color: var(--red); }
-.chip-score.neutral { color: var(--zero); }
-
-.chip-watermark {
-  position: absolute;
-  top: 3px;
-  left: 5px;
-  z-index: 0;
-  color: var(--zero);
-  font-size: clamp(0.8rem, calc(var(--cell-size) * 0.18), 1.8rem);
-  font-weight: 900;
-  line-height: 1;
-  opacity: 0.15;
-  pointer-events: none;
-}
-.placed-chip.positive .chip-watermark { color: var(--green); }
-.placed-chip.negative .chip-watermark { color: var(--red); }
-.placed-chip.neutral .chip-watermark { color: var(--zero); }
+.placed-chip:hover { transform: scale(1.02); z-index: 3; }
 
 .fit-text {
   position: relative;
@@ -985,7 +962,6 @@ h2 {
   overflow-wrap: anywhere;
 }
 
-/* ===== Drag-Ghost (Thesen-Vorschau beim Ziehen) ===== */
 .drag-ghost {
   position: fixed;
   z-index: 50;
@@ -1007,11 +983,9 @@ h2 {
 }
 
 /* ============================================================
-   THESIS PANEL – unverändert
+   THESIS PANEL
    ============================================================ */
-.thesis-panel[hidden] {
-  display: none !important;
-}
+.thesis-panel[hidden] { display: none !important; }
 .thesis-panel {
   min-height: 480px;
   border: 1px solid rgba(211, 1, 12, 0.25);
@@ -1102,12 +1076,10 @@ h2 {
   letter-spacing: 0.01em;
 }
 .thesis-card:active,
-.placed-chip:active {
-  cursor: grabbing;
-}
+.placed-chip:active { cursor: grabbing; }
 
 /* ============================================================
-   SETTINGS DIALOG – unverändert
+   SETTINGS DIALOG
    ============================================================ */
 .settings-dialog {
   width: min(920px, calc(100% - 28px));
@@ -1123,9 +1095,7 @@ h2 {
   background-size: 24px 24px;
   padding: 0;
 }
-.settings-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.85);
-}
+.settings-dialog::backdrop { background: rgba(0, 0, 0, 0.85); }
 .settings-shell {
   display: grid;
   gap: 16px;
@@ -1135,17 +1105,9 @@ h2 {
   scrollbar-width: thin;
   scrollbar-color: var(--bundesliga-red) rgba(255, 255, 255, 0.05);
 }
-.settings-shell::-webkit-scrollbar {
-  width: 8px;
-}
-.settings-shell::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 8px;
-}
-.settings-shell::-webkit-scrollbar-thumb {
-  background: var(--bundesliga-red);
-  border-radius: 8px;
-}
+.settings-shell::-webkit-scrollbar { width: 8px; }
+.settings-shell::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.04); border-radius: 8px; }
+.settings-shell::-webkit-scrollbar-thumb { background: var(--bundesliga-red); border-radius: 8px; }
 
 .settings-head {
   display: flex;
@@ -1155,9 +1117,7 @@ h2 {
   padding-bottom: 14px;
   border-bottom: 2px solid rgba(211, 1, 12, 0.3);
 }
-.settings-head h2 {
-  font-size: 1.5rem;
-}
+.settings-head h2 { font-size: 1.5rem; }
 
 .settings-shell input {
   min-height: 32px;
@@ -1217,30 +1177,22 @@ h2 {
   cursor: pointer;
   transition: background 0.2s;
 }
-.view-controls button:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
+.view-controls button:hover { background: rgba(255, 255, 255, 0.18); }
 #toggleThesisButton {
   background: var(--bundesliga-red);
   border-color: var(--bundesliga-red);
 }
-#toggleThesisButton:hover {
-  background: var(--bundesliga-red-dark);
-}
+#toggleThesisButton:hover { background: var(--bundesliga-red-dark); }
 #toggleRemoveButtons {
   background: rgba(255, 255, 255, 0.12);
 }
-#toggleRemoveButtons:hover {
-  background: rgba(255, 255, 255, 0.22);
-}
+#toggleRemoveButtons:hover { background: rgba(255, 255, 255, 0.22); }
 #toggleRemoveButtons[aria-pressed="true"] {
   background: var(--bundesliga-gold);
   border-color: var(--bundesliga-gold);
   color: #1a1400;
 }
-#toggleRemoveButtons[aria-pressed="true"]:hover {
-  background: var(--bundesliga-gold);
-}
+#toggleRemoveButtons[aria-pressed="true"]:hover { background: var(--bundesliga-gold); }
 
 .close-button {
   display: grid;
@@ -1286,9 +1238,7 @@ h2 {
   height: 2px;
   background: var(--bundesliga-red);
 }
-.results-panel h2 {
-  font-size: 1.1rem;
-}
+.results-panel h2 { font-size: 1.1rem; }
 
 .evaluation-list {
   display: grid;
@@ -1303,9 +1253,7 @@ h2 {
   background: rgba(255, 255, 255, 0.05);
   padding: 8px;
 }
-.evaluation-card strong {
-  font-size: 0.85rem;
-}
+.evaluation-card strong { font-size: 0.85rem; }
 .evaluation-card input {
   font-size: 0.8rem;
   min-height: 30px;
@@ -1330,9 +1278,7 @@ h2 {
   padding: 0 6px;
   font-size: 0.75rem;
 }
-.evaluation-controls button:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
+.evaluation-controls button:hover { background: rgba(255, 255, 255, 0.15); }
 .evaluation-controls .neutral-button.active {
   background: var(--bundesliga-gold);
   color: var(--bundesliga-black);
@@ -1348,12 +1294,8 @@ h2 {
   color: white;
   border-color: var(--bundesliga-red);
 }
-.evaluation-controls .polarity-button:not(.active) {
-  opacity: 0.6;
-}
-.evaluation-controls .neutral-button:not(.active) {
-  opacity: 0.6;
-}
+.evaluation-controls .polarity-button:not(.active) { opacity: 0.6; }
+.evaluation-controls .neutral-button:not(.active) { opacity: 0.6; }
 
 .results-grid {
   display: grid;
@@ -1368,20 +1310,14 @@ h2 {
   background: rgba(255, 255, 255, 0.05);
   padding: 8px;
 }
-.result-group h3 {
-  margin: 0;
-  font-size: 0.9rem;
-}
+.result-group h3 { margin: 0; font-size: 0.9rem; }
 .result-row {
   display: grid;
   grid-template-columns: 60px 1fr;
   gap: 6px;
   align-items: center;
 }
-.result-row label {
-  text-transform: none;
-  font-size: 0.7rem;
-}
+.result-row label { text-transform: none; font-size: 0.7rem; }
 .result-row input {
   min-height: 28px;
   font-size: 0.8rem;
@@ -1402,10 +1338,7 @@ h2 {
   background: rgba(255, 255, 255, 0.05);
   padding: 10px;
 }
-.randomizer-card div {
-  display: grid;
-  gap: 4px;
-}
+.randomizer-card div { display: grid; gap: 4px; }
 .randomizer-card span {
   color: var(--muted);
   font-weight: 800;
@@ -1422,10 +1355,7 @@ h2 {
   font-size: 0.8rem;
 }
 
-.import-export-grid {
-  display: grid;
-  gap: 10px;
-}
+.import-export-grid { display: grid; gap: 10px; }
 .storage-card {
   display: grid;
   gap: 6px;
@@ -1466,7 +1396,7 @@ h2 {
 }
 
 /* ============================================================
-   RESPONSIVE – unverändert
+   RESPONSIVE
    ============================================================ */
 @media (max-width: 1200px) {
   .app-shell { padding: 16px 0 24px; }
@@ -1497,10 +1427,10 @@ h2 {
   .grid-cell { padding: 0; }
   .piece-svg { max-width: 50px; }
   .placed-chip { font-size: clamp(0.4rem, 0.5vw, 0.55rem); padding: 8px 4px 4px; }
-  .chip-score { font-size: 0.45rem; min-width: 14px; min-height: 12px; padding: 1px 3px; }
-  .chip-watermark { font-size: clamp(0.8rem, calc(var(--cell-size) * 0.18), 1.6rem); }
   .field-watermark { font-size: clamp(0.8rem, calc(var(--cell-size) * 0.18), 1.6rem); }
-  .cell-value { font-size: clamp(0.7rem, calc(var(--cell-size) * 0.12), 1rem); }
+  .drop-value { font-size: clamp(1rem, calc(var(--cell-size) * 0.22), 1.7rem); }
+  .drop-cell.has-theses .drop-value { font-size: clamp(0.6rem, calc(var(--cell-size) * 0.12), 1rem); }
+  .drop-total { font-size: clamp(1rem, calc(var(--cell-size) * 0.22), 1.7rem); }
 
   .thesis-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .thesis-card { height: calc(var(--cell-size) * 0.85); font-size: 0.7rem; }
@@ -1542,10 +1472,10 @@ h2 {
   .grid-cell { padding: 0; }
   .piece-svg { max-width: 36px; }
   .placed-chip { font-size: clamp(0.35rem, 0.4vw, 0.45rem); padding: 6px 3px 3px; }
-  .chip-score { font-size: 0.35rem; min-width: 12px; min-height: 10px; padding: 0 2px; }
-  .chip-watermark { font-size: clamp(0.6rem, calc(var(--cell-size) * 0.15), 1.2rem); top: 3px; left: 4px; }
   .field-watermark { font-size: clamp(0.6rem, calc(var(--cell-size) * 0.15), 1.2rem); right: 4px; bottom: 4px; }
-  .cell-value { font-size: clamp(0.5rem, calc(var(--cell-size) * 0.1), 0.8rem); }
+  .drop-value { font-size: clamp(0.8rem, calc(var(--cell-size) * 0.18), 1.4rem); }
+  .drop-cell.has-theses .drop-value { font-size: clamp(0.5rem, calc(var(--cell-size) * 0.1), 0.8rem); }
+  .drop-total { font-size: clamp(0.8rem, calc(var(--cell-size) * 0.18), 1.4rem); }
 
   .thesis-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .thesis-card { height: calc(var(--cell-size) * 0.7); font-size: 0.6rem; }
@@ -1585,10 +1515,10 @@ h2 {
   .grid-cell { padding: 0; }
   .piece-svg { max-width: 28px; }
   .placed-chip { font-size: clamp(0.3rem, 0.35vw, 0.4rem); padding: 4px 2px 2px; border-radius: 3px; }
-  .chip-score { font-size: 0.3rem; min-width: 10px; min-height: 8px; padding: 0 2px; top: 2px; right: 2px; }
-  .chip-watermark { font-size: clamp(0.5rem, calc(var(--cell-size) * 0.12), 0.9rem); top: 2px; left: 3px; }
   .field-watermark { font-size: clamp(0.5rem, calc(var(--cell-size) * 0.12), 0.9rem); right: 3px; bottom: 3px; }
-  .cell-value { font-size: clamp(0.4rem, calc(var(--cell-size) * 0.08), 0.6rem); }
+  .drop-value { font-size: clamp(0.6rem, calc(var(--cell-size) * 0.14), 1.1rem); }
+  .drop-cell.has-theses .drop-value { font-size: clamp(0.4rem, calc(var(--cell-size) * 0.08), 0.6rem); }
+  .drop-total { font-size: clamp(0.6rem, calc(var(--cell-size) * 0.14), 1.1rem); }
 
   .thesis-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
   .thesis-card { height: calc(var(--cell-size) * 0.6); font-size: 0.5rem; padding: 4px; }
