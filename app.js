@@ -137,16 +137,19 @@ function saveTeamLogos() {
 function renderTeamLogos() {
   SIDES.forEach(side => {
     const img = $(`#${side}Logo`);
+    const wrapper = document.querySelector(`.team-logo-wrapper[data-team="${side}"]`);
     const removeBtn = document.querySelector(`.remove-logo-btn[data-team="${side}"]`);
     if (!img) return;
     if (teamLogos[side]) {
       img.src = teamLogos[side];
       img.style.display = 'block';
       if (removeBtn) removeBtn.classList.add('visible');
+      if (wrapper) wrapper.classList.add('has-logo');
     } else {
       img.src = '';
       img.style.display = 'none';
       if (removeBtn) removeBtn.classList.remove('visible');
+      if (wrapper) wrapper.classList.remove('has-logo');
     }
   });
 }
@@ -329,7 +332,7 @@ function createBoard() {
         cell.addEventListener('dragover', handleFigureDragOver);
         cell.addEventListener('dragleave', handleFigureDragLeave);
         cell.addEventListener('drop', handleFigureDrop);
-        cell.addEventListener('dblclick', handleFigurePick);
+        cell.addEventListener('click', handleFigurePick);
       } else {
         cell.classList.add('drop-cell');
         cell.dataset.side = row;
