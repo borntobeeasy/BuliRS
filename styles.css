@@ -186,6 +186,15 @@ body:has(dialog[open]) {
     backdrop-filter: blur(18px);
   }
 }
+@media (hover: none), (pointer: coarse) {
+  /* Auf Touch-Geräten (v.a. iOS Safari) führt backdrop-filter in Kombination
+     mit dem eigenständig scrollenden Dialog-Inhalt zu einem Render-Fehler,
+     bei dem der Dialog beim Scrollen sichtbar "schräg" verzerrt/verschoben
+     wirkt. Der Hintergrund ist ohnehin fast deckend, daher hier deaktivieren. */
+  .settings-dialog {
+    backdrop-filter: none;
+  }
+}
 
 @keyframes cardIn {
   from { opacity: 0; transform: translateY(10px) scale(0.96); }
@@ -476,6 +485,14 @@ h2 {
 }
 .team-logo-wrapper.has-logo .logo-upload-btn:hover {
   background: var(--bundesliga-red);
+}
+@media (hover: none), (pointer: coarse) {
+  .team-logo-wrapper.has-logo .logo-upload-btn {
+    display: none;
+  }
+  .app-shell.show-remove-buttons .team-logo-wrapper.has-logo .logo-upload-btn {
+    display: grid;
+  }
 }
 
 .team-logo-wrapper .remove-logo-btn {
@@ -1517,6 +1534,16 @@ h2 {
   .thesis-card .thesis-title { font-size: 0.65rem; }
   .thesis-panel { min-height: 240px; padding: 10px; }
   .thesis-head h2 { font-size: 0.85rem; }
+
+  .player-photo {
+    inset: 3px;
+    width: calc(100% - 6px);
+    height: calc(100% - 6px);
+    border-radius: 8px;
+    object-fit: cover;
+    object-position: center top;
+  }
+  .piece-corner { top: 2px; left: 2px; width: 24%; max-width: 22px; }
 
   .evaluation-list { grid-template-columns: 1fr; }
   .result-row { grid-template-columns: 50px 1fr; }
