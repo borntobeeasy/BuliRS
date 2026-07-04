@@ -794,6 +794,7 @@ h2 {
 .field-watermark.positive { color: rgba(0, 200, 80, 0.5); }
 .field-watermark.negative { color: rgba(211, 1, 12, 0.5); }
 .field-watermark.neutral { color: rgba(255, 255, 255, 0.12); }
+.field-watermark.zero { color: rgba(178, 143, 240, 0.6); }
 .piece-cell:hover .field-watermark { opacity: 1; }
 
 /* ===== Schachfiguren-SVG ===== */
@@ -953,6 +954,36 @@ h2 {
   transition: transform 0.1s;
 }
 .placed-chip:hover { transform: scale(1.02); z-index: 3; }
+
+.chip-field-badge {
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  z-index: 2;
+  line-height: 1;
+  font-size: 1.3em;
+  font-weight: 800;
+  color: rgba(10, 10, 10, 0.55);
+  pointer-events: none;
+}
+.chip-watermark {
+  position: absolute;
+  right: 4px;
+  bottom: 3px;
+  z-index: 1;
+  line-height: 1;
+  font-size: 2.3em;
+  font-weight: 900;
+  opacity: 0.6;
+  pointer-events: none;
+  color: rgba(10, 10, 10, 0.15);
+  transition: opacity 0.15s;
+}
+.chip-watermark.positive { color: rgba(0, 132, 61, 0.55); }
+.chip-watermark.negative { color: rgba(211, 1, 12, 0.5); }
+.chip-watermark.neutral  { color: rgba(10, 10, 10, 0.15); }
+.chip-watermark.zero     { color: rgba(147, 112, 219, 0.65); }
+.placed-chip:hover .chip-watermark { opacity: 1; }
 
 .fit-text {
   position: relative;

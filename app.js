@@ -164,10 +164,15 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-function getScoreTone(value) {
+function getScoreTone(value, evaluated) {
   if (value > 0) return 'positive';
   if (value < 0) return 'negative';
+  if (value === 0 && evaluated) return 'zero';
   return 'neutral';
+}
+
+function isEvaluationActive() {
+  return state.assignments.some(a => a.polarity);
 }
 
 // ============================
@@ -343,7 +348,7 @@ function renderFigureCell(cell, piece) {
   const image = state.figureImages[slot];
   const side = cell.dataset.side;
   const score = getPlayerScore(side, piece.id);
-  const scoreMarkup = `<strong class="field-watermark ${getScoreTone(score)}">${formatNumber(score)}</strong>`;
+  const scoreMarkup = `<strong class="field-watermark ${getScoreTone(score, isEvaluationActive())}">${formatNumber(score)}</strong>`;
   const pieceSvg = PIECE_SVG_URLS[piece.id];
   const pieceImgMarkup = pieceSvg ? `<img class="piece-svg${image ? ' piece-corner' : ''}" src="${pieceSvg}" alt="" />` : '';
 
@@ -440,16 +445,21 @@ function renderPlacements() {
     if (!a.side || !a.piece) return;
     const slot = document.querySelector(`[data-slot="${a.side}-${a.piece}"]`);
     if (!slot) return;
+    const piece = getPieceById(a.piece);
+    const fieldLabel = (a.piece === 'knight' && state.questionValue !== null)
+      ? formatNumber(state.questionValue)
+      : piece.value;
+    const score = getAssignmentScore(a);
     const chip = document.createElement('span');
     chip.className = `placed-chip`;
     chip.draggable = true;
     chip.dataset.id = a.id;
-    // Kein chip-score mehr – nur der Thesentext
     chip.innerHTML = `
-      <strong class="chip-watermark"></strong>
+      <span class="chip-field-badge">${escapeHtml(fieldLabel)}</span>
+      <strong class="chip-watermark ${getScoreTone(score, Boolean(a.polarity))}">${formatNumber(score)}</strong>
       <span class="fit-text">${escapeHtml(state.theses[a.id - 1])}</span>
     `;
-    chip.title = `${state.theses[a.id - 1]} ${a.polarity || 'unbewertet'}`;
+    chip.title = `${state.theses[a.id - 1]} — Feld ${fieldLabel} — ${formatNumber(score)} Punkte`;
     chip.addEventListener('dragstart', handleDragStart);
     chip.addEventListener('pointerdown', handlePointerDragStart);
     slot.appendChild(chip);
