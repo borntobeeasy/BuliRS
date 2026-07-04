@@ -337,7 +337,11 @@ function getSideTotal(side) {
 }
 
 function calculateTotals() {
-  return { white: getSideTotal('white'), black: getSideTotal('black') };
+  let white = getSideTotal('white');
+  let black = getSideTotal('black');
+  if (white < 0) { black += -white; white = 0; }
+  if (black < 0) { white += -black; black = 0; }
+  return { white, black };
 }
 
 // ============================
@@ -543,9 +547,9 @@ function renderThesisStatus() {
   const total = 10;
   const evaluated = state.assignments.filter(a => a.polarity).length;
   container.innerHTML = `
-    <span>📋 <strong>${placed}</strong> von <strong>${total}</strong> platziert</span>
+    <span><strong>${placed}</strong> von <strong>${total}</strong> platziert</span>
     <span>•</span>
-    <span>🔍 <strong>${evaluated}</strong> bewertet</span>
+    <span><strong>${evaluated}</strong> bewertet</span>
   `;
 }
 
@@ -553,9 +557,9 @@ function renderRandomizerStatus() {
   const container = document.getElementById('randomizerStatusDisplay');
   if (!container) return;
   const val = state.questionValue;
-  const text = val !== null ? formatNumber(val) : '❓ noch nicht gewürfelt';
+  const text = val !== null ? formatNumber(val) : 'noch nicht gewürfelt';
   const cls = val !== null ? getScoreTone(val) : 'neutral';
-  container.innerHTML = `<span class="value ${cls}">🎲 ${text}</span>`;
+  container.innerHTML = `<span class="value ${cls}">${text}</span>`;
 }
 
 function render() {
