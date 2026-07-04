@@ -1117,6 +1117,7 @@ h2 {
 .settings-dialog {
   width: min(920px, calc(100% - 28px));
   max-height: min(700px, calc(100vh - 28px));
+  max-height: min(700px, calc(100dvh - 28px));
   border: 2px solid var(--bundesliga-red);
   border-radius: 8px;
   background:
@@ -1133,6 +1134,7 @@ h2 {
   display: grid;
   gap: 16px;
   max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
   overflow: auto;
   padding: 18px;
   scrollbar-width: thin;
@@ -1470,7 +1472,7 @@ h2 {
   .thesis-card .thesis-title { font-size: 0.75rem; }
   .thesis-panel { min-height: 320px; padding: 12px; }
 
-  .settings-dialog { width: calc(100% - 20px); max-height: calc(100vh - 20px); }
+  .settings-dialog { width: calc(100% - 20px); max-height: calc(100vh - 20px); max-height: calc(100dvh - 20px); }
   .settings-shell { padding: 14px; gap: 12px; }
   .evaluation-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .results-grid { grid-template-columns: 1fr; }
@@ -1560,7 +1562,7 @@ h2 {
   .thesis-head h2 { font-size: 0.7rem; }
   .thesis-head .eyebrow { font-size: 0.45rem; }
 
-  .settings-dialog { width: calc(100% - 8px); max-height: calc(100vh - 8px); }
+  .settings-dialog { width: calc(100% - 8px); max-height: calc(100vh - 8px); max-height: calc(100dvh - 8px); }
   .settings-shell { padding: 8px; gap: 8px; }
   .evaluation-controls button { font-size: 0.6rem; min-height: 22px; }
   .result-row { grid-template-columns: 40px 1fr; gap: 4px; }
