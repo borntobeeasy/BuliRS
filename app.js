@@ -86,7 +86,6 @@ function undoLastAction() {
   render();
   createResultSettings();
   renderTeamLogos();
-  saveTeamLogos();
   isUndoing = false;
   updateUndoButtonState();
 }
@@ -178,26 +177,6 @@ function isEvaluationActive() {
 // ============================
 //  LOGO-VERWALTUNG
 // ============================
-function loadTeamLogos() {
-  try {
-    const raw = localStorage.getItem('rasenschach.teamLogos');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed.white) teamLogos.white = parsed.white;
-      if (parsed.black) teamLogos.black = parsed.black;
-    }
-  } catch { /* ignore */ }
-}
-
-function saveTeamLogos() {
-  try {
-    localStorage.setItem('rasenschach.teamLogos', JSON.stringify({
-      white: teamLogos.white,
-      black: teamLogos.black,
-    }));
-  } catch { /* ignore */ }
-}
-
 function renderTeamLogos() {
   SIDES.forEach(side => {
     const img = $(`#${side}Logo`);
@@ -222,7 +201,6 @@ function handleLogoUpload(team, file) {
   if (!file) return;
   const process = (dataUrl) => {
     teamLogos[team] = dataUrl;
-    saveTeamLogos();
     renderTeamLogos();
     renderTotals();
     pushUndo();
@@ -238,7 +216,6 @@ function handleLogoUpload(team, file) {
 
 function removeTeamLogo(team) {
   teamLogos[team] = null;
-  saveTeamLogos();
   renderTeamLogos();
   renderTotals();
   pushUndo();
@@ -736,7 +713,6 @@ document.querySelectorAll('.team-logo-wrapper').forEach(wrapper => {
       const url = getDroppedImageUrl(e.dataTransfer);
       if (url) {
         teamLogos[team] = url;
-        saveTeamLogos();
         renderTeamLogos();
         renderTotals();
         pushUndo();
@@ -867,9 +843,8 @@ function importAllData(file) {
         state.figureImages = safe;
       }
       if (data.teamLogos) {
-        if (isImageUrl(data.teamLogos.white)) teamLogos.white = data.teamLogos.white;
-        if (isImageUrl(data.teamLogos.black)) teamLogos.black = data.teamLogos.black;
-        saveTeamLogos();
+        teamLogos.white = isImageUrl(data.teamLogos.white) ? data.teamLogos.white : null;
+        teamLogos.black = isImageUrl(data.teamLogos.black) ? data.teamLogos.black : null;
       }
       render();
       createResultSettings();
@@ -889,7 +864,6 @@ function importAllData(file) {
 //  EVENT-LISTENER
 // ============================
 document.addEventListener('DOMContentLoaded', () => {
-  loadTeamLogos();
   renderTeamLogos();
 });
 
