@@ -18,7 +18,7 @@
   --cell-size: clamp(64px, min(7.5vw, 16vh), 120px);
   --shadow: 0 28px 75px rgba(0, 0, 0, 0.46);
   --event-font: "Sora", "Segoe UI", Arial, sans-serif;
-  --headline-font: "Anton", "Arial Narrow", Impact, sans-serif;
+  --headline-font: "DFL Sans", "Anton", "Arial Narrow", Impact, sans-serif;
 }
 
 * {
@@ -26,7 +26,7 @@
 }
 
 /* ============================================================
-   RETRO BUNDESLIGA HINTERGRUND – mit Trikots
+   TRIKOT-HINTERGRUND – BILDSCHIRMSCHONER
    ============================================================ */
 .bg-trikots {
   position: fixed;
@@ -35,23 +35,49 @@
   width: 100%;
   height: 100%;
   z-index: -1;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
-  opacity: 0.35;
+  overflow: hidden;
+  opacity: 0.5;
   pointer-events: none;
   background-color: #0a0a0a;
-  padding: 12px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
-.bg-trikots .trikot-item {
-  background: no-repeat center / contain, #1a1a1a;
-  border: 2px solid rgba(255, 255, 255, 0.06);
-  border-radius: 4px;
-  min-height: 100px;
-  filter: saturate(0.7) contrast(0.9);
-  transition: filter 0.3s;
+.bg-trikots-inner {
+  display: flex;
+  flex-wrap: nowrap;
+  height: 25%; /* 4 Reihen */
+  width: 100%;
+  will-change: transform;
+  flex-shrink: 0;
 }
+.bg-trikots-inner .trikot-item {
+  flex: 0 0 auto;
+  width: 200px;
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  filter: saturate(0.9) contrast(0.95);
+}
+
+/* Animationen – für 3 Sätze (33.33% Verschiebung) */
+@keyframes scrollRight {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-33.33%); }
+}
+@keyframes scrollLeft {
+  0%   { transform: translateX(-33.33%); }
+  100% { transform: translateX(0); }
+}
+
+.row-0 { animation: scrollRight 40s linear infinite; }
+.row-1 { animation: scrollLeft  40s linear infinite; }
+.row-2 { animation: scrollRight 40s linear infinite; }
+.row-3 { animation: scrollLeft  40s linear infinite; }
+
 .bg-overlay {
   position: fixed;
   top: 0;
@@ -59,7 +85,7 @@
   width: 100%;
   height: 100%;
   z-index: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.3);
   pointer-events: none;
 }
 
@@ -71,70 +97,58 @@ body {
   font-family: var(--event-font);
 }
 
-body::after {
-  content: "2. BUNDESLIGA 26/27";
-  position: fixed;
-  bottom: -8vh;
-  right: -4vw;
-  z-index: -3;
-  font-family: var(--headline-font);
-  font-size: min(28vw, 18rem);
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.025);
-  white-space: nowrap;
-  pointer-events: none;
-  transform: rotate(-8deg);
-  text-shadow: 0 0 60px rgba(211, 1, 12, 0.04);
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+@supports (backdrop-filter: blur(18px)) {
+  .board-panel,
+  .thesis-panel,
+  .scorebug,
+  .settings-dialog {
+    backdrop-filter: blur(18px);
+  }
+}
+@media (hover: none), (pointer: coarse) {
+  .settings-dialog {
+    backdrop-filter: none;
+  }
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.2; transform: scale(0.6); }
 }
 
 .app-shell {
   width: min(1440px, calc(100% - 32px));
   margin: 0 auto;
   padding: 28px 0 40px;
-  position: relative;
-  z-index: 1;
-  isolation: isolate;
 }
 
-/* ============================================================
-   BOARD-PANEL – Retro Kasten
-   ============================================================ */
 .board-panel {
   position: relative;
   overflow: hidden;
   background:
     linear-gradient(120deg, rgba(211, 1, 12, 0.12), transparent 22%, transparent 74%, rgba(211, 1, 12, 0.08)),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
     rgba(10, 10, 10, 0.92);
-  border: 2px solid rgba(211, 1, 12, 0.4);
-  border-radius: 12px;
-  box-shadow:
-    0 0 0 1px rgba(245, 197, 24, 0.1),
-    0 28px 75px rgba(0, 0, 0, 0.46),
-    0 0 60px rgba(211, 1, 12, 0.05);
+  border: 1px solid rgba(211, 1, 12, 0.3);
+  box-shadow: var(--shadow), 0 0 60px rgba(211, 1, 12, 0.05);
   padding: 20px;
+  border-radius: 8px;
 }
-.board-panel::before {
-  content: "";
-  position: absolute;
-  top: -12vh;
-  right: -8vw;
-  z-index: 0;
-  width: 45vw;
-  height: 45vw;
-  background: radial-gradient(ellipse at 70% 30%, rgba(211, 1, 12, 0.08), transparent 60%);
-  border-radius: 50%;
-  pointer-events: none;
-  animation: glowPulse 8s ease-in-out infinite alternate;
-}
-@keyframes glowPulse {
-  0% { opacity: 0.3; transform: scale(0.95); }
-  100% { opacity: 0.7; transform: scale(1.05); }
+.board-panel > * {
+  position: relative;
+  z-index: 2;
 }
 
 /* ============================================================
-   TOPBAR – Retro Schriftzug
+   TOPBAR
    ============================================================ */
 .topbar {
   display: flex;
@@ -170,7 +184,7 @@ h2 {
   opacity: 0.7;
 }
 .topbar h1 {
-  font-size: clamp(1.4rem, 2.4vw, 2.6rem);
+  font-size: clamp(1.2rem, 2vw, 2.2rem);
   font-family: var(--headline-font);
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -189,9 +203,9 @@ h2 {
 }
 .topbar .action-buttons button {
   min-height: 28px;
-  padding: 4px 14px;
-  font-size: 0.65rem;
-  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.6rem;
+  border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.06);
   color: var(--white);
@@ -199,11 +213,10 @@ h2 {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  transition: background 0.2s, transform 0.1s;
+  transition: background 0.2s;
 }
 .topbar .action-buttons button:hover {
   background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.02);
 }
 #openSettingsButton {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 42%), var(--bundesliga-red);
@@ -225,13 +238,14 @@ h2 {
 }
 
 /* ============================================================
-   SCOREBOARD – TV-Style 90er
+   SCOREBOARD
    ============================================================ */
 .scoreboard {
   display: flex;
   justify-content: center;
   width: 100%;
 }
+
 .scorebug {
   display: flex;
   flex-direction: column;
@@ -239,12 +253,13 @@ h2 {
   max-width: 900px;
   position: relative;
 }
+
 .scorebug-main {
   display: flex;
   align-items: stretch;
   border-radius: 999px;
   overflow: hidden;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45), 0 0 0 2px rgba(245, 197, 24, 0.15);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
 }
 
 .league-badge {
@@ -318,6 +333,20 @@ h2 {
 .team-logo-wrapper.has-logo::after {
   content: none;
 }
+@media (hover: hover) and (pointer: fine) {
+  .team-logo-wrapper:not(.has-logo):not(.drag-over) {
+    border-color: transparent;
+  }
+  .team-logo-wrapper:not(.has-logo):not(.drag-over)::after {
+    opacity: 0;
+  }
+  .team-logo-wrapper:not(.has-logo):hover {
+    border-color: rgba(0, 0, 0, 0.18);
+  }
+  .team-logo-wrapper:not(.has-logo):hover::after {
+    opacity: 1;
+  }
+}
 .team-logo-wrapper .team-logo {
   width: 100%;
   height: 100%;
@@ -325,6 +354,7 @@ h2 {
   border-radius: 50%;
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
 }
 .team-logo-wrapper .team-logo:not([src]),
 .team-logo-wrapper .team-logo[src=""],
@@ -356,6 +386,30 @@ h2 {
   background: var(--bundesliga-red-dark);
   transform: scale(1.1);
 }
+@media (hover: hover) and (pointer: fine) {
+  .team-logo-wrapper .logo-upload-btn {
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .team-logo-wrapper:hover .logo-upload-btn {
+    opacity: 1;
+  }
+}
+.team-logo-wrapper.has-logo .logo-upload-btn {
+  background: rgba(0,0,0,0.6);
+}
+.team-logo-wrapper.has-logo .logo-upload-btn:hover {
+  background: var(--bundesliga-red);
+}
+@media (hover: none), (pointer: coarse) {
+  .team-logo-wrapper.has-logo .logo-upload-btn {
+    display: none;
+  }
+  .app-shell.show-remove-buttons .team-logo-wrapper.has-logo .logo-upload-btn {
+    display: grid;
+  }
+}
+
 .team-logo-wrapper .remove-logo-btn {
   position: absolute;
   top: -6px;
@@ -380,6 +434,11 @@ h2 {
 }
 .app-shell.show-remove-buttons .team-logo-wrapper .remove-logo-btn.visible {
   display: grid;
+}
+@media (hover: hover) and (pointer: fine) {
+  .team-logo-wrapper:hover .remove-logo-btn.visible {
+    display: grid;
+  }
 }
 
 .team-name {
@@ -439,10 +498,6 @@ h2 {
   line-height: 0.6;
   animation: pulse-dot 1.2s ease-in-out infinite;
 }
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.2; transform: scale(0.6); }
-}
 
 .scorebug-meta {
   margin-top: 8px;
@@ -500,7 +555,7 @@ h2 {
 .ticker-content .value.neutral  { color: var(--zero); }
 
 /* ============================================================
-   SPIELFELD – Rasen-Optik
+   LAYOUT
    ============================================================ */
 .game-layout {
   display: grid;
@@ -509,6 +564,7 @@ h2 {
   align-items: start;
   position: relative;
 }
+
 .field-thesis-wrapper {
   display: grid;
   grid-template-columns: 1fr;
@@ -524,11 +580,13 @@ h2 {
 .field-thesis-wrapper.thesis-hidden .field-wrap {
   justify-self: center;
 }
+
 .field-wrap {
   position: relative;
   width: max-content;
   max-width: 100%;
 }
+
 @media (min-width: 1201px) {
   .field-thesis-wrapper {
     grid-template-columns: auto 1fr;
@@ -538,15 +596,18 @@ h2 {
   }
 }
 
+/* ============================================================
+   SCHACHBRETT
+   ============================================================ */
 .chess-grid {
   display: grid;
   grid-template-columns: repeat(5, var(--cell-size));
   grid-template-rows: repeat(4, var(--cell-size));
   width: calc(var(--cell-size) * 5);
   height: calc(var(--cell-size) * 4);
-  border: 3px solid rgba(211, 1, 12, 0.5);
-  border-radius: 8px;
-  outline: 1px solid rgba(245, 197, 24, 0.15);
+  border: 2px solid rgba(211, 1, 12, 0.5);
+  border-radius: 6px;
+  outline: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow:
     0 0 0 3px rgba(10, 10, 10, 0.9),
     0 0 30px rgba(211, 1, 12, 0.15),
@@ -564,6 +625,7 @@ h2 {
   background: #1f1f1f;
 }
 
+/* ===== Figuren-Felder ===== */
 .piece-cell {
   display: grid;
   place-items: center;
@@ -584,6 +646,7 @@ h2 {
   z-index: 1;
 }
 
+/* ===== Drop-Felder ===== */
 .drop-cell {
   display: flex;
   align-items: center;
@@ -604,19 +667,24 @@ h2 {
   box-shadow: inset 0 0 30px rgba(211, 1, 12, 0.12), 0 0 20px rgba(211, 1, 12, 0.06);
   animation: dragGlow 0.5s ease-in-out;
 }
+
 @keyframes dragGlow {
   0% { box-shadow: inset 0 0 10px rgba(211, 1, 12, 0); }
   100% { box-shadow: inset 0 0 30px rgba(211, 1, 12, 0.12), 0 0 20px rgba(211, 1, 12, 0.06); }
 }
 
+/* Figurenwert (zentriert, standard) */
 .drop-value {
   font-size: clamp(1.2rem, calc(var(--cell-size) * 0.25), 2rem);
   font-weight: 900;
   font-family: var(--headline-font);
   color: rgba(255, 255, 255, 0.85);
   text-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+  transition: all 0.2s;
   pointer-events: none;
 }
+
+/* Wenn Thesen auf dem Feld liegen */
 .drop-cell.has-theses .drop-value {
   position: absolute;
   top: 4px;
@@ -624,6 +692,8 @@ h2 {
   font-size: clamp(0.7rem, calc(var(--cell-size) * 0.14), 1.2rem);
   color: rgba(255, 255, 255, 0.5);
 }
+
+/* Summe der Thesen (rechts unten) – nur sichtbar wenn Thesen vorhanden */
 .drop-total {
   position: absolute;
   bottom: 4px;
@@ -640,6 +710,7 @@ h2 {
   display: block;
 }
 
+/* ===== Wasserzeichen auf Figuren-Feldern ===== */
 .field-watermark {
   position: absolute;
   right: clamp(4px, calc(var(--cell-size) * 0.06), 8px);
@@ -652,12 +723,15 @@ h2 {
   opacity: 0.6;
   pointer-events: none;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  transition: opacity 0.15s;
 }
 .field-watermark.positive { color: rgba(0, 200, 80, 0.5); }
 .field-watermark.negative { color: rgba(211, 1, 12, 0.5); }
 .field-watermark.neutral { color: rgba(255, 255, 255, 0.12); }
 .field-watermark.zero { color: rgba(178, 143, 240, 0.6); }
+.piece-cell:hover .field-watermark { opacity: 1; }
 
+/* ===== Schachfiguren-SVG ===== */
 .piece-svg {
   position: relative;
   z-index: 1;
@@ -669,6 +743,7 @@ h2 {
     drop-shadow(0 0 6px rgba(255, 255, 255, 0.08))
     drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
   opacity: 0.95;
+  transition: transform 0.15s ease;
 }
 .piece-cell:not(.light) .piece-svg {
   filter:
@@ -676,6 +751,8 @@ h2 {
     drop-shadow(0 0 6px rgba(211, 1, 12, 0.15))
     drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
 }
+.piece-cell:hover .piece-svg { transform: scale(1.04); }
+
 .piece-corner {
   position: absolute;
   top: 4px;
@@ -690,6 +767,7 @@ h2 {
   filter: none !important;
 }
 
+/* ===== Spielerfoto auf Figuren-Feld ===== */
 .player-photo {
   position: absolute;
   inset: 5px;
@@ -703,6 +781,8 @@ h2 {
   padding: 3px;
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
 }
+
+/* ×-Button zum Entfernen des Fotos */
 .remove-player-photo {
   position: absolute;
   top: 4px;
@@ -729,6 +809,46 @@ h2 {
 .app-shell.show-remove-buttons .remove-player-photo {
   opacity: 1;
   pointer-events: auto;
+}
+@media (hover: hover) and (pointer: fine) {
+  .piece-cell:hover .remove-player-photo {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* "Foto wählen"-Hinweis */
+.piece-cell::after {
+  content: "Foto wählen";
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 2;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.65);
+  color: var(--white);
+  font-size: 0.5rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  pointer-events: none;
+}
+.piece-cell.has-player-image::after { content: ""; display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .piece-cell:hover::after,
+  .piece-cell.image-drop-over::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+.piece-cell.image-drop-over {
+  outline: 2px solid var(--bundesliga-red);
+  outline-offset: -4px;
+  transform: scale(0.98);
 }
 
 /* ===== Platzierte Thesen-Chips ===== */
@@ -765,12 +885,9 @@ h2 {
   isolation: isolate;
   animation: cardIn 180ms ease-out;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s;
 }
 .placed-chip:hover { transform: scale(1.02); z-index: 3; }
-@keyframes cardIn {
-  from { opacity: 0; transform: translateY(10px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
 
 .chip-field-badge {
   position: absolute;
@@ -794,11 +911,21 @@ h2 {
   opacity: 0.6;
   pointer-events: none;
   color: rgba(10, 10, 10, 0.15);
+  transition: opacity 0.15s;
 }
 .chip-watermark.positive { color: rgba(0, 132, 61, 0.55); }
 .chip-watermark.negative { color: rgba(211, 1, 12, 0.5); }
 .chip-watermark.neutral  { color: rgba(10, 10, 10, 0.15); }
 .chip-watermark.zero     { color: rgba(147, 112, 219, 0.65); }
+.placed-chip:hover .chip-watermark { opacity: 1; }
+
+.fit-text {
+  position: relative;
+  z-index: 1;
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
 
 .drag-ghost {
   position: fixed;
@@ -821,7 +948,7 @@ h2 {
 }
 
 /* ============================================================
-   THESIS PANEL – Retro Karten
+   THESIS PANEL
    ============================================================ */
 .thesis-panel[hidden] { display: none !important; }
 .thesis-panel {
@@ -917,7 +1044,7 @@ h2 {
 .placed-chip:active { cursor: grabbing; }
 
 /* ============================================================
-   SETTINGS DIALOG – Retro
+   SETTINGS DIALOG
    ============================================================ */
 .settings-dialog {
   width: min(920px, calc(100% - 28px));
