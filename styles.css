@@ -1180,10 +1180,10 @@ h2 {
 .results-panel {
   display: grid;
   gap: 14px;
-  padding: 0 0 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
 }
-.results-panel:last-child { border-bottom: none; padding-bottom: 0; }
 .results-panel > div:first-child {
   position: relative;
   padding-bottom: 4px;
@@ -1208,12 +1208,12 @@ h2 {
 .evaluation-card {
   display: grid;
   gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.035);
   padding: 10px;
-  transition: background 0.2s;
+  transition: border-color 0.2s;
 }
-.evaluation-card:hover { background: rgba(255, 255, 255, 0.06); }
+.evaluation-card:hover { border-color: rgba(255, 255, 255, 0.22); }
 .evaluation-card strong { font-size: 0.85rem; }
 .evaluation-card input {
   font-size: 0.8rem;
@@ -1263,8 +1263,8 @@ h2 {
 .result-group {
   display: grid;
   gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.035);
   padding: 10px;
 }
 .result-group h3 { margin: 0; font-size: 0.9rem; }
@@ -1290,8 +1290,8 @@ h2 {
 .randomizer-card {
   display: grid;
   gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.035);
   padding: 12px;
 }
 .randomizer-card div { display: grid; gap: 4px; }
@@ -1317,8 +1317,8 @@ h2 {
 .storage-card {
   display: grid;
   gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.035);
   padding: 12px;
 }
 .storage-card span,
