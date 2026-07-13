@@ -183,7 +183,7 @@ function isEvaluationActive() {
 }
 
 // ============================
-//  Prüft, ob ein Feld bereits belegt ist
+//  NEUE HILFSFUNKTION: Prüft, ob ein Feld bereits belegt ist
 // ============================
 function isFieldOccupied(side, piece, excludeId) {
   return state.assignments.some(a =>
@@ -522,21 +522,10 @@ function createResultSettings() {
   });
 }
 
-// ============================
-//  RENDER TOTALS (angepasst)
-// ============================
 function renderTotals() {
-  const placed = state.assignments.filter(a => a.side && a.piece).length;
-  if (placed === 0) {
-    // Keine These platziert → noch kein Spiel → Strich anzeigen
-    $('#whiteTotal').textContent = '–';
-    $('#blackTotal').textContent = '–';
-  } else {
-    const totals = calculateTotals();
-    $('#whiteTotal').textContent = totals.white;
-    $('#blackTotal').textContent = totals.black;
-  }
-  // Teamnamen immer aktualisieren (auch wenn kein Spiel)
+  const totals = calculateTotals();
+  $('#whiteTotal').textContent = totals.white;
+  $('#blackTotal').textContent = totals.black;
   SIDES.forEach(side => {
     const label = nameInputs[side].value.trim() || getSideLabel(side);
     $(`#${side}Label`).textContent = label;
@@ -603,7 +592,7 @@ function fitAllCardText() {
 }
 
 // ============================
-//  DRAG & DROP (Maus + Touch)
+//  DRAG & DROP (Maus + Touch) – angepasst
 // ============================
 function handleDragStart(e) {
   const id = e.currentTarget.dataset.id;
@@ -632,11 +621,18 @@ function handleDrop(e) {
   const newSide = cell.dataset.side;
   const newPiece = cell.dataset.piece;
 
-  if (oldSide === newSide && oldPiece === newPiece) return;
+  // Nichts tun, wenn die These bereits auf diesem Feld liegt
+  if (oldSide === newSide && oldPiece === newPiece) {
+    return;
+  }
 
-  // Prüfen, ob Zielfeld belegt ist
-  if (isFieldOccupied(newSide, newPiece, id)) return;
+  // Prüfen, ob das Zielfeld bereits von einer anderen These belegt ist
+  if (isFieldOccupied(newSide, newPiece, id)) {
+    // Aktion abbrechen – keine Änderung
+    return;
+  }
 
+  // Neue Zuordnung setzen (alte wird automatisch frei)
   assignment.side = newSide;
   assignment.piece = newPiece;
 
@@ -685,7 +681,9 @@ function handlePointerDragEnd(e) {
     const newSide = target.dataset.side;
     const newPiece = target.dataset.piece;
 
+    // Nichts tun, wenn bereits auf diesem Feld
     if (!(oldSide === newSide && oldPiece === newPiece)) {
+      // Prüfen, ob Zielfeld belegt ist
       if (!isFieldOccupied(newSide, newPiece, pointerDrag.id)) {
         assignment.side = newSide;
         assignment.piece = newPiece;
@@ -693,6 +691,7 @@ function handlePointerDragEnd(e) {
           changed = true;
         }
       }
+      // Falls belegt: keine Änderung (changed bleibt false)
     }
   }
 
