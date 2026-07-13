@@ -1050,58 +1050,56 @@ h2 {
   width: min(920px, calc(100% - 28px));
   max-height: min(700px, calc(100vh - 28px));
   max-height: min(700px, calc(100dvh - 28px));
-  border: 2px solid var(--bundesliga-red);
-  border-radius: 8px;
+  border: none;
+  border-radius: 22px;
   background:
-    radial-gradient(circle at 18% 8%, rgba(211, 1, 12, 0.15), transparent 26%),
-    radial-gradient(circle at 90% 12%, rgba(211, 1, 12, 0.12), transparent 26%),
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    rgba(10, 10, 10, 0.97);
-  background-size: 24px 24px;
+    radial-gradient(circle at 18% 0%, rgba(211, 1, 12, 0.16), transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(211, 1, 12, 0.08), transparent 40%),
+    rgba(14, 14, 14, 0.97);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55);
   padding: 0;
 }
-.settings-dialog::backdrop { background: rgba(0, 0, 0, 0.85); }
+.settings-dialog::backdrop { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); }
 .settings-shell {
   display: grid;
-  gap: 16px;
+  gap: 28px;
   max-height: calc(100vh - 32px);
   max-height: calc(100dvh - 32px);
   overflow: auto;
-  padding: 18px;
+  padding: 26px;
   scrollbar-width: thin;
-  scrollbar-color: var(--bundesliga-red) rgba(255, 255, 255, 0.05);
+  scrollbar-color: rgba(211, 1, 12, 0.5) transparent;
 }
-.settings-shell::-webkit-scrollbar { width: 8px; }
-.settings-shell::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.04); border-radius: 8px; }
-.settings-shell::-webkit-scrollbar-thumb { background: var(--bundesliga-red); border-radius: 8px; }
+.settings-shell::-webkit-scrollbar { width: 6px; }
+.settings-shell::-webkit-scrollbar-track { background: transparent; }
+.settings-shell::-webkit-scrollbar-thumb { background: rgba(211, 1, 12, 0.5); border-radius: 8px; }
 
 .settings-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  padding-bottom: 14px;
-  border-bottom: 2px solid rgba(211, 1, 12, 0.3);
+  padding-bottom: 4px;
 }
 .settings-head h2 { font-size: 1.5rem; }
 
 .settings-shell input {
   min-height: 32px;
-  padding: 0 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.06);
+  padding: 0 4px;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
   color: var(--white);
   font-family: var(--event-font);
   font-size: 0.85rem;
   font-weight: 600;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.2s;
 }
 .settings-shell input:focus {
   outline: none;
-  border-color: var(--bundesliga-red);
-  background: rgba(255, 255, 255, 0.1);
+  border-bottom-color: var(--bundesliga-red);
+  background: transparent;
 }
 
 .match-controls {
@@ -1133,8 +1131,8 @@ h2 {
   flex: 1;
   min-width: 120px;
   min-height: 36px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
+  border: none;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   color: var(--white);
   font-weight: 700;
@@ -1144,19 +1142,17 @@ h2 {
   cursor: pointer;
   transition: background 0.2s;
 }
-.view-controls button:hover { background: rgba(255, 255, 255, 0.18); }
+.view-controls button:hover { background: rgba(255, 255, 255, 0.16); }
 #toggleThesisButton {
   background: var(--bundesliga-red);
-  border-color: var(--bundesliga-red);
 }
 #toggleThesisButton:hover { background: var(--bundesliga-red-dark); }
 #toggleRemoveButtons {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
 }
-#toggleRemoveButtons:hover { background: rgba(255, 255, 255, 0.22); }
+#toggleRemoveButtons:hover { background: rgba(255, 255, 255, 0.2); }
 #toggleRemoveButtons[aria-pressed="true"] {
   background: var(--bundesliga-gold);
-  border-color: var(--bundesliga-gold);
   color: #1a1400;
 }
 #toggleRemoveButtons[aria-pressed="true"]:hover { background: var(--bundesliga-gold); }
@@ -1164,14 +1160,14 @@ h2 {
 .close-button {
   display: grid;
   place-items: center;
-  width: 38px;
-  min-height: 38px;
-  border: 1px solid rgba(255, 255, 255, 0.26);
-  border-radius: 6px;
-  background: var(--bundesliga-black);
+  width: 34px;
+  min-height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
   color: var(--white);
   padding: 0;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
@@ -1183,26 +1179,23 @@ h2 {
 
 .results-panel {
   display: grid;
-  gap: 12px;
-  padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  background:
-    linear-gradient(160deg, rgba(211, 1, 12, 0.06), transparent 45%),
-    rgba(255, 255, 255, 0.03);
+  gap: 14px;
+  padding: 0 0 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
+.results-panel:last-child { border-bottom: none; padding-bottom: 0; }
 .results-panel > div:first-child {
   position: relative;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 4px;
 }
 .results-panel > div:first-child::after {
   content: "";
   position: absolute;
   left: 0;
   bottom: -1px;
-  width: 34px;
+  width: 28px;
   height: 2px;
+  border-radius: 2px;
   background: var(--bundesliga-red);
 }
 .results-panel h2 { font-size: 1.1rem; }
@@ -1214,12 +1207,13 @@ h2 {
 }
 .evaluation-card {
   display: grid;
-  gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 8px;
+  gap: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 10px;
+  transition: background 0.2s;
 }
+.evaluation-card:hover { background: rgba(255, 255, 255, 0.06); }
 .evaluation-card strong { font-size: 0.85rem; }
 .evaluation-card input {
   font-size: 0.8rem;
@@ -1235,9 +1229,9 @@ h2 {
 .evaluation-controls button {
   flex: 1;
   min-height: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
   color: var(--muted);
   font-weight: 700;
   cursor: pointer;
@@ -1245,21 +1239,18 @@ h2 {
   padding: 0 6px;
   font-size: 0.75rem;
 }
-.evaluation-controls button:hover { background: rgba(255, 255, 255, 0.15); }
+.evaluation-controls button:hover { background: rgba(255, 255, 255, 0.14); }
 .evaluation-controls .neutral-button.active {
   background: var(--bundesliga-gold);
   color: var(--bundesliga-black);
-  border-color: var(--bundesliga-gold);
 }
 .evaluation-controls .polarity-button.active[data-polarity="positive"] {
   background: var(--green);
   color: white;
-  border-color: var(--green);
 }
 .evaluation-controls .polarity-button.active[data-polarity="negative"] {
   background: var(--bundesliga-red);
   color: white;
-  border-color: var(--bundesliga-red);
 }
 .evaluation-controls .polarity-button:not(.active) { opacity: 0.6; }
 .evaluation-controls .neutral-button:not(.active) { opacity: 0.6; }
@@ -1271,11 +1262,10 @@ h2 {
 }
 .result-group {
   display: grid;
-  gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 8px;
+  gap: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 10px;
 }
 .result-group h3 { margin: 0; font-size: 0.9rem; }
 .result-row {
@@ -1299,11 +1289,10 @@ h2 {
 }
 .randomizer-card {
   display: grid;
-  gap: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 10px;
+  gap: 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 12px;
 }
 .randomizer-card div { display: grid; gap: 4px; }
 .randomizer-card span {
@@ -1313,23 +1302,24 @@ h2 {
 }
 .randomizer-card button {
   min-height: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 6px;
+  border: none;
+  border-radius: 999px;
   background: var(--bundesliga-red);
   color: var(--white);
   cursor: pointer;
   font-weight: 800;
   font-size: 0.8rem;
+  transition: background 0.2s;
 }
+.randomizer-card button:hover { background: var(--bundesliga-red-dark); }
 
 .import-export-grid { display: grid; gap: 10px; }
 .storage-card {
   display: grid;
-  gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 10px;
+  gap: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 12px;
 }
 .storage-card span,
 .storage-status {
@@ -1340,22 +1330,25 @@ h2 {
 .import-export-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
+  gap: 8px;
 }
 .import-export-actions button {
-  min-height: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 6px;
+  min-height: 32px;
+  border: none;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.1);
   color: var(--white);
   cursor: pointer;
   font-size: 0.7rem;
   font-weight: 800;
+  transition: background 0.2s;
 }
+.import-export-actions button:hover { background: rgba(255, 255, 255, 0.18); }
 .import-export-actions button:first-child {
   background: var(--bundesliga-red);
   color: var(--white);
 }
+.import-export-actions button:first-child:hover { background: var(--bundesliga-red-dark); }
 .storage-status {
   min-height: 1.2em;
   margin: 0;
