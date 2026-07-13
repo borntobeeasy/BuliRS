@@ -183,16 +183,14 @@ function isEvaluationActive() {
 }
 
 // ============================
-//  NEU: Entfernt alte Zuordnung auf einem Feld
+//  NEUE HILFSFUNKTION: Prüft, ob ein Feld bereits belegt ist
 // ============================
-function clearExistingAssignment(side, piece, excludeId) {
-  state.assignments.forEach(a => {
-    if (a.id === excludeId) return;
-    if (a.side === side && a.piece === piece) {
-      a.side = null;
-      a.piece = null;
-    }
-  });
+function isFieldOccupied(side, piece, excludeId) {
+  return state.assignments.some(a =>
+    a.id !== excludeId &&
+    a.side === side &&
+    a.piece === piece
+  );
 }
 
 // ============================
@@ -628,10 +626,13 @@ function handleDrop(e) {
     return;
   }
 
-  // Vorhandene Zuordnung auf dem Zielfeld entfernen (außer der aktuellen)
-  clearExistingAssignment(newSide, newPiece, id);
+  // Prüfen, ob das Zielfeld bereits von einer anderen These belegt ist
+  if (isFieldOccupied(newSide, newPiece, id)) {
+    // Aktion abbrechen – keine Änderung
+    return;
+  }
 
-  // Neue Zuordnung setzen
+  // Neue Zuordnung setzen (alte wird automatisch frei)
   assignment.side = newSide;
   assignment.piece = newPiece;
 
@@ -680,13 +681,17 @@ function handlePointerDragEnd(e) {
     const newSide = target.dataset.side;
     const newPiece = target.dataset.piece;
 
+    // Nichts tun, wenn bereits auf diesem Feld
     if (!(oldSide === newSide && oldPiece === newPiece)) {
-      clearExistingAssignment(newSide, newPiece, pointerDrag.id);
-      assignment.side = newSide;
-      assignment.piece = newPiece;
-      if (oldSide !== assignment.side || oldPiece !== assignment.piece) {
-        changed = true;
+      // Prüfen, ob Zielfeld belegt ist
+      if (!isFieldOccupied(newSide, newPiece, pointerDrag.id)) {
+        assignment.side = newSide;
+        assignment.piece = newPiece;
+        if (oldSide !== assignment.side || oldPiece !== assignment.piece) {
+          changed = true;
+        }
       }
+      // Falls belegt: keine Änderung (changed bleibt false)
     }
   }
 
