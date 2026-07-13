@@ -49,9 +49,8 @@ const undoStack = [];
 const MAX_UNDO = 20;
 let isUndoing = false;
 
-function pushUndo() {
-  if (isUndoing) return;
-  const snapshot = {
+function snapshotState() {
+  return {
     theses: [...state.theses],
     assignments: state.assignments.map(a => ({ ...a })),
     results: cloneData(state.results),
@@ -63,7 +62,11 @@ function pushUndo() {
       black: nameInputs.black.value,
     }
   };
-  undoStack.push(snapshot);
+}
+
+function pushUndo(snapshot) {
+  if (isUndoing) return;
+  undoStack.push(snapshot || snapshotState());
   if (undoStack.length > MAX_UNDO) undoStack.shift();
   updateUndoButtonState();
 }
@@ -200,10 +203,11 @@ function renderTeamLogos() {
 function handleLogoUpload(team, file) {
   if (!file) return;
   const process = (dataUrl) => {
+    const before = snapshotState();
     teamLogos[team] = dataUrl;
     renderTeamLogos();
     renderTotals();
-    pushUndo();
+    pushUndo(before);
   };
   if (file.size > 500 * 1024) {
     compressImage(file, process);
@@ -215,10 +219,11 @@ function handleLogoUpload(team, file) {
 }
 
 function removeTeamLogo(team) {
+  const before = snapshotState();
   teamLogos[team] = null;
   renderTeamLogos();
   renderTotals();
-  pushUndo();
+  pushUndo(before);
 }
 
 // ============================
@@ -254,10 +259,11 @@ function compressImage(file, callback) {
 function handleFigureImageUpload(file, cell) {
   if (!file) return;
   const process = (dataUrl) => {
+    const before = snapshotState();
     state.figureImages[cell.dataset.figureSlot] = dataUrl;
     const piece = getPieceById(cell.dataset.figureSlot.split('-')[1]);
     renderFigureCell(cell, piece);
-    pushUndo();
+    pushUndo(before);
   };
   if (file.size > 500 * 1024) {
     compressImage(file, process);
@@ -347,9 +353,10 @@ function renderFigureCell(cell, piece) {
     });
     cell.querySelector('.remove-player-photo').addEventListener('click', (e) => {
       e.stopPropagation();
+      const before = snapshotState();
       delete state.figureImages[slot];
       renderFigureCell(cell, piece);
-      pushUndo();
+      pushUndo(before);
     });
   } else {
     if (image) delete state.figureImages[slot];
@@ -593,12 +600,13 @@ function handleDrop(e) {
   const cell = e.currentTarget;
   cell.classList.remove('drag-over');
   if (!assignment) return;
+  const before = snapshotState();
   const oldSide = assignment.side;
   const oldPiece = assignment.piece;
   assignment.side = cell.dataset.side;
   assignment.piece = cell.dataset.piece;
   render();
-  if (oldSide !== assignment.side || oldPiece !== assignment.piece) pushUndo();
+  if (oldSide !== assignment.side || oldPiece !== assignment.piece) pushUndo(before);
 }
 
 function handlePointerDragStart(e) {
@@ -631,6 +639,7 @@ function handlePointerDragEnd(e) {
   const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.drop-cell');
   const assignment = state.assignments.find(a => a.id === pointerDrag.id);
   let changed = false;
+  const before = snapshotState();
   if (target && assignment) {
     const oldSide = assignment.side;
     const oldPiece = assignment.piece;
@@ -643,7 +652,7 @@ function handlePointerDragEnd(e) {
   window.removeEventListener('pointermove', handlePointerDragMove);
   document.querySelectorAll('.drop-cell.drag-over').forEach(c => c.classList.remove('drag-over'));
   render();
-  if (changed) pushUndo();
+  if (changed) pushUndo(before);
 }
 
 function movePointerGhost(x, y) {
@@ -673,10 +682,11 @@ function handleFigureDrop(e) {
   }
   const url = getDroppedImageUrl(e.dataTransfer);
   if (url) {
+    const before = snapshotState();
     state.figureImages[cell.dataset.figureSlot] = url;
     const piece = getPieceById(cell.dataset.figureSlot.split('-')[1]);
     renderFigureCell(cell, piece);
-    pushUndo();
+    pushUndo(before);
   }
 }
 
@@ -712,10 +722,11 @@ document.querySelectorAll('.team-logo-wrapper').forEach(wrapper => {
     } else {
       const url = getDroppedImageUrl(e.dataTransfer);
       if (url) {
+        const before = snapshotState();
         teamLogos[team] = url;
         renderTeamLogos();
         renderTotals();
-        pushUndo();
+        pushUndo(before);
       }
     }
   });
@@ -890,22 +901,24 @@ evaluationList.addEventListener('click', (e) => {
   if (!btn) return;
   const a = state.assignments.find(item => item.id === Number(btn.dataset.id));
   if (!a) return;
+  const before = snapshotState();
   const oldPolarity = a.polarity;
   a.polarity = btn.dataset.polarity || null;
   render();
-  if (oldPolarity !== a.polarity) pushUndo();
+  if (oldPolarity !== a.polarity) pushUndo(before);
 });
 
 evaluationList.addEventListener('input', (e) => {
   const inp = e.target;
   if (!inp.matches('[data-field="thesis-text"]')) return;
   const idx = Number(inp.dataset.id) - 1;
+  const before = snapshotState();
   const oldText = state.theses[idx];
   state.theses[idx] = inp.value;
   createThesisList();
   renderPlacements();
   fitAllCardText();
-  if (oldText !== state.theses[idx]) pushUndo();
+  if (oldText !== state.theses[idx]) pushUndo(before);
 });
 
 resultsGrid.addEventListener('input', (e) => {
@@ -913,18 +926,28 @@ resultsGrid.addEventListener('input', (e) => {
   if (!inp.matches('[data-side][data-piece]')) return;
   const { side, piece } = inp.dataset;
   if (!SIDES.includes(side) || !PIECE_IDS.includes(piece)) return;
+  const before = snapshotState();
   const oldVal = state.results[side][piece];
   state.results[side][piece] = Number(inp.value) || 0;
   createBoard();
   renderPlacements();
   renderTotals();
   fitAllCardText();
-  if (oldVal !== state.results[side][piece]) pushUndo();
+  if (oldVal !== state.results[side][piece]) pushUndo(before);
 });
 
-Object.values(nameInputs).forEach(inp => inp.addEventListener('input', () => {
+Object.values(nameInputs).forEach(inp => inp.addEventListener('focus', (e) => {
+  e.target.dataset.prevValue = e.target.value;
+}));
+Object.values(nameInputs).forEach(inp => inp.addEventListener('input', (e) => {
+  const before = snapshotState();
+  before.teamNames = {
+    white: e.target === nameInputs.white ? (e.target.dataset.prevValue ?? nameInputs.white.value) : nameInputs.white.value,
+    black: e.target === nameInputs.black ? (e.target.dataset.prevValue ?? nameInputs.black.value) : nameInputs.black.value,
+  };
   renderTotals();
-  pushUndo();
+  pushUndo(before);
+  e.target.dataset.prevValue = e.target.value;
 }));
 
 window.addEventListener('resize', fitAllCardText);
@@ -940,10 +963,11 @@ importFileInput.addEventListener('change', () => {
 });
 
 randomQuestionBtn.addEventListener('click', () => {
+  const before = snapshotState();
   const oldVal = state.questionValue;
   state.questionValue = QUESTION_VALUES[Math.floor(Math.random() * QUESTION_VALUES.length)];
   render();
-  if (oldVal !== state.questionValue) pushUndo();
+  if (oldVal !== state.questionValue) pushUndo(before);
 });
 
 // ============================
@@ -951,4 +975,3 @@ randomQuestionBtn.addEventListener('click', () => {
 // ============================
 render();
 createResultSettings();
-pushUndo();
