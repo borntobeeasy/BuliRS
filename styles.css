@@ -1048,6 +1048,7 @@ h2 {
    ============================================================ */
 .settings-dialog {
   width: min(920px, calc(100% - 28px));
+  max-width: calc(100% - 28px);
   max-height: min(700px, calc(100vh - 28px));
   max-height: min(700px, calc(100dvh - 28px));
   border: none;
@@ -1058,6 +1059,7 @@ h2 {
     rgba(14, 14, 14, 0.97);
   box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55);
   padding: 0;
+  overflow: hidden;
 }
 .settings-dialog::backdrop { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); }
 .settings-shell {
@@ -1065,7 +1067,8 @@ h2 {
   gap: 28px;
   max-height: calc(100vh - 32px);
   max-height: calc(100dvh - 32px);
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 26px;
   scrollbar-width: thin;
   scrollbar-color: rgba(211, 1, 12, 0.5) transparent;
@@ -1085,6 +1088,9 @@ h2 {
 
 .settings-shell input {
   min-height: 32px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
   padding: 0 4px;
   border-radius: 0;
   border: none;
@@ -1106,10 +1112,12 @@ h2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  min-width: 0;
 }
 .match-controls label {
   display: grid;
   gap: 6px;
+  min-width: 0;
   font-size: 0.65rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -1118,6 +1126,8 @@ h2 {
 }
 .match-controls input {
   min-height: 36px;
+  min-width: 0;
+  width: 100%;
   font-size: 0.95rem;
   font-weight: 700;
 }
