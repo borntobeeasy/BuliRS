@@ -311,7 +311,7 @@ h2 {
 }
 .team-logo-wrapper.has-logo {
   border-color: transparent;
-  background: transparent;
+  background: #ffffff;
 }
 .team-logo-wrapper.drag-over {
   border-color: var(--bundesliga-red);
@@ -351,10 +351,11 @@ h2 {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  padding: 12%;
+  box-sizing: border-box;
 }
 .team-logo-wrapper .team-logo:not([src]),
 .team-logo-wrapper .team-logo[src=""],
