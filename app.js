@@ -183,6 +183,19 @@ function isEvaluationActive() {
 }
 
 // ============================
+//  NEU: Entfernt alte Zuordnung auf einem Feld
+// ============================
+function clearExistingAssignment(side, piece, excludeId) {
+  state.assignments.forEach(a => {
+    if (a.id === excludeId) return;
+    if (a.side === side && a.piece === piece) {
+      a.side = null;
+      a.piece = null;
+    }
+  });
+}
+
+// ============================
 //  LOGO-VERWALTUNG
 // ============================
 function renderTeamLogos() {
@@ -399,7 +412,6 @@ function createBoard() {
         cell.dataset.side = row;
         cell.dataset.piece = piece.id;
 
-        // Thesen-Summe auf diesem Feld berechnen
         let thesisTotal = 0;
         state.assignments.forEach(a => {
           if (a.side === row && a.piece === piece.id) {
@@ -407,7 +419,6 @@ function createBoard() {
           }
         });
 
-        // Figurenwert (fest) – je nach Springer-Sonderfall
         let figureValue = (piece.id === 'knight' && state.questionValue !== null)
           ? formatNumber(state.questionValue)
           : piece.value;
@@ -583,7 +594,7 @@ function fitAllCardText() {
 }
 
 // ============================
-//  DRAG & DROP (Maus + Touch)
+//  DRAG & DROP (Maus + Touch) – angepasst
 // ============================
 function handleDragStart(e) {
   const id = e.currentTarget.dataset.id;
@@ -605,13 +616,29 @@ function handleDrop(e) {
   const cell = e.currentTarget;
   cell.classList.remove('drag-over');
   if (!assignment) return;
+
   const before = snapshotState();
   const oldSide = assignment.side;
   const oldPiece = assignment.piece;
-  assignment.side = cell.dataset.side;
-  assignment.piece = cell.dataset.piece;
+  const newSide = cell.dataset.side;
+  const newPiece = cell.dataset.piece;
+
+  // Nichts tun, wenn die These bereits auf diesem Feld liegt
+  if (oldSide === newSide && oldPiece === newPiece) {
+    return;
+  }
+
+  // Vorhandene Zuordnung auf dem Zielfeld entfernen (außer der aktuellen)
+  clearExistingAssignment(newSide, newPiece, id);
+
+  // Neue Zuordnung setzen
+  assignment.side = newSide;
+  assignment.piece = newPiece;
+
   render();
-  if (oldSide !== assignment.side || oldPiece !== assignment.piece) pushUndo(before);
+  if (oldSide !== assignment.side || oldPiece !== assignment.piece) {
+    pushUndo(before);
+  }
 }
 
 function handlePointerDragStart(e) {
@@ -641,21 +668,33 @@ function handlePointerDragMove(e) {
 
 function handlePointerDragEnd(e) {
   if (!pointerDrag) return;
+
   const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.drop-cell');
   const assignment = state.assignments.find(a => a.id === pointerDrag.id);
   let changed = false;
   const before = snapshotState();
+
   if (target && assignment) {
     const oldSide = assignment.side;
     const oldPiece = assignment.piece;
-    assignment.side = target.dataset.side;
-    assignment.piece = target.dataset.piece;
-    if (oldSide !== assignment.side || oldPiece !== assignment.piece) changed = true;
+    const newSide = target.dataset.side;
+    const newPiece = target.dataset.piece;
+
+    if (!(oldSide === newSide && oldPiece === newPiece)) {
+      clearExistingAssignment(newSide, newPiece, pointerDrag.id);
+      assignment.side = newSide;
+      assignment.piece = newPiece;
+      if (oldSide !== assignment.side || oldPiece !== assignment.piece) {
+        changed = true;
+      }
+    }
   }
+
   pointerDrag.ghost.remove();
   pointerDrag = null;
   window.removeEventListener('pointermove', handlePointerDragMove);
   document.querySelectorAll('.drop-cell.drag-over').forEach(c => c.classList.remove('drag-over'));
+
   render();
   if (changed) pushUndo(before);
 }
