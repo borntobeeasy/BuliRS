@@ -30,7 +30,7 @@ const initialBonuses = {
 };
 
 const state = {
-  theses: Array.from({ length: 12 }, (_, i) => `These ${i + 1}`),
+  theses: Array.from({ length: 12 }, () => ''),
   assignments: Array.from({ length: 12 }, (_, i) => ({
     id: i + 1,
     side: null,
@@ -42,6 +42,11 @@ const state = {
   figureImages: {},
   questionValue: null,
 };
+
+function getThesisLabel(idx) {
+  const text = state.theses[idx];
+  return text && text.trim() !== '' ? text : `These ${idx + 1}`;
+}
 
 const teamLogos = { white: null, black: null };
 
@@ -445,9 +450,9 @@ function renderPlacements() {
     chip.innerHTML = `
       <span class="chip-field-badge">${escapeHtml(fieldLabel)}</span>
       <strong class="chip-watermark ${getScoreTone(score, Boolean(a.polarity))}">${formatNumber(score)}</strong>
-      <span class="fit-text">${escapeHtml(state.theses[a.id - 1])}</span>
+      <span class="fit-text">${escapeHtml(getThesisLabel(a.id - 1))}</span>
     `;
-    chip.title = `${state.theses[a.id - 1]} — Feld ${fieldLabel} — ${formatNumber(score)} Punkte`;
+    chip.title = `${getThesisLabel(a.id - 1)} — Feld ${fieldLabel} — ${formatNumber(score)} Punkte`;
     chip.addEventListener('dragstart', handleDragStart);
     chip.addEventListener('pointerdown', handlePointerDragStart);
     slot.appendChild(chip);
@@ -462,7 +467,7 @@ function createThesisList() {
     card.className = 'thesis-card';
     card.draggable = true;
     card.dataset.id = a.id;
-    card.innerHTML = `<div class="thesis-title fit-text">${escapeHtml(state.theses[a.id - 1])}</div>`;
+    card.innerHTML = `<div class="thesis-title fit-text">${escapeHtml(getThesisLabel(a.id - 1))}</div>`;
     card.addEventListener('dragstart', handleDragStart);
     card.addEventListener('pointerdown', handlePointerDragStart);
     thesisList.appendChild(card);
@@ -479,7 +484,7 @@ function createEvaluationList() {
     const negativeActive = a.polarity === 'negative' ? 'active' : '';
     card.innerHTML = `
       <strong>These ${a.id}</strong>
-      <input aria-label="These ${a.id} Titel" data-id="${a.id}" data-field="thesis-text" value="${escapeHtml(state.theses[a.id - 1])}" />
+      <input aria-label="These ${a.id} Titel" data-id="${a.id}" data-field="thesis-text" placeholder="These ${a.id}" value="${escapeHtml(state.theses[a.id - 1])}" />
       <div class="evaluation-controls" aria-label="These ${a.id} auswerten">
         <button class="neutral-button ${neutralActive}" data-id="${a.id}" data-polarity="" type="button">unausgewertet</button>
         <button class="polarity-button ${positiveActive}" data-id="${a.id}" data-polarity="positive" type="button">+</button>
@@ -566,7 +571,7 @@ function fitAllCardText() {
       const container = el.closest('.thesis-card, .placed-chip');
       if (!container) return;
       let size = el.closest('.placed-chip') ? 11 : 16;
-      const minSize = el.closest('.placed-chip') ? 6 : 8;
+      const minSize = el.closest('.placed-chip') ? 6 : 10;
       el.style.fontSize = size + 'px';
       while (size > minSize &&
         (el.scrollHeight > container.clientHeight - 4 || el.scrollWidth > el.clientWidth)) {
@@ -619,7 +624,7 @@ function handlePointerDragStart(e) {
     ghost: document.createElement('div'),
   };
   pointerDrag.ghost.className = 'drag-ghost';
-  pointerDrag.ghost.textContent = state.theses[id - 1];
+  pointerDrag.ghost.textContent = getThesisLabel(id - 1);
   document.body.appendChild(pointerDrag.ghost);
   movePointerGhost(e.clientX, e.clientY);
   window.addEventListener('pointermove', handlePointerDragMove);

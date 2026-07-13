@@ -1005,7 +1005,7 @@ h2 {
   color: var(--white);
   padding: 14px 8px 6px;
   cursor: grab;
-  font-weight: 800;
+  font-weight: 400;
   font-size: 0.8rem;
   user-select: none;
   touch-action: none;
@@ -1019,10 +1019,12 @@ h2 {
   left: 8px;
   font-family: var(--headline-font);
   font-size: 0.55rem;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0.04em;
   color: var(--bundesliga-gold);
   opacity: 0.9;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 .thesis-card:hover {
   border-color: var(--bundesliga-red);
@@ -1037,9 +1039,12 @@ h2 {
   width: 100%;
   text-align: center;
   font-size: 0.85rem;
-  line-height: 1.2;
-  font-family: var(--headline-font);
-  letter-spacing: 0.01em;
+  line-height: 1.25;
+  font-family: var(--event-font);
+  font-weight: 700;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 .thesis-card:active,
 .placed-chip:active { cursor: grabbing; }
