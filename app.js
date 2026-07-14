@@ -527,7 +527,9 @@ function renderTotals() {
   $('#whiteTotal').textContent = totals.white;
   $('#blackTotal').textContent = totals.black;
   SIDES.forEach(side => {
-    const label = nameInputs[side].value.trim() || getSideLabel(side);
+    const input = nameInputs[side];
+    const fallback = side === 'white' ? 'Spieler A' : 'Spieler B';
+    const label = input && input.value.trim() !== '' ? input.value.trim() : fallback;
     $(`#${side}Label`).textContent = label;
   });
 }
@@ -875,8 +877,8 @@ function importAllData(file) {
         });
       }
       if (data.names) {
-        if (data.names.white) nameInputs.white.value = data.names.white;
-        if (data.names.black) nameInputs.black.value = data.names.black;
+        if (data.names.white !== undefined) nameInputs.white.value = data.names.white;
+        if (data.names.black !== undefined) nameInputs.black.value = data.names.black;
       }
       if (data.results) {
         const next = cloneData(initialBonuses);
