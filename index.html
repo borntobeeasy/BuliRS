@@ -13,16 +13,12 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Sora:wght@400;700;800&family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260715" />
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=20260716" />
   </head>
   <body>
-    <!-- TRIKOT-HINTERGRUND -->
-    <div class="bg-trikots" id="bgTrikots"></div>
-    <div class="bg-overlay"></div>
-    <!-- RETRO-TV / VIDEOTEXT SCANLINES -->
-    <div class="crt-scanlines" aria-hidden="true"></div>
-    <div class="crt-flicker" aria-hidden="true"></div>
+    <!-- WANDERNDER GRAFIK-HINTERGRUND (data/grafiken/1.png – 30.png) -->
+    <canvas id="bgCanvas"></canvas>
 
     <main class="app-shell">
       <section class="board-panel" aria-label="Rasenschach Spielfeld">
@@ -208,6 +204,129 @@
       </div>
     </dialog>
 
+    <script>
+      // ============================
+      //  HINTERGRUND – 4 Reihen, lückenlos, modulo-basiert
+      //  Bilder: data/grafiken/1.png … 30.png
+      // ============================
+      function initBackground() {
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const BG_IMAGE_COUNT = 30;
+        const BG_IMAGE_PATH = 'data/grafiken/';
+        const loadPromises = [];
+
+        for (let i = 1; i <= BG_IMAGE_COUNT; i++) {
+          const img = new Image();
+          img.src = `${BG_IMAGE_PATH}${i}.png`;
+          const promise = new Promise((resolve) => {
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+          });
+          loadPromises.push(promise);
+        }
+
+        Promise.all(loadPromises).then(results => {
+          const loaded = results.filter(img => img !== null);
+          if (loaded.length === 0) {
+            console.warn('Keine Hintergrundbilder gefunden (data/grafiken/1.png … 30.png).');
+            return;
+          }
+
+          const maxWidth = 120;
+          const gap = 12;
+          const speedBase = 0.3;
+          const speedVariance = 0.15;
+
+          const images = loaded.map(img => {
+            const scale = Math.min(1, maxWidth / img.width);
+            const w = img.width * scale;
+            const h = img.height * scale;
+            return { img, w, h };
+          });
+
+          const rows = 4;
+          const imagesPerRow = Math.ceil(images.length / rows);
+          let imgIndex = 0;
+          const rowData = [];
+
+          for (let r = 0; r < rows; r++) {
+            const rowImages = [];
+            for (let c = 0; c < imagesPerRow; c++) {
+              if (imgIndex >= images.length) break;
+              rowImages.push(images[imgIndex++]);
+            }
+            if (rowImages.length === 0) continue;
+
+            const baseImages = rowImages;
+            let totalWidth = 0;
+            baseImages.forEach((img, i) => {
+              totalWidth += img.w;
+              if (i < baseImages.length - 1) totalWidth += gap;
+            });
+
+            const direction = (r % 2 === 0) ? 1 : -1;
+            const speed = direction * (speedBase + (Math.random() - 0.5) * speedVariance);
+
+            const positions = [];
+            let x = 0;
+            for (let i = 0; i < baseImages.length; i++) {
+              positions.push(x);
+              x += baseImages[i].w + gap;
+            }
+
+            const y = (r / (rows - 1)) * (canvas.height - baseImages[0].h);
+            rowData.push({
+              images: baseImages,
+              y: Math.min(y, canvas.height - baseImages[0].h),
+              speed: speed,
+              positions: positions,
+              totalWidth: totalWidth,
+              offset: 0,
+            });
+          }
+
+          function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (const row of rowData) {
+              row.offset += row.speed;
+              row.offset = ((row.offset % row.totalWidth) + row.totalWidth) % row.totalWidth;
+
+              const { images, y, positions, totalWidth, offset } = row;
+              for (let i = 0; i < images.length; i++) {
+                const img = images[i];
+                const baseX = positions[i];
+                for (let copy = -1; copy <= 1; copy++) {
+                  let x = baseX + offset + copy * totalWidth;
+                  if (x + img.w > -50 && x < canvas.width + 50) {
+                    ctx.save();
+                    ctx.globalAlpha = 0.6;
+                    ctx.drawImage(img.img, x, y, img.w, img.h);
+                    ctx.restore();
+                  }
+                }
+              }
+            }
+            requestAnimationFrame(animate);
+          }
+          animate();
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initBackground);
+      } else {
+        initBackground();
+      }
+    </script>
     <script src="app.js"></script>
   </body>
 </html>

@@ -1,34 +1,39 @@
 :root {
   color-scheme: dark;
-  /* ---- Videotext / Teletext 90er-Jahre Palette ---- */
-  --vt-black: #000000;
-  --vt-cyan: #00ffe6;
-  --vt-yellow: #fff200;
-  --vt-green: #16ff2b;
-  --vt-magenta: #ff2fd6;
-  --vt-red: #ff2b2b;
-  --vt-blue: #3d5bff;
-  --vt-white: #f2f2f2;
+  /* ---- Retro 90er Bundesliga Style (Referenz: RS-Tabelle) ---- */
+  --night: #0a0a0a;
+  --night-2: #161616;
+  --bundesliga-red: #e2001a;
+  --bundesliga-red-dark: #9e0008;
+  --bundesliga-gold: #ffcc00;
+  --zone-cl: #1e5fae;
+  --zone-el: #f7941d;
+  --zone-elq: #6ec6ff;
+  --zone-conf: #00913f;
+  --zone-playoff: #ffcc00;
+  --blue: #0047ab;
+  --surface: rgba(255, 255, 255, 0.8);
+  --bundesliga-white: #ffffff;
+  --bundesliga-black: #000000;
 
-  --bundesliga-red: var(--vt-red);
-  --bundesliga-red-dark: #a30000;
-  --bundesliga-gold: var(--vt-yellow);
-  --bundesliga-white: var(--vt-white);
-  --bundesliga-black: var(--vt-black);
-
-  --paper: #000000;
-  --ink: var(--vt-white);
-  --muted: #5fe0d0;
-  --line: rgba(0, 255, 230, 0.35);
-  --grid: rgba(0, 255, 230, 0.08);
+  --paper: #0a0a0a;
+  --ink: #111111;
+  --steel: #555555;
+  --muted: #cccccc;
+  --line: #000000;
+  --grid: rgba(0, 0, 0, 0.12);
   --accent: var(--bundesliga-red);
   --yellow: var(--bundesliga-gold);
-  --green: var(--vt-green);
-  --zero: var(--vt-magenta);
+  --green: #00913f;
+  --zero: #6a4fb8;
   --cell-size: clamp(64px, min(7.5vw, 16vh), 120px);
-  --shadow: 0 0 0 rgba(0, 0, 0, 0);
-  --event-font: "VT323", "Courier New", monospace;
-  --headline-font: "Press Start 2P", "VT323", "Courier New", monospace;
+  --hard-shadow: 4px 4px 0 #000;
+  --hard-shadow-sm: 2px 2px 0 #000;
+  --shadow: var(--hard-shadow);
+  --event-font: "Sora", "Segoe UI", Arial, sans-serif;
+  --headline-font: "Anton", "Arial Narrow", Impact, sans-serif;
+  --mono-font: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  --led-font: "VT323", "Courier New", monospace;
 }
 
 * {
@@ -36,68 +41,9 @@
 }
 
 /* ============================================================
-   TRIKOT-HINTERGRUND – BILDSCHIRMSCHONER
+   HINTERGRUND – siehe #bgCanvas Regel weiter unten
+   (wandernde Grafiken aus data/grafiken/1.png … 30.png)
    ============================================================ */
-.bg-trikots {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  overflow: hidden;
-  opacity: 0.5;
-  pointer-events: none;
-  background-color: #0a0a0a;
-  display: flex;
-  flex-direction: column;
-}
-.bg-trikots-inner {
-  display: flex;
-  flex-wrap: nowrap;
-  height: 25%; /* 4 Reihen */
-  width: 100%;
-  will-change: transform;
-  flex-shrink: 0;
-}
-.bg-trikots-inner .trikot-item {
-  flex: 0 0 auto;
-  width: 200px;
-  height: 100%;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  margin: 0;
-  border: none;
-  border-radius: 0;
-  filter: saturate(0.9) contrast(0.95);
-}
-
-/* Animationen – für 3 Sätze (33.33% Verschiebung) */
-@keyframes scrollRight {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-33.33%); }
-}
-@keyframes scrollLeft {
-  0%   { transform: translateX(-33.33%); }
-  100% { transform: translateX(0); }
-}
-
-.row-0 { animation: scrollRight 40s linear infinite; }
-.row-1 { animation: scrollLeft  40s linear infinite; }
-.row-2 { animation: scrollRight 40s linear infinite; }
-.row-3 { animation: scrollLeft  40s linear infinite; }
-
-.bg-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  background: rgba(0, 0, 0, 0.3);
-  pointer-events: none;
-}
 
 body {
   margin: 0;
@@ -1535,57 +1481,39 @@ h2 {
   .randomizer-card span { font-size: 0.7rem; }
   .view-controls button { font-size: 0.6rem; min-height: 28px; }
 }
+
 /* ============================================================
    ============================================================
-   RETRO-TV / VIDEOTEXT LOOK (ARD/ZDF-Teletext, 1990er)
-   Flache Blockfarben, Monospace-Pixel-Font, harte Kanten,
-   Scanlines & CRT-Flicker. Alles unten überschreibt bewusst
-   die Verläufe/Rundungen/Blur der Grundstile weiter oben.
+   RETRO 90ER BUNDESLIGA STYLE
+   Orientiert an der Sticker-/Sportschau-Ästhetik: dicke schwarze
+   Konturen, harte Offset-Schatten (kein Blur), Anton kursiv als
+   Headline, VT323 als LED-Ziffernfont, JetBrains Mono für Meta-
+   Text, plus wandernder Grafik-Hintergrund (data/grafiken/1-30.png).
    ============================================================
    ============================================================ */
 
-html, body {
-  background: #000 !important;
-}
+html, body { background: var(--night) !important; }
 
 body {
-  font-size: 1.05rem;
-  letter-spacing: 0.01em;
+  font-family: var(--event-font);
 }
 
-/* ---------- CRT Scanlines & Flicker ---------- */
-.crt-scanlines {
+::selection { background: var(--bundesliga-red); color: #fff; }
+
+/* ---------- Wandernder Canvas-Hintergrund ---------- */
+#bgCanvas {
   position: fixed;
-  inset: 0;
-  z-index: 40;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 0px,
-    rgba(0, 0, 0, 0) 2px,
-    rgba(0, 0, 0, 0.28) 3px,
-    rgba(0, 0, 0, 0) 4px
-  );
-  mix-blend-mode: multiply;
-  opacity: 0.55;
 }
-.crt-flicker {
-  position: fixed;
-  inset: 0;
-  z-index: 41;
-  pointer-events: none;
-  background: rgba(255, 255, 255, 0.015);
-  animation: crtFlicker 6s steps(2) infinite;
-}
-@keyframes crtFlicker {
-  0%, 92%, 100% { opacity: 1; }
-  93% { opacity: 0.55; }
-  94% { opacity: 1; }
-  96% { opacity: 0.7; }
-  97% { opacity: 1; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .crt-flicker { animation: none; }
+.app-shell {
+  position: relative;
+  isolation: isolate;
+  z-index: 1;
 }
 
 /* ---------- Kill blur / rounding / soft gradients ---------- */
@@ -1593,7 +1521,7 @@ body {
 .thesis-panel,
 .scorebug,
 .settings-dialog {
-  backdrop-filter: none !important;
+  backdrop-filter: blur(2px) !important;
 }
 
 .board-panel,
@@ -1615,7 +1543,6 @@ body {
 .randomizer-card,
 .storage-card,
 .result-group,
-.close-button,
 .topbar .action-buttons button,
 .view-controls button,
 .import-export-actions button,
@@ -1626,279 +1553,269 @@ body {
 
 /* ---------- App-Rahmen ---------- */
 .board-panel {
-  background: #000000;
-  border: 3px solid var(--vt-cyan);
-  box-shadow: 6px 6px 0 rgba(0, 255, 230, 0.25);
+  background: rgba(10, 10, 10, 0.85);
+  border: 4px solid #000;
+  box-shadow: var(--hard-shadow);
   padding: 20px;
+  overflow: visible;
+}
+
+/* Gestreifter Balken oben, wie eine Sportschau-Bauchbinde */
+.board-panel::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(90deg, var(--bundesliga-red) 0 24px, var(--bundesliga-gold) 24px 48px, var(--blue) 48px 72px);
+  z-index: 3;
 }
 
 /* ---------- Kopfzeile ---------- */
 .eyebrow {
-  color: var(--vt-yellow);
-  font-family: var(--event-font);
-  font-size: 0.9rem;
-  letter-spacing: 0.18em;
+  color: var(--bundesliga-gold);
+  font-family: var(--led-font);
+  font-size: 1rem;
+  letter-spacing: 0.1em;
   opacity: 1;
 }
-.topbar .eyebrow { font-size: 0.75rem; }
+.topbar .eyebrow { font-size: 0.85rem; margin-top: 10px; }
 
 .topbar h1 {
   background: none;
   -webkit-text-fill-color: initial;
-  color: var(--vt-cyan);
-  text-shadow: 3px 3px 0 var(--vt-red);
-  font-size: clamp(1rem, 2vw, 1.7rem);
-  letter-spacing: 0.06em;
+  font-family: var(--headline-font);
+  font-style: italic;
+  font-weight: 400;
+  color: #fff;
+  -webkit-text-stroke: 1.5px #000;
+  text-shadow: 3px 3px 0 var(--bundesliga-red), 6px 6px 0 #000;
+  transform: skewX(-2deg);
+  font-size: clamp(1.3rem, 3vw, 2.4rem);
+  letter-spacing: 0.01em;
 }
 
 .topbar .action-buttons button {
-  font-family: var(--event-font);
-  font-size: 0.95rem;
-  letter-spacing: 0.06em;
-  border: 2px solid var(--vt-cyan);
-  background: #000;
-  color: var(--vt-cyan);
+  font-family: var(--headline-font);
+  font-style: italic;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  border: 3px solid #000;
+  background: #fff;
+  color: #000;
+  box-shadow: var(--hard-shadow-sm);
+  transition: transform 0.08s, box-shadow 0.08s;
 }
 .topbar .action-buttons button:hover {
-  background: var(--vt-cyan);
-  color: #000;
+  background: #fff;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #000;
 }
 #openSettingsButton {
-  background: var(--vt-yellow) !important;
-  border-color: var(--vt-yellow) !important;
-  color: #000 !important;
+  background: var(--bundesliga-red) !important;
+  color: #fff !important;
+  border-color: #000 !important;
 }
-#openSettingsButton:hover {
-  background: #000 !important;
-  color: var(--vt-yellow) !important;
-}
-#undoButton {
-  background: #000 !important;
-  border-color: var(--vt-magenta) !important;
-  color: var(--vt-magenta) !important;
-}
-#undoButton:hover:not(:disabled) {
-  background: var(--vt-magenta) !important;
-  color: #000 !important;
-}
+#openSettingsButton:hover { background: var(--bundesliga-red-dark) !important; }
+#undoButton { background: #fff !important; color: #000 !important; }
+#undoButton:disabled { opacity: 0.35; }
 
 /* ---------- Scorebug ---------- */
-.scorebug-main { box-shadow: none; border: 2px solid var(--vt-cyan); }
-.league-badge { background: #000; border-right: 2px solid var(--vt-cyan); }
-.scoreline { background: #000; }
+.scorebug-main { box-shadow: none; border: 3px solid #000; }
+.league-badge { background: #000; border-right: 3px solid #000; }
+.scoreline { background: var(--surface); }
 .team-name {
-  font-family: var(--event-font);
-  color: var(--vt-white);
-  font-size: clamp(1.1rem, 2.1vw, 1.9rem);
+  font-family: var(--headline-font);
+  font-style: italic;
+  color: var(--ink);
+  font-size: clamp(1rem, 2vw, 1.7rem);
 }
-.score-team-white .team-name { color: var(--vt-cyan); }
-.score-team-black .team-name { color: var(--vt-magenta); }
 
 .score-core {
-  background: #000;
-  border: 2px solid var(--vt-yellow);
-  box-shadow: none;
+  background: #1a0f00;
+  border: 3px solid #000;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.8), var(--hard-shadow-sm);
 }
 .score-core span {
-  font-family: var(--headline-font);
-  color: var(--vt-yellow);
-  text-shadow: none;
-  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-family: var(--led-font);
+  color: #ff9500;
+  text-shadow: 0 0 6px rgba(255, 149, 0, 0.7);
+  font-size: clamp(1.3rem, 2.4vw, 2rem);
 }
-.score-separator { color: var(--vt-yellow); }
+.score-separator { color: #ff9500; }
 
 .live-chip {
   background: #000;
-  border-left: 2px solid var(--vt-cyan);
-  color: var(--vt-red);
-  font-family: var(--event-font);
+  border-left: 3px solid #000;
+  color: var(--bundesliga-gold);
+  font-family: var(--mono-font);
 }
-.live-chip .live-dot { color: var(--vt-red); }
+.live-chip .live-dot { color: var(--bundesliga-red); }
 
 .scorebug-meta { border-top: none; }
-.meta-season { color: var(--vt-cyan); font-family: var(--event-font); font-size: 0.85rem; }
-.meta-dot { color: var(--vt-yellow); }
+.meta-season { color: var(--bundesliga-gold); font-family: var(--mono-font); font-size: 0.65rem; }
+.meta-dot { color: #fff; }
 .ticker-row {
-  font-family: var(--event-font);
-  font-size: 0.9rem;
-  border-top: 1px solid rgba(0, 255, 230, 0.25);
+  font-family: var(--mono-font);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
-.ticker-row:first-of-type { border-top: 2px solid var(--vt-cyan); }
-.ticker-label { color: var(--vt-yellow); font-size: 0.6rem; opacity: 1; }
-.ticker-content { font-size: 0.9rem; }
+.ticker-row:first-of-type { border-top: 2px solid var(--bundesliga-gold); }
+.ticker-label { color: var(--bundesliga-gold); }
 
 /* ---------- Spielfeld ---------- */
 .chess-grid {
-  border: 3px solid var(--vt-cyan);
-  box-shadow: 6px 6px 0 rgba(0, 255, 230, 0.2);
+  border: 3px solid #000;
+  box-shadow: 0 0 0 3px var(--bundesliga-gold), var(--hard-shadow);
   background: #000;
 }
-.grid-cell { background: #050505; }
-.piece-cell {
-  background: #000;
-  box-shadow: inset 0 0 0 1px rgba(0, 255, 230, 0.25);
-}
-.piece-cell.light { background: #0b0b0b; }
-.piece-cell:hover { background: rgba(0, 255, 230, 0.08); transform: none; }
+.grid-cell { border: 1px solid rgba(255, 255, 255, 0.12); background: #000; }
+.piece-cell { background: #141414; }
+.piece-cell.light { background: #202020; }
+.piece-cell:hover { transform: none; }
 
-.drop-cell {
-  background: #000;
-  box-shadow: inset 0 0 0 1px rgba(0, 255, 230, 0.15);
-}
-.drop-cell[data-side="white"] { border-top: 2px solid var(--vt-cyan); }
-.drop-cell[data-side="black"] { border-bottom: 2px solid var(--vt-magenta); }
+.drop-cell { background: #0c0c0c; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+.drop-cell[data-side="white"] { border-top: 3px solid var(--bundesliga-gold); }
+.drop-cell[data-side="black"] { border-bottom: 3px solid var(--zone-cl); }
 .drop-cell.drag-over {
-  background: rgba(255, 242, 0, 0.12);
-  box-shadow: inset 0 0 0 2px var(--vt-yellow);
+  background: rgba(255, 204, 0, 0.12);
+  box-shadow: inset 0 0 0 2px var(--bundesliga-gold);
   animation: none;
 }
-.drop-value {
-  font-family: var(--headline-font);
-  color: var(--vt-white);
-  text-shadow: none;
+.drop-value { font-family: var(--led-font); color: #fff; }
+.field-watermark {
+  font-family: var(--led-font);
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.9);
 }
-.field-watermark { text-shadow: none; }
+.field-watermark.positive { color: #2be08a; }
+.field-watermark.negative { color: #ff4d4d; }
+.field-watermark.zero { color: #c3aeff; }
 
-.piece-svg {
-  filter: drop-shadow(0 0 0 transparent);
-}
-.piece-cell:not(.light) .piece-svg { filter: invert(1); }
+.piece-svg { filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.35)); }
+.piece-cell:not(.light) .piece-svg { filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.35)); }
 
 /* ---------- Thesen ---------- */
 .thesis-panel {
-  background: #000;
-  border: 3px solid var(--vt-magenta);
-  box-shadow: 6px 6px 0 rgba(255, 47, 214, 0.2);
+  background: rgba(0, 0, 0, 0.75);
+  border: 3px solid #000;
+  box-shadow: var(--hard-shadow);
 }
-.thesis-head h2 { font-family: var(--headline-font); font-size: 0.85rem; color: var(--vt-white); }
-.thesis-head .eyebrow { color: var(--vt-magenta); }
+.thesis-head h2 { font-family: var(--headline-font); font-style: italic; color: #fff; }
+.thesis-head .eyebrow { color: var(--bundesliga-gold); }
 
 .thesis-card {
-  background: #000;
-  border: 2px solid var(--vt-cyan);
-  border-left: 6px solid var(--vt-yellow);
-  box-shadow: none;
-  transition: background 100ms;
+  background: #fff;
+  border: 3px solid #000;
+  border-left: 3px solid #000;
+  box-shadow: var(--hard-shadow-sm);
+  transition: transform 0.08s, box-shadow 0.08s;
 }
-.thesis-card::before { color: var(--vt-yellow); font-family: var(--event-font); font-size: 0.85rem; }
+.thesis-card::before { color: var(--bundesliga-red); font-family: var(--mono-font); font-weight: 800; }
 .thesis-card:hover {
-  border-color: var(--vt-yellow);
-  background: rgba(255, 242, 0, 0.08);
-  box-shadow: none;
-  transform: none;
+  border-color: #000;
+  background: #fff;
+  box-shadow: 3px 3px 0 #000;
+  transform: translate(-1px, -1px);
 }
-.thesis-card .thesis-title { font-family: var(--event-font); font-weight: 400; font-size: 1rem; letter-spacing: 0.02em; }
+.thesis-card .thesis-title { font-family: var(--event-font); color: var(--ink); }
 
 .placed-chip {
-  background: var(--vt-white);
+  background: #fff;
   border: 2px solid #000;
-  box-shadow: 3px 3px 0 rgba(0, 255, 230, 0.4);
+  box-shadow: var(--hard-shadow-sm);
 }
-.chip-field-badge { font-family: var(--event-font); }
+.chip-field-badge { font-family: var(--mono-font); }
 
 .drag-ghost {
-  border: 2px solid var(--vt-cyan);
-  background: #000;
-  box-shadow: none;
+  border: 3px solid #000;
+  background: var(--bundesliga-red);
+  box-shadow: var(--hard-shadow);
   font-family: var(--headline-font);
 }
 
 /* ---------- Settings-Dialog ---------- */
 .settings-dialog {
-  background: #000 !important;
-  border: 3px solid var(--vt-cyan) !important;
-  box-shadow: 8px 8px 0 rgba(0, 255, 230, 0.2) !important;
+  background: rgba(10, 10, 10, 0.97) !important;
+  border: 4px solid #000 !important;
+  box-shadow: var(--hard-shadow) !important;
 }
 .settings-dialog::backdrop { background: rgba(0, 0, 0, 0.85); backdrop-filter: none; }
-.settings-head h2 { font-family: var(--headline-font); font-size: 1rem; color: var(--vt-cyan); }
-.settings-head .eyebrow { color: var(--vt-yellow); }
+.settings-head h2 { font-family: var(--headline-font); font-style: italic; color: #fff; }
+.settings-head .eyebrow { color: var(--bundesliga-gold); }
 
 .close-button {
-  background: #000;
-  border: 2px solid var(--vt-red);
-  color: var(--vt-red);
+  background: #fff;
+  border: 3px solid #000;
+  color: #000;
+  box-shadow: var(--hard-shadow-sm);
 }
-.close-button:hover { background: var(--vt-red); color: #000; transform: none; }
+.close-button:hover { background: var(--bundesliga-red); color: #fff; transform: none; }
 
 .results-panel {
-  border: 2px solid rgba(0, 255, 230, 0.4);
-  background: #000;
+  border: 3px solid #000;
+  background: rgba(255, 255, 255, 0.06);
 }
-.results-panel h2 { font-family: var(--headline-font); font-size: 0.85rem; color: var(--vt-white); }
-.results-panel > div:first-child::after { background: var(--vt-yellow); border-radius: 0; }
+.results-panel h2 { font-family: var(--headline-font); font-style: italic; color: #fff; }
+.results-panel > div:first-child::after { background: var(--bundesliga-gold); border-radius: 0; }
 
 .settings-shell input {
-  font-family: var(--event-font);
-  font-size: 1rem;
-  border-bottom: 2px solid var(--vt-cyan);
-  color: var(--vt-white);
+  font-family: var(--mono-font);
+  border-bottom: 2px solid var(--bundesliga-gold);
+  color: #fff;
 }
-.settings-shell input:focus { border-bottom-color: var(--vt-yellow); }
+.settings-shell input:focus { border-bottom-color: var(--bundesliga-red); }
 
-.match-controls label { color: var(--vt-cyan); font-family: var(--event-font); letter-spacing: 0.06em; }
+.match-controls label { color: var(--bundesliga-gold); font-family: var(--mono-font); }
 
-.evaluation-card { border: 2px solid rgba(0, 255, 230, 0.3); }
-.evaluation-card:hover { border-color: var(--vt-cyan); }
-.evaluation-card strong { font-family: var(--event-font); color: var(--vt-white); }
+.evaluation-card { border: 2px solid rgba(255, 255, 255, 0.2); }
+.evaluation-card:hover { border-color: var(--bundesliga-gold); }
+.evaluation-card strong { font-family: var(--mono-font); color: #fff; }
 
 .evaluation-controls button {
-  border: 2px solid rgba(0, 255, 230, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.25);
   background: #000;
-  color: var(--vt-cyan);
-  font-family: var(--event-font);
+  color: #fff;
+  font-family: var(--mono-font);
 }
-.evaluation-controls button:hover { background: rgba(0, 255, 230, 0.15); }
-.evaluation-controls .neutral-button.active { background: var(--vt-yellow); color: #000; border-color: var(--vt-yellow); }
-.evaluation-controls .polarity-button.active[data-polarity="positive"] { background: var(--vt-green); color: #000; border-color: var(--vt-green); }
-.evaluation-controls .polarity-button.active[data-polarity="negative"] { background: var(--vt-red); color: #000; border-color: var(--vt-red); }
+.evaluation-controls button:hover { background: rgba(255, 255, 255, 0.12); }
+.evaluation-controls .neutral-button.active { background: var(--bundesliga-gold); color: #000; border-color: #000; }
+.evaluation-controls .polarity-button.active[data-polarity="positive"] { background: var(--green); color: #fff; border-color: #000; }
+.evaluation-controls .polarity-button.active[data-polarity="negative"] { background: var(--bundesliga-red); color: #fff; border-color: #000; }
 
-.result-group { border: 2px solid rgba(0, 255, 230, 0.3); }
-.result-group h3 { font-family: var(--event-font); color: var(--vt-cyan); }
+.result-group { border: 2px solid rgba(255, 255, 255, 0.2); }
+.result-group h3 { font-family: var(--mono-font); color: var(--bundesliga-gold); }
 
-.randomizer-card {
-  border: 2px solid var(--vt-yellow);
-  background: #000;
-}
-.randomizer-card span { color: var(--vt-cyan); font-family: var(--event-font); }
+.randomizer-card { border: 3px solid #000; background: #000; }
+.randomizer-card span { color: var(--bundesliga-gold); font-family: var(--mono-font); }
 .randomizer-card button {
-  background: var(--vt-yellow);
+  background: var(--bundesliga-gold);
   color: #000;
-  font-family: var(--event-font);
+  font-family: var(--headline-font);
+  font-style: italic;
+  box-shadow: var(--hard-shadow-sm);
 }
-.randomizer-card button:hover { background: #000; color: var(--vt-yellow); border: 2px solid var(--vt-yellow); }
+.randomizer-card button:hover { background: #fff; }
 
-.storage-card {
-  border: 2px solid rgba(0, 255, 230, 0.3);
-  background: #000;
-}
-.storage-card strong { font-family: var(--event-font); color: var(--vt-white); }
-.storage-card span, .storage-status { color: var(--vt-cyan); font-family: var(--event-font); }
+.storage-card { border: 3px solid #000; background: #000; }
+.storage-card strong { font-family: var(--mono-font); color: #fff; }
+.storage-card span, .storage-status { color: var(--bundesliga-gold); font-family: var(--mono-font); }
 
 .import-export-actions button {
-  background: #000;
-  border: 2px solid var(--vt-cyan);
-  color: var(--vt-cyan);
-  font-family: var(--event-font);
-}
-.import-export-actions button:hover { background: rgba(0, 255, 230, 0.15); }
-.import-export-actions button:first-child {
-  background: var(--vt-yellow);
+  background: #fff;
+  border: 3px solid #000;
   color: #000;
-  border-color: var(--vt-yellow);
+  font-family: var(--headline-font);
+  font-style: italic;
+  box-shadow: var(--hard-shadow-sm);
 }
-.import-export-actions button:first-child:hover { background: #000; color: var(--vt-yellow); }
+.import-export-actions button:first-child { background: var(--bundesliga-red); color: #fff; }
+.import-export-actions button:first-child:hover { background: var(--bundesliga-red-dark); }
 
 .view-controls button {
-  background: #000;
-  border: 2px solid var(--vt-cyan);
-  color: var(--vt-cyan);
-  font-family: var(--event-font);
+  background: #fff;
+  border: 3px solid #000;
+  color: #000;
+  font-family: var(--headline-font);
+  font-style: italic;
+  box-shadow: var(--hard-shadow-sm);
 }
-.view-controls button:hover { background: rgba(0, 255, 230, 0.15); }
-#toggleThesisButton { background: var(--vt-magenta) !important; color: #000; border-color: var(--vt-magenta) !important; }
-#toggleThesisButton:hover { background: #000 !important; color: var(--vt-magenta); }
-#toggleRemoveButtons[aria-pressed="true"] { background: var(--vt-yellow) !important; color: #000; }
-
-/* Trikot-Hintergrund etwas dämpfen, damit der Videotext-Look dominiert */
-.bg-trikots { opacity: 0.25; }
-.bg-overlay { background: rgba(0, 0, 0, 0.6); }
+#toggleThesisButton { background: var(--bundesliga-red) !important; color: #fff; }
+#toggleRemoveButtons[aria-pressed="true"] { background: var(--bundesliga-gold) !important; color: #000; }
