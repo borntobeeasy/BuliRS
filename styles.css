@@ -1,24 +1,34 @@
 :root {
   color-scheme: dark;
-  --bundesliga-red: #D3010C;
-  --bundesliga-red-dark: #8B0000;
-  --bundesliga-gold: #F5C518;
-  --bundesliga-white: #FFFFFF;
-  --bundesliga-black: #000000;
+  /* ---- Videotext / Teletext 90er-Jahre Palette ---- */
+  --vt-black: #000000;
+  --vt-cyan: #00ffe6;
+  --vt-yellow: #fff200;
+  --vt-green: #16ff2b;
+  --vt-magenta: #ff2fd6;
+  --vt-red: #ff2b2b;
+  --vt-blue: #3d5bff;
+  --vt-white: #f2f2f2;
 
-  --paper: #0a0a0a;
-  --ink: var(--bundesliga-white);
-  --muted: #a0a8b8;
-  --line: rgba(255, 255, 255, 0.12);
-  --grid: rgba(255, 255, 255, 0.05);
+  --bundesliga-red: var(--vt-red);
+  --bundesliga-red-dark: #a30000;
+  --bundesliga-gold: var(--vt-yellow);
+  --bundesliga-white: var(--vt-white);
+  --bundesliga-black: var(--vt-black);
+
+  --paper: #000000;
+  --ink: var(--vt-white);
+  --muted: #5fe0d0;
+  --line: rgba(0, 255, 230, 0.35);
+  --grid: rgba(0, 255, 230, 0.08);
   --accent: var(--bundesliga-red);
   --yellow: var(--bundesliga-gold);
-  --green: #00843d;
-  --zero: #8b95b8;
+  --green: var(--vt-green);
+  --zero: var(--vt-magenta);
   --cell-size: clamp(64px, min(7.5vw, 16vh), 120px);
-  --shadow: 0 28px 75px rgba(0, 0, 0, 0.46);
-  --event-font: "Sora", "Segoe UI", Arial, sans-serif;
-  --headline-font: "DFL Sans", "Anton", "Arial Narrow", Impact, sans-serif;
+  --shadow: 0 0 0 rgba(0, 0, 0, 0);
+  --event-font: "VT323", "Courier New", monospace;
+  --headline-font: "Press Start 2P", "VT323", "Courier New", monospace;
 }
 
 * {
@@ -1525,3 +1535,370 @@ h2 {
   .randomizer-card span { font-size: 0.7rem; }
   .view-controls button { font-size: 0.6rem; min-height: 28px; }
 }
+/* ============================================================
+   ============================================================
+   RETRO-TV / VIDEOTEXT LOOK (ARD/ZDF-Teletext, 1990er)
+   Flache Blockfarben, Monospace-Pixel-Font, harte Kanten,
+   Scanlines & CRT-Flicker. Alles unten überschreibt bewusst
+   die Verläufe/Rundungen/Blur der Grundstile weiter oben.
+   ============================================================
+   ============================================================ */
+
+html, body {
+  background: #000 !important;
+}
+
+body {
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+/* ---------- CRT Scanlines & Flicker ---------- */
+.crt-scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.28) 3px,
+    rgba(0, 0, 0, 0) 4px
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+}
+.crt-flicker {
+  position: fixed;
+  inset: 0;
+  z-index: 41;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.015);
+  animation: crtFlicker 6s steps(2) infinite;
+}
+@keyframes crtFlicker {
+  0%, 92%, 100% { opacity: 1; }
+  93% { opacity: 0.55; }
+  94% { opacity: 1; }
+  96% { opacity: 0.7; }
+  97% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .crt-flicker { animation: none; }
+}
+
+/* ---------- Kill blur / rounding / soft gradients ---------- */
+.board-panel,
+.thesis-panel,
+.scorebug,
+.settings-dialog {
+  backdrop-filter: none !important;
+}
+
+.board-panel,
+.thesis-panel,
+.settings-dialog,
+.scorebug-main,
+.league-badge,
+.scoreline,
+.score-core,
+.live-chip,
+.chess-grid,
+.grid-cell,
+.piece-cell,
+.drop-cell,
+.thesis-card,
+.placed-chip,
+.results-panel,
+.evaluation-card,
+.randomizer-card,
+.storage-card,
+.result-group,
+.close-button,
+.topbar .action-buttons button,
+.view-controls button,
+.import-export-actions button,
+.evaluation-controls button,
+.randomizer-card button {
+  border-radius: 0 !important;
+}
+
+/* ---------- App-Rahmen ---------- */
+.board-panel {
+  background: #000000;
+  border: 3px solid var(--vt-cyan);
+  box-shadow: 6px 6px 0 rgba(0, 255, 230, 0.25);
+  padding: 20px;
+}
+
+/* ---------- Kopfzeile ---------- */
+.eyebrow {
+  color: var(--vt-yellow);
+  font-family: var(--event-font);
+  font-size: 0.9rem;
+  letter-spacing: 0.18em;
+  opacity: 1;
+}
+.topbar .eyebrow { font-size: 0.75rem; }
+
+.topbar h1 {
+  background: none;
+  -webkit-text-fill-color: initial;
+  color: var(--vt-cyan);
+  text-shadow: 3px 3px 0 var(--vt-red);
+  font-size: clamp(1rem, 2vw, 1.7rem);
+  letter-spacing: 0.06em;
+}
+
+.topbar .action-buttons button {
+  font-family: var(--event-font);
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  border: 2px solid var(--vt-cyan);
+  background: #000;
+  color: var(--vt-cyan);
+}
+.topbar .action-buttons button:hover {
+  background: var(--vt-cyan);
+  color: #000;
+}
+#openSettingsButton {
+  background: var(--vt-yellow) !important;
+  border-color: var(--vt-yellow) !important;
+  color: #000 !important;
+}
+#openSettingsButton:hover {
+  background: #000 !important;
+  color: var(--vt-yellow) !important;
+}
+#undoButton {
+  background: #000 !important;
+  border-color: var(--vt-magenta) !important;
+  color: var(--vt-magenta) !important;
+}
+#undoButton:hover:not(:disabled) {
+  background: var(--vt-magenta) !important;
+  color: #000 !important;
+}
+
+/* ---------- Scorebug ---------- */
+.scorebug-main { box-shadow: none; border: 2px solid var(--vt-cyan); }
+.league-badge { background: #000; border-right: 2px solid var(--vt-cyan); }
+.scoreline { background: #000; }
+.team-name {
+  font-family: var(--event-font);
+  color: var(--vt-white);
+  font-size: clamp(1.1rem, 2.1vw, 1.9rem);
+}
+.score-team-white .team-name { color: var(--vt-cyan); }
+.score-team-black .team-name { color: var(--vt-magenta); }
+
+.score-core {
+  background: #000;
+  border: 2px solid var(--vt-yellow);
+  box-shadow: none;
+}
+.score-core span {
+  font-family: var(--headline-font);
+  color: var(--vt-yellow);
+  text-shadow: none;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+}
+.score-separator { color: var(--vt-yellow); }
+
+.live-chip {
+  background: #000;
+  border-left: 2px solid var(--vt-cyan);
+  color: var(--vt-red);
+  font-family: var(--event-font);
+}
+.live-chip .live-dot { color: var(--vt-red); }
+
+.scorebug-meta { border-top: none; }
+.meta-season { color: var(--vt-cyan); font-family: var(--event-font); font-size: 0.85rem; }
+.meta-dot { color: var(--vt-yellow); }
+.ticker-row {
+  font-family: var(--event-font);
+  font-size: 0.9rem;
+  border-top: 1px solid rgba(0, 255, 230, 0.25);
+}
+.ticker-row:first-of-type { border-top: 2px solid var(--vt-cyan); }
+.ticker-label { color: var(--vt-yellow); font-size: 0.6rem; opacity: 1; }
+.ticker-content { font-size: 0.9rem; }
+
+/* ---------- Spielfeld ---------- */
+.chess-grid {
+  border: 3px solid var(--vt-cyan);
+  box-shadow: 6px 6px 0 rgba(0, 255, 230, 0.2);
+  background: #000;
+}
+.grid-cell { background: #050505; }
+.piece-cell {
+  background: #000;
+  box-shadow: inset 0 0 0 1px rgba(0, 255, 230, 0.25);
+}
+.piece-cell.light { background: #0b0b0b; }
+.piece-cell:hover { background: rgba(0, 255, 230, 0.08); transform: none; }
+
+.drop-cell {
+  background: #000;
+  box-shadow: inset 0 0 0 1px rgba(0, 255, 230, 0.15);
+}
+.drop-cell[data-side="white"] { border-top: 2px solid var(--vt-cyan); }
+.drop-cell[data-side="black"] { border-bottom: 2px solid var(--vt-magenta); }
+.drop-cell.drag-over {
+  background: rgba(255, 242, 0, 0.12);
+  box-shadow: inset 0 0 0 2px var(--vt-yellow);
+  animation: none;
+}
+.drop-value {
+  font-family: var(--headline-font);
+  color: var(--vt-white);
+  text-shadow: none;
+}
+.field-watermark { text-shadow: none; }
+
+.piece-svg {
+  filter: drop-shadow(0 0 0 transparent);
+}
+.piece-cell:not(.light) .piece-svg { filter: invert(1); }
+
+/* ---------- Thesen ---------- */
+.thesis-panel {
+  background: #000;
+  border: 3px solid var(--vt-magenta);
+  box-shadow: 6px 6px 0 rgba(255, 47, 214, 0.2);
+}
+.thesis-head h2 { font-family: var(--headline-font); font-size: 0.85rem; color: var(--vt-white); }
+.thesis-head .eyebrow { color: var(--vt-magenta); }
+
+.thesis-card {
+  background: #000;
+  border: 2px solid var(--vt-cyan);
+  border-left: 6px solid var(--vt-yellow);
+  box-shadow: none;
+  transition: background 100ms;
+}
+.thesis-card::before { color: var(--vt-yellow); font-family: var(--event-font); font-size: 0.85rem; }
+.thesis-card:hover {
+  border-color: var(--vt-yellow);
+  background: rgba(255, 242, 0, 0.08);
+  box-shadow: none;
+  transform: none;
+}
+.thesis-card .thesis-title { font-family: var(--event-font); font-weight: 400; font-size: 1rem; letter-spacing: 0.02em; }
+
+.placed-chip {
+  background: var(--vt-white);
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0 rgba(0, 255, 230, 0.4);
+}
+.chip-field-badge { font-family: var(--event-font); }
+
+.drag-ghost {
+  border: 2px solid var(--vt-cyan);
+  background: #000;
+  box-shadow: none;
+  font-family: var(--headline-font);
+}
+
+/* ---------- Settings-Dialog ---------- */
+.settings-dialog {
+  background: #000 !important;
+  border: 3px solid var(--vt-cyan) !important;
+  box-shadow: 8px 8px 0 rgba(0, 255, 230, 0.2) !important;
+}
+.settings-dialog::backdrop { background: rgba(0, 0, 0, 0.85); backdrop-filter: none; }
+.settings-head h2 { font-family: var(--headline-font); font-size: 1rem; color: var(--vt-cyan); }
+.settings-head .eyebrow { color: var(--vt-yellow); }
+
+.close-button {
+  background: #000;
+  border: 2px solid var(--vt-red);
+  color: var(--vt-red);
+}
+.close-button:hover { background: var(--vt-red); color: #000; transform: none; }
+
+.results-panel {
+  border: 2px solid rgba(0, 255, 230, 0.4);
+  background: #000;
+}
+.results-panel h2 { font-family: var(--headline-font); font-size: 0.85rem; color: var(--vt-white); }
+.results-panel > div:first-child::after { background: var(--vt-yellow); border-radius: 0; }
+
+.settings-shell input {
+  font-family: var(--event-font);
+  font-size: 1rem;
+  border-bottom: 2px solid var(--vt-cyan);
+  color: var(--vt-white);
+}
+.settings-shell input:focus { border-bottom-color: var(--vt-yellow); }
+
+.match-controls label { color: var(--vt-cyan); font-family: var(--event-font); letter-spacing: 0.06em; }
+
+.evaluation-card { border: 2px solid rgba(0, 255, 230, 0.3); }
+.evaluation-card:hover { border-color: var(--vt-cyan); }
+.evaluation-card strong { font-family: var(--event-font); color: var(--vt-white); }
+
+.evaluation-controls button {
+  border: 2px solid rgba(0, 255, 230, 0.3);
+  background: #000;
+  color: var(--vt-cyan);
+  font-family: var(--event-font);
+}
+.evaluation-controls button:hover { background: rgba(0, 255, 230, 0.15); }
+.evaluation-controls .neutral-button.active { background: var(--vt-yellow); color: #000; border-color: var(--vt-yellow); }
+.evaluation-controls .polarity-button.active[data-polarity="positive"] { background: var(--vt-green); color: #000; border-color: var(--vt-green); }
+.evaluation-controls .polarity-button.active[data-polarity="negative"] { background: var(--vt-red); color: #000; border-color: var(--vt-red); }
+
+.result-group { border: 2px solid rgba(0, 255, 230, 0.3); }
+.result-group h3 { font-family: var(--event-font); color: var(--vt-cyan); }
+
+.randomizer-card {
+  border: 2px solid var(--vt-yellow);
+  background: #000;
+}
+.randomizer-card span { color: var(--vt-cyan); font-family: var(--event-font); }
+.randomizer-card button {
+  background: var(--vt-yellow);
+  color: #000;
+  font-family: var(--event-font);
+}
+.randomizer-card button:hover { background: #000; color: var(--vt-yellow); border: 2px solid var(--vt-yellow); }
+
+.storage-card {
+  border: 2px solid rgba(0, 255, 230, 0.3);
+  background: #000;
+}
+.storage-card strong { font-family: var(--event-font); color: var(--vt-white); }
+.storage-card span, .storage-status { color: var(--vt-cyan); font-family: var(--event-font); }
+
+.import-export-actions button {
+  background: #000;
+  border: 2px solid var(--vt-cyan);
+  color: var(--vt-cyan);
+  font-family: var(--event-font);
+}
+.import-export-actions button:hover { background: rgba(0, 255, 230, 0.15); }
+.import-export-actions button:first-child {
+  background: var(--vt-yellow);
+  color: #000;
+  border-color: var(--vt-yellow);
+}
+.import-export-actions button:first-child:hover { background: #000; color: var(--vt-yellow); }
+
+.view-controls button {
+  background: #000;
+  border: 2px solid var(--vt-cyan);
+  color: var(--vt-cyan);
+  font-family: var(--event-font);
+}
+.view-controls button:hover { background: rgba(0, 255, 230, 0.15); }
+#toggleThesisButton { background: var(--vt-magenta) !important; color: #000; border-color: var(--vt-magenta) !important; }
+#toggleThesisButton:hover { background: #000 !important; color: var(--vt-magenta); }
+#toggleRemoveButtons[aria-pressed="true"] { background: var(--vt-yellow) !important; color: #000; }
+
+/* Trikot-Hintergrund etwas dämpfen, damit der Videotext-Look dominiert */
+.bg-trikots { opacity: 0.25; }
+.bg-overlay { background: rgba(0, 0, 0, 0.6); }
