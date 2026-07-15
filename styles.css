@@ -398,7 +398,9 @@ h2 {
   }
 }
 
+/* ===== Team-Name – angepasst für saubere Darstellung ===== */
 .team-name {
+  display: inline-block;
   font-size: clamp(1rem, 2.1vw, 1.7rem);
   font-weight: 800;
   color: #16171a;
@@ -408,7 +410,9 @@ h2 {
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: var(--headline-font);
-  max-width: 32vw;
+  max-width: 100%;
+  padding-right: 0.3em;
+  box-sizing: border-box;
 }
 
 .score-core {
@@ -1623,12 +1627,7 @@ body {
 .scorebug-main { box-shadow: none; border: 3px solid #000; }
 .league-badge { background: #000; border-right: 3px solid #000; }
 .scoreline { background: var(--surface); }
-.team-name {
-  font-family: var(--headline-font);
-  font-style: italic;
-  color: var(--ink);
-  font-size: clamp(1rem, 2vw, 1.7rem);
-}
+/* Team‑Name wurde oben bereits angepasst – hier keine zusätzliche Überschreibung */
 
 .score-core {
   background: #1a0f00;
@@ -1674,7 +1673,7 @@ body {
 
 .drop-cell { background: #0c0c0c; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
 .drop-cell[data-side="white"] { border-top: 3px solid var(--bundesliga-gold); }
-.drop-cell[data-side="black"] { border-bottom: 3px solid var(--zone-cl); }
+.drop-cell[data-side="black"] { border-bottom: 3px solid var(--bundesliga-gold); } /* geändert auf Gold */
 .drop-cell.drag-over {
   background: rgba(255, 204, 0, 0.12);
   box-shadow: inset 0 0 0 2px var(--bundesliga-gold);
