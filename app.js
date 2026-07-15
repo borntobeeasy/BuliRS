@@ -2,11 +2,11 @@
 //  KONSTANTEN & BASIS-DATEN
 // ============================
 const PIECES = [
-  { id: 'rook',   name: 'Turm',    value: '-/+3', base: 3 },
+  { id: 'rook',   name: 'Turm',    value: '-/+1,5', base: 1.5 },
   { id: 'bishop', name: 'Läufer',  value: '-1',   base: 1 },
   { id: 'knight', name: 'Springer',value: '?',    base: 1 },
   { id: 'queen',  name: 'Dame',    value: '+1',   base: 1 },
-  { id: 'king',   name: 'König',   value: '+/-3', base: 3 },
+  { id: 'king',   name: 'König',   value: '+/-1,5', base: 1.5 },
 ];
 const PIECE_IDS = PIECES.map(p => p.id);
 const SIDES = ['white', 'black'];
@@ -155,7 +155,11 @@ function getSideLabel(side) {
 }
 
 function formatNumber(num) {
-  return num > 0 ? `+${num}` : String(num);
+  // Auf eine Dezimalstelle runden und Punkt durch Komma ersetzen
+  const rounded = Math.round(num * 10) / 10;
+  const sign = rounded > 0 ? '+' : '';
+  const str = String(rounded).replace('.', ',');
+  return sign + str;
 }
 
 function isImageUrl(value) {
