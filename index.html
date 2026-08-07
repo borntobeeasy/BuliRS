@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rasenschach – Draft‑Leitfaden</title>
+  <title>Rasenschach – Draft</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="icon" href="favicon.ico" sizes="any" />
@@ -199,7 +199,7 @@
     #undoButton:hover:not(:disabled) { background: rgba(255, 255, 255, 0.18); }
     #undoButton:disabled { opacity: 0.4; cursor: default; }
 
-    /* Phasen‑Leiste (nur Draft) */
+    /* Phasen‑Leiste (vereinfacht) */
     .phase-bar {
       display: flex;
       align-items: center;
@@ -228,28 +228,17 @@
       text-transform: uppercase;
       margin-right: auto;
     }
-    .phase-bar .phase-steps {
-      display: flex;
-      gap: 6px;
-      font-size: 0.65rem;
+    .phase-bar .phase-status {
+      font-family: var(--mono-font);
+      font-size: 0.7rem;
       color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .phase-bar .phase-steps .step {
-      padding: 2px 10px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.05);
-      border-radius: 0;
-    }
-    .phase-bar .phase-steps .step.active {
-      background: var(--bundesliga-gold);
-      color: #000;
-      border-color: #000;
+    .phase-bar .phase-status .highlight {
+      color: var(--bundesliga-gold);
       font-weight: 700;
-    }
-    .phase-bar .phase-steps .step.done {
-      background: var(--green);
-      color: #fff;
-      border-color: #000;
     }
     .phase-bar .phase-nav button {
       min-height: 28px;
@@ -1407,7 +1396,7 @@
       .view-controls button { font-size: 0.7rem; min-height: 32px; }
       .phase-bar { padding: 6px 10px; }
       .phase-bar .phase-name { font-size: 0.9rem; }
-      .phase-bar .phase-steps .step { font-size: 0.55rem; padding: 1px 6px; }
+      .phase-bar .phase-status { font-size: 0.6rem; }
     }
     @media (max-width: 480px) {
       .app-shell { padding: 6px 0 12px; width: calc(100% - 8px); }
@@ -1454,7 +1443,7 @@
       .randomizer-card span { font-size: 0.7rem; }
       .view-controls button { font-size: 0.6rem; min-height: 28px; }
       .phase-bar .phase-name { font-size: 0.75rem; }
-      .phase-bar .phase-steps .step { font-size: 0.45rem; padding: 1px 4px; }
+      .phase-bar .phase-status { font-size: 0.5rem; }
       .phase-bar .phase-nav button { font-size: 0.6rem; padding: 2px 8px; min-height: 24px; }
     }
 
@@ -1740,23 +1729,12 @@
       font-style: italic;
       color: #fff;
     }
-    .phase-bar .phase-steps .step {
-      border: 2px solid #000;
-      background: #fff;
-      color: #000;
+    .phase-bar .phase-status {
       font-family: var(--mono-font);
-      font-size: 0.6rem;
-      font-weight: 700;
+      color: var(--muted);
     }
-    .phase-bar .phase-steps .step.active {
-      background: var(--bundesliga-gold);
-      color: #000;
-      border-color: #000;
-    }
-    .phase-bar .phase-steps .step.done {
-      background: var(--green);
-      color: #fff;
-      border-color: #000;
+    .phase-bar .phase-status .highlight {
+      color: var(--bundesliga-gold);
     }
     .phase-bar .phase-nav button {
       font-family: var(--headline-font);
@@ -1797,18 +1775,17 @@
         </div>
       </header>
 
-      <!-- PHASEN‑LEISTE (nur Draft) -->
+      <!-- PHASEN‑LEISTE (vereinfacht) -->
       <div class="phase-bar" id="phaseBar">
         <span class="phase-label">Draft</span>
-        <span class="phase-name" id="phaseName">aktiv</span>
-        <div class="phase-steps">
-          <span class="step active" data-step="draft">Draft läuft</span>
-          <span class="step" data-step="done">Draft beendet</span>
-        </div>
+        <span class="phase-name" id="phaseName">wartet</span>
+        <span class="phase-status" id="phaseStatus">
+          <span id="thesenCount">0</span> / 12 Thesen ausgefüllt
+        </span>
         <div class="phase-nav">
-          <button id="phaseToggle" type="button" class="primary">Draft beenden</button>
+          <button id="draftStartBtn" type="button" class="primary" disabled>Draft starten</button>
         </div>
-        <div class="phase-message" id="phaseMessage">Thesen platzieren &amp; Bilder hochladen</div>
+        <div class="phase-message" id="phaseMessage">Bitte alle 12 Thesen eingeben.</div>
       </div>
 
       <div class="game-layout">
@@ -2017,7 +1994,7 @@
       results: cloneData(initialBonuses),
       figureImages: {},
       questionValue: null,
-      draftActive: true,  // NEU: Draft an/aus
+      draftActive: false,  // wird erst durch Start-Button aktiv
     };
 
     function getThesisLabel(idx) {
@@ -2037,8 +2014,12 @@
     function canPlaceTheses() { return state.draftActive === true; }
     function canUploadImages() { return state.draftActive === true; }
 
+    function areAllThesesFilled() {
+      return state.theses.every(t => t.trim() !== '');
+    }
+
     // ============================
-    //  SNAPSHOT & UNDO (erweitert)
+    //  SNAPSHOT & UNDO
     // ============================
     function snapshotState() {
       return {
@@ -2074,7 +2055,7 @@
       state.questionValue = snapshot.questionValue;
       teamLogos.white = snapshot.teamLogos.white;
       teamLogos.black = snapshot.teamLogos.black;
-      state.draftActive = snapshot.draftActive !== undefined ? snapshot.draftActive : true;
+      state.draftActive = snapshot.draftActive !== undefined ? snapshot.draftActive : false;
       if (snapshot.teamNames) {
         nameInputs.white.value = snapshot.teamNames.white;
         nameInputs.black.value = snapshot.teamNames.black;
@@ -2082,7 +2063,7 @@
       render();
       createResultSettings();
       renderTeamLogos();
-      renderDraftIndicator();
+      updateDraftUI();
       isUndoing = false;
       updateUndoButtonState();
     }
@@ -2125,7 +2106,11 @@
     const thesisPanel = $('#thesisPanel');
     const fieldThesisWrapper = $('#fieldThesisWrapper');
     const undoBtn = $('#undoButton');
-    const phaseToggle = $('#phaseToggle');
+    const draftStartBtn = $('#draftStartBtn');
+    const phaseName = $('#phaseName');
+    const phaseStatus = $('#phaseStatus');
+    const phaseMessage = $('#phaseMessage');
+    const thesenCount = $('#thesenCount');
 
     let pointerDrag = null;
 
@@ -2310,7 +2295,6 @@
       if (!canUploadImages()) {
         flashTurnDenied(cell);
         flashTurnDenied(document.getElementById('turnStatusDisplay'));
-        showDraftMessage('Bilder können nur im aktiven Draft hochgeladen werden.', true);
         return false;
       }
       const slot = cell.dataset.figureSlot;
@@ -2619,52 +2603,46 @@
     function renderTurnStatus() {
       const container = document.getElementById('turnStatusDisplay');
       if (!container) return;
+      if (!state.draftActive) {
+        container.innerHTML = `<span>Draft noch nicht gestartet</span>`;
+        return;
+      }
       const thesisSide = getCurrentThesisTurnSide();
       const imageSide = getCurrentImageTurnSide();
       const tone = (side) => side === 'white' ? 'positive' : side === 'black' ? 'negative' : 'neutral';
       const label = (side) => side ? getSideDisplayName(side) : 'fertig';
       container.innerHTML = `
-        <span>These: <strong class="value ${tone(thesisSide)}">${escapeHtml(label(thesisSide))}</strong></span>
-        <span>Bild: <strong class="value ${tone(imageSide)}">${escapeHtml(label(imageSide))}</strong></span>
+        <span>Thesen: <strong class="value ${tone(thesisSide)}">${escapeHtml(label(thesisSide))}</strong></span>
+        <span>Bilder: <strong class="value ${tone(imageSide)}">${escapeHtml(label(imageSide))}</strong></span>
       `;
     }
 
-    function renderDraftIndicator() {
-      const nameEl = document.getElementById('phaseName');
-      const steps = document.querySelectorAll('#phaseSteps .step');
-      const msgEl = document.getElementById('phaseMessage');
-      const toggleBtn = document.getElementById('phaseToggle');
+    function updateDraftUI() {
+      const filled = areAllThesesFilled();
+      const count = state.theses.filter(t => t.trim() !== '').length;
+      thesenCount.textContent = count;
 
       if (state.draftActive) {
-        nameEl.textContent = 'aktiv';
-        steps[0].classList.add('active');
-        steps[0].classList.remove('done');
-        steps[1].classList.remove('active', 'done');
-        msgEl.textContent = 'Thesen platzieren & Bilder hochladen';
-        toggleBtn.textContent = 'Draft beenden';
-        toggleBtn.classList.add('primary');
+        phaseName.textContent = 'aktiv';
+        phaseStatus.innerHTML = `<span class="highlight">Draft läuft</span> – Zug: ${getSideDisplayName(getCurrentThesisTurnSide() || 'beendet')}`;
+        draftStartBtn.disabled = true;
+        draftStartBtn.textContent = 'Draft läuft';
+        draftStartBtn.classList.remove('primary');
+        phaseMessage.textContent = 'Thesen platzieren & Bilder hochladen';
+      } else if (filled) {
+        phaseName.textContent = 'bereit';
+        phaseStatus.innerHTML = `<span class="highlight">Alle Thesen ausgefüllt</span> – Draft starten`;
+        draftStartBtn.disabled = false;
+        draftStartBtn.textContent = 'Draft starten';
+        draftStartBtn.classList.add('primary');
+        phaseMessage.textContent = 'Klicke auf "Draft starten"';
       } else {
-        nameEl.textContent = 'beendet';
-        steps[0].classList.remove('active');
-        steps[0].classList.add('done');
-        steps[1].classList.add('active');
-        steps[1].classList.remove('done');
-        msgEl.textContent = 'Draft abgeschlossen – Platzieren & Hochladen gesperrt';
-        toggleBtn.textContent = 'Draft wieder aktivieren';
-        toggleBtn.classList.remove('primary');
-      }
-    }
-
-    function showDraftMessage(msg, isError = false) {
-      const el = document.getElementById('phaseMessage');
-      if (el) {
-        el.textContent = msg;
-        el.style.color = isError ? 'var(--bundesliga-red)' : 'var(--bundesliga-gold)';
-        clearTimeout(el._msgTimeout);
-        el._msgTimeout = setTimeout(() => {
-          el.textContent = state.draftActive ? 'Thesen platzieren & Bilder hochladen' : 'Draft abgeschlossen – Platzieren & Hochladen gesperrt';
-          el.style.color = 'var(--bundesliga-gold)';
-        }, 4000);
+        phaseName.textContent = 'wartet';
+        phaseStatus.innerHTML = `<span>${count} / 12 Thesen ausgefüllt</span>`;
+        draftStartBtn.disabled = true;
+        draftStartBtn.textContent = 'Draft starten';
+        draftStartBtn.classList.remove('primary');
+        phaseMessage.textContent = 'Bitte alle 12 Thesen eingeben.';
       }
     }
 
@@ -2679,7 +2657,7 @@
       renderThesisStatus();
       renderRandomizerStatus();
       renderTurnStatus();
-      renderDraftIndicator();
+      updateDraftUI();
       fitAllCardText();
       updateUndoButtonState();
     }
@@ -2728,7 +2706,6 @@
       if (!canPlaceTheses()) {
         flashTurnDenied(cell);
         flashTurnDenied(document.getElementById('turnStatusDisplay'));
-        showDraftMessage('Thesen können nur im aktiven Draft platziert werden.', true);
         return;
       }
 
@@ -2801,7 +2778,6 @@
         if (!canPlaceTheses()) {
           flashTurnDenied(target);
           flashTurnDenied(document.getElementById('turnStatusDisplay'));
-          showDraftMessage('Thesen können nur im aktiven Draft platziert werden.', true);
         } else {
           const oldSide = assignment.side;
           const oldPiece = assignment.piece;
@@ -2951,29 +2927,28 @@
     });
 
     // ============================
-    //  UNDO & DRAFT-TOGGLE
+    //  UNDO & DRAFT-START
     // ============================
     undoBtn?.addEventListener('click', undoLastAction);
 
-    phaseToggle?.addEventListener('click', () => {
+    draftStartBtn?.addEventListener('click', () => {
+      if (!areAllThesesFilled()) {
+        return;
+      }
       const before = snapshotState();
-      state.draftActive = !state.draftActive;
+      state.draftActive = true;
       render();
       pushUndo(before);
-      if (state.draftActive) {
-        showDraftMessage('Draft wieder aktiviert.');
-      } else {
-        showDraftMessage('Draft beendet – Platzieren & Hochladen gesperrt.');
-      }
+      phaseMessage.textContent = 'Draft gestartet!';
     });
 
     // ============================
-    //  EXPORT / IMPORT (erweitert um draftActive)
+    //  EXPORT / IMPORT
     // ============================
     function getFullExportPayload() {
       return {
         app: 'rasenschach',
-        version: 5,
+        version: 6,
         exportedAt: new Date().toISOString(),
         data: {
           theses: state.theses,
@@ -3065,7 +3040,7 @@
             teamLogos.white = isImageUrl(data.teamLogos.white) ? data.teamLogos.white : null;
             teamLogos.black = isImageUrl(data.teamLogos.black) ? data.teamLogos.black : null;
           }
-          state.draftActive = data.draftActive !== undefined ? data.draftActive : true;
+          state.draftActive = data.draftActive !== undefined ? data.draftActive : false;
           render();
           createResultSettings();
           renderTeamLogos();
@@ -3128,6 +3103,8 @@
       renderPlacements();
       fitAllCardText();
       if (oldText !== state.theses[idx]) pushUndo(before);
+      // UI aktualisieren (Zähler)
+      updateDraftUI();
     });
 
     resultsGrid.addEventListener('input', (e) => {
@@ -3184,7 +3161,7 @@
     // ============================
     render();
     createResultSettings();
-    renderDraftIndicator();
+    updateDraftUI();
 
     // ============================
     //  HINTERGRUND (aus index.html)
