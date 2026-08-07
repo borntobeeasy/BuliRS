@@ -198,6 +198,57 @@ function isFieldOccupied(side, piece, excludeId) {
 }
 
 // ============================
+//  SNAKE-DRAFT REIHENFOLGE
+//  Spieler A (weiß) beginnt mit einem Pick, danach wechseln sich
+//  beide Seiten im klassischen Snake-Draft-Muster ab:
+//  Weiß, Schwarz, Schwarz, Weiß, Weiß, Schwarz, Schwarz, Weiß, Weiß, Schwarz
+//  Gilt gleichermaßen für Thesen-Platzierung und Figuren-Bilder.
+// ============================
+const DRAFT_PICKS_PER_SIDE = PIECES.length; // 5 Felder je Seite
+const DRAFT_TOTAL_PICKS = DRAFT_PICKS_PER_SIDE * SIDES.length; // 10
+
+function getSnakeDraftSide(pickIndex) {
+  const round = Math.floor(pickIndex / SIDES.length);
+  const posInRound = pickIndex % SIDES.length;
+  const order = (round % 2 === 0) ? SIDES : SIDES.slice().reverse();
+  return order[posInRound];
+}
+
+function getThesisPickCount() {
+  return state.assignments.filter(a => a.side && a.piece).length;
+}
+
+function getCurrentThesisTurnSide() {
+  const count = getThesisPickCount();
+  if (count >= DRAFT_TOTAL_PICKS) return null;
+  return getSnakeDraftSide(count);
+}
+
+function getImagePickCount() {
+  return Object.values(state.figureImages).filter(url => isImageUrl(url)).length;
+}
+
+function getCurrentImageTurnSide() {
+  const count = getImagePickCount();
+  if (count >= DRAFT_TOTAL_PICKS) return null;
+  return getSnakeDraftSide(count);
+}
+
+function getSideDisplayName(side) {
+  const input = nameInputs[side];
+  const fallback = side === 'white' ? 'Spieler A' : 'Spieler B';
+  return input && input.value.trim() !== '' ? input.value.trim() : fallback;
+}
+
+function flashTurnDenied(el) {
+  if (!el) return;
+  el.classList.remove('turn-denied');
+  void el.offsetWidth; // Reflow erzwingen, damit die Animation erneut abspielt
+  el.classList.add('turn-denied');
+  setTimeout(() => el.classList.remove('turn-denied'), 500);
+}
+
+// ============================
 //  LOGO-VERWALTUNG
 // ============================
 function renderTeamLogos() {
@@ -276,8 +327,21 @@ function compressImage(file, callback) {
 // ============================
 //  FIGUREN-BILDER
 // ============================
+function isImagePickAllowed(cell) {
+  const slot = cell.dataset.figureSlot;
+  const hasImage = state.figureImages[slot] && isImageUrl(state.figureImages[slot]);
+  if (hasImage) return true; // Ersetzen eines vorhandenen Bildes ist immer erlaubt
+  const turnSide = getCurrentImageTurnSide();
+  return turnSide === null || cell.dataset.side === turnSide;
+}
+
 function handleFigureImageUpload(file, cell) {
   if (!file) return;
+  if (!isImagePickAllowed(cell)) {
+    flashTurnDenied(cell);
+    flashTurnDenied(document.getElementById('turnStatusDisplay'));
+    return;
+  }
   const process = (dataUrl) => {
     const before = snapshotState();
     state.figureImages[cell.dataset.figureSlot] = dataUrl;
@@ -536,6 +600,7 @@ function renderTotals() {
     const label = input && input.value.trim() !== '' ? input.value.trim() : fallback;
     $(`#${side}Label`).textContent = label;
   });
+  renderTurnStatus();
 }
 
 function renderRandomizerState() {
@@ -566,6 +631,19 @@ function renderRandomizerStatus() {
   container.innerHTML = `<span class="value ${cls}">${text}</span>`;
 }
 
+function renderTurnStatus() {
+  const container = document.getElementById('turnStatusDisplay');
+  if (!container) return;
+  const thesisSide = getCurrentThesisTurnSide();
+  const imageSide = getCurrentImageTurnSide();
+  const tone = (side) => side === 'white' ? 'positive' : side === 'black' ? 'negative' : 'neutral';
+  const label = (side) => side ? getSideDisplayName(side) : 'fertig';
+  container.innerHTML = `
+    <span>These: <strong class="value ${tone(thesisSide)}">${escapeHtml(label(thesisSide))}</strong></span>
+    <span>Bild: <strong class="value ${tone(imageSide)}">${escapeHtml(label(imageSide))}</strong></span>
+  `;
+}
+
 function render() {
   createBoard();
   createThesisList();
@@ -576,6 +654,7 @@ function render() {
   renderTeamLogos();
   renderThesisStatus();
   renderRandomizerStatus();
+  renderTurnStatus();
   fitAllCardText();
   updateUndoButtonState();
 }
@@ -638,6 +717,18 @@ function handleDrop(e) {
     return;
   }
 
+  // Bei einem NEUEN Pick (These war vorher noch nicht platziert) gilt die
+  // feste Snake-Draft-Reihenfolge. Bereits platzierte Thesen dürfen frei
+  // zwischen Feldern verschoben werden.
+  if (!oldSide) {
+    const turnSide = getCurrentThesisTurnSide();
+    if (turnSide !== null && newSide !== turnSide) {
+      flashTurnDenied(cell);
+      flashTurnDenied(document.getElementById('turnStatusDisplay'));
+      return;
+    }
+  }
+
   // Neue Zuordnung setzen (alte wird automatisch frei)
   assignment.side = newSide;
   assignment.piece = newPiece;
@@ -691,10 +782,22 @@ function handlePointerDragEnd(e) {
     if (!(oldSide === newSide && oldPiece === newPiece)) {
       // Prüfen, ob Zielfeld belegt ist
       if (!isFieldOccupied(newSide, newPiece, pointerDrag.id)) {
-        assignment.side = newSide;
-        assignment.piece = newPiece;
-        if (oldSide !== assignment.side || oldPiece !== assignment.piece) {
-          changed = true;
+        // Bei einem NEUEN Pick gilt die feste Snake-Draft-Reihenfolge
+        let turnOk = true;
+        if (!oldSide) {
+          const turnSide = getCurrentThesisTurnSide();
+          if (turnSide !== null && newSide !== turnSide) {
+            turnOk = false;
+            flashTurnDenied(target);
+            flashTurnDenied(document.getElementById('turnStatusDisplay'));
+          }
+        }
+        if (turnOk) {
+          assignment.side = newSide;
+          assignment.piece = newPiece;
+          if (oldSide !== assignment.side || oldPiece !== assignment.piece) {
+            changed = true;
+          }
         }
       }
       // Falls belegt: keine Änderung (changed bleibt false)
@@ -737,6 +840,11 @@ function handleFigureDrop(e) {
   }
   const url = getDroppedImageUrl(e.dataTransfer);
   if (url) {
+    if (!isImagePickAllowed(cell)) {
+      flashTurnDenied(cell);
+      flashTurnDenied(document.getElementById('turnStatusDisplay'));
+      return;
+    }
     const before = snapshotState();
     state.figureImages[cell.dataset.figureSlot] = url;
     const piece = getPieceById(cell.dataset.figureSlot.split('-')[1]);
@@ -747,6 +855,11 @@ function handleFigureDrop(e) {
 
 function handleFigurePick(e) {
   const cell = e.currentTarget;
+  if (!isImagePickAllowed(cell)) {
+    flashTurnDenied(cell);
+    flashTurnDenied(document.getElementById('turnStatusDisplay'));
+    return;
+  }
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';

@@ -516,6 +516,22 @@ h2 {
 .ticker-content .value.neutral  { color: var(--zero); }
 
 /* ============================================================
+   SNAKE-DRAFT: Hinweis bei Zug außer der Reihe
+   ============================================================ */
+@keyframes turnDeniedShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+.turn-denied {
+  animation: turnDeniedShake 0.4s ease;
+  outline: 2px solid var(--bundesliga-red);
+  outline-offset: -2px;
+}
+
+/* ============================================================
    LAYOUT
    ============================================================ */
 .game-layout {
