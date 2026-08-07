@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rasenschach – Phasen‑Leitfaden</title>
+  <title>Rasenschach – Draft‑Leitfaden</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="icon" href="favicon.ico" sizes="any" />
@@ -199,7 +199,7 @@
     #undoButton:hover:not(:disabled) { background: rgba(255, 255, 255, 0.18); }
     #undoButton:disabled { opacity: 0.4; cursor: default; }
 
-    /* Phasen‑Leiste */
+    /* Phasen‑Leiste (nur Draft) */
     .phase-bar {
       display: flex;
       align-items: center;
@@ -1797,21 +1797,18 @@
         </div>
       </header>
 
-      <!-- PHASEN‑LEISTE (Leitfaden) -->
+      <!-- PHASEN‑LEISTE (nur Draft) -->
       <div class="phase-bar" id="phaseBar">
-        <span class="phase-label">Phase</span>
-        <span class="phase-name" id="phaseName">Thesen eingeben</span>
-        <div class="phase-steps" id="phaseSteps">
-          <span class="step active" data-step="thesen">1. Thesen</span>
-          <span class="step" data-step="draft">2. Draft</span>
-          <span class="step" data-step="evaluation">3. Auswertung</span>
-          <span class="step" data-step="done">✔ Fertig</span>
+        <span class="phase-label">Draft</span>
+        <span class="phase-name" id="phaseName">aktiv</span>
+        <div class="phase-steps">
+          <span class="step active" data-step="draft">Draft läuft</span>
+          <span class="step" data-step="done">Draft beendet</span>
         </div>
         <div class="phase-nav">
-          <button id="phasePrev" type="button" disabled>← Zurück</button>
-          <button id="phaseNext" type="button" class="primary">Weiter →</button>
+          <button id="phaseToggle" type="button" class="primary">Draft beenden</button>
         </div>
-        <div class="phase-message" id="phaseMessage">Bitte alle Thesen ausfüllen.</div>
+        <div class="phase-message" id="phaseMessage">Thesen platzieren &amp; Bilder hochladen</div>
       </div>
 
       <div class="game-layout">
@@ -1973,7 +1970,8 @@
 
   <script>
     // ============================
-    //  GESAMTER JAVASCRIPT-CODE (app.js) + PHASENLEITFADEN
+    //  GESAMTER JAVASCRIPT-CODE (app.js)
+    //  + vereinfachter Draft‑Leitfaden
     // ============================
 
     // ============================
@@ -2000,29 +1998,6 @@
     };
 
     // ============================
-    //  PHASEN-DEFINITION
-    // ============================
-    const PHASES = {
-      THESEN: 'thesen',
-      DRAFT: 'draft',
-      EVALUATION: 'evaluation',
-      DONE: 'done'
-    };
-    const PHASE_ORDER = [PHASES.THESEN, PHASES.DRAFT, PHASES.EVALUATION, PHASES.DONE];
-    const PHASE_LABELS = {
-      [PHASES.THESEN]: 'Thesen eingeben',
-      [PHASES.DRAFT]: 'Draft – Thesen & Figuren platzieren',
-      [PHASES.EVALUATION]: 'Auswertung – Bewerten & Ergebnisse',
-      [PHASES.DONE]: 'Fertig – Spiel abgeschlossen'
-    };
-    const PHASE_MESSAGES = {
-      [PHASES.THESEN]: 'Bitte alle 12 Thesentexte ausfüllen.',
-      [PHASES.DRAFT]: 'Platziere alle 10 Thesen auf dem Brett und lade Fotos hoch.',
-      [PHASES.EVALUATION]: 'Bewerte alle Thesen und trage die Ergebnisse ein.',
-      [PHASES.DONE]: 'Das Spiel ist abgeschlossen. Du kannst jederzeit Änderungen rückgängig machen.'
-    };
-
-    // ============================
     //  ZUSTAND & UNDO-STACK
     // ============================
     const initialBonuses = {
@@ -2042,7 +2017,7 @@
       results: cloneData(initialBonuses),
       figureImages: {},
       questionValue: null,
-      phase: PHASES.THESEN,  // NEU: aktuelle Spielphase
+      draftActive: true,  // NEU: Draft an/aus
     };
 
     function getThesisLabel(idx) {
@@ -2057,73 +2032,10 @@
     let isUndoing = false;
 
     // ============================
-    //  HILFSFUNKTIONEN FÜR PHASEN
+    //  HILFSFUNKTIONEN FÜR DRAFT
     // ============================
-    function canEditTheses() { return state.phase === PHASES.THESEN; }
-    function canPlaceTheses() { return state.phase === PHASES.DRAFT; }
-    function canUploadImages() { return state.phase === PHASES.DRAFT; }
-    function canEvaluate() { return state.phase === PHASES.EVALUATION; }
-    function canInputResults() { return state.phase === PHASES.EVALUATION; }
-
-    function isPhaseComplete(phase) {
-      if (phase === PHASES.THESEN) {
-        return state.theses.every(t => t.trim() !== '');
-      }
-      if (phase === PHASES.DRAFT) {
-        const placed = state.assignments.filter(a => a.side && a.piece).length;
-        return placed === 10; // 5 weiße + 5 schwarze Felder belegt
-      }
-      if (phase === PHASES.EVALUATION) {
-        const allEvaluated = state.assignments.every(a => a.polarity !== null);
-        // Ergebnisse müssen nicht zwingend geändert werden, aber wir prüfen, ob alle Felder Werte haben (initial 0 ist ok)
-        // Wir gehen davon aus, dass der Nutzer sie selbst einträgt.
-        return allEvaluated;
-      }
-      if (phase === PHASES.DONE) return true;
-      return false;
-    }
-
-    function getPhaseIndex(phase) { return PHASE_ORDER.indexOf(phase); }
-    function getCurrentPhaseIndex() { return getPhaseIndex(state.phase); }
-
-    function canGoToPhase(targetPhase) {
-      const currentIdx = getCurrentPhaseIndex();
-      const targetIdx = getPhaseIndex(targetPhase);
-      if (targetIdx < currentIdx) return true; // Zurück immer erlaubt
-      if (targetIdx === currentIdx) return false;
-      // Vorwärts: alle vorherigen Phasen müssen komplett sein
-      for (let i = currentIdx; i < targetIdx; i++) {
-        if (!isPhaseComplete(PHASE_ORDER[i])) return false;
-      }
-      return true;
-    }
-
-    function setPhase(newPhase) {
-      if (!PHASE_ORDER.includes(newPhase)) return;
-      if (newPhase === state.phase) return;
-      if (!canGoToPhase(newPhase)) {
-        showPhaseMessage('Phase kann nicht gewechselt werden – erfülle zuerst die Bedingungen.', true);
-        return;
-      }
-      const before = snapshotState();
-      state.phase = newPhase;
-      render();
-      renderPhaseIndicator();
-      pushUndo(before);
-    }
-
-    function showPhaseMessage(msg, isError = false) {
-      const el = document.getElementById('phaseMessage');
-      if (el) {
-        el.textContent = msg;
-        el.style.color = isError ? 'var(--bundesliga-red)' : 'var(--bundesliga-gold)';
-        clearTimeout(el._msgTimeout);
-        el._msgTimeout = setTimeout(() => {
-          el.textContent = PHASE_MESSAGES[state.phase] || '';
-          el.style.color = 'var(--bundesliga-gold)';
-        }, 4000);
-      }
-    }
+    function canPlaceTheses() { return state.draftActive === true; }
+    function canUploadImages() { return state.draftActive === true; }
 
     // ============================
     //  SNAPSHOT & UNDO (erweitert)
@@ -2140,7 +2052,7 @@
           white: nameInputs.white.value,
           black: nameInputs.black.value,
         },
-        phase: state.phase,  // Phase speichern
+        draftActive: state.draftActive,
       };
     }
 
@@ -2162,7 +2074,7 @@
       state.questionValue = snapshot.questionValue;
       teamLogos.white = snapshot.teamLogos.white;
       teamLogos.black = snapshot.teamLogos.black;
-      state.phase = snapshot.phase || PHASES.THESEN; // Fallback
+      state.draftActive = snapshot.draftActive !== undefined ? snapshot.draftActive : true;
       if (snapshot.teamNames) {
         nameInputs.white.value = snapshot.teamNames.white;
         nameInputs.black.value = snapshot.teamNames.black;
@@ -2170,7 +2082,7 @@
       render();
       createResultSettings();
       renderTeamLogos();
-      renderPhaseIndicator();
+      renderDraftIndicator();
       isUndoing = false;
       updateUndoButtonState();
     }
@@ -2213,8 +2125,7 @@
     const thesisPanel = $('#thesisPanel');
     const fieldThesisWrapper = $('#fieldThesisWrapper');
     const undoBtn = $('#undoButton');
-    const phaseNext = $('#phaseNext');
-    const phasePrev = $('#phasePrev');
+    const phaseToggle = $('#phaseToggle');
 
     let pointerDrag = null;
 
@@ -2393,13 +2304,13 @@
     }
 
     // ============================
-    //  FIGUREN-BILDER (mit Phasenprüfung)
+    //  FIGUREN-BILDER (mit Draft‑Prüfung)
     // ============================
     function isImagePickAllowed(cell) {
       if (!canUploadImages()) {
         flashTurnDenied(cell);
         flashTurnDenied(document.getElementById('turnStatusDisplay'));
-        showPhaseMessage('Bilder können nur in der Draft‑Phase hochgeladen werden.', true);
+        showDraftMessage('Bilder können nur im aktiven Draft hochgeladen werden.', true);
         return false;
       }
       const slot = cell.dataset.figureSlot;
@@ -2635,11 +2546,11 @@
         const negativeActive = a.polarity === 'negative' ? 'active' : '';
         card.innerHTML = `
           <strong>These ${a.id}</strong>
-          <input aria-label="These ${a.id} Titel" data-id="${a.id}" data-field="thesis-text" placeholder="These ${a.id}" value="${escapeHtml(state.theses[a.id - 1])}" ${canEditTheses() ? '' : 'disabled'} />
+          <input aria-label="These ${a.id} Titel" data-id="${a.id}" data-field="thesis-text" placeholder="These ${a.id}" value="${escapeHtml(state.theses[a.id - 1])}" />
           <div class="evaluation-controls" aria-label="These ${a.id} auswerten">
-            <button class="neutral-button ${neutralActive}" data-id="${a.id}" data-polarity="" type="button" ${canEvaluate() ? '' : 'disabled'}>unausgewertet</button>
-            <button class="polarity-button ${positiveActive}" data-id="${a.id}" data-polarity="positive" type="button" ${canEvaluate() ? '' : 'disabled'}>+</button>
-            <button class="polarity-button ${negativeActive}" data-id="${a.id}" data-polarity="negative" type="button" ${canEvaluate() ? '' : 'disabled'}>-</button>
+            <button class="neutral-button ${neutralActive}" data-id="${a.id}" data-polarity="" type="button">unausgewertet</button>
+            <button class="polarity-button ${positiveActive}" data-id="${a.id}" data-polarity="positive" type="button">+</button>
+            <button class="polarity-button ${negativeActive}" data-id="${a.id}" data-polarity="negative" type="button">-</button>
           </div>
         `;
         evaluationList.appendChild(card);
@@ -2656,7 +2567,7 @@
           ${PIECES.map(p => `
             <div class="result-row">
               <label for="${side}-${p.id}-result">${p.name}</label>
-              <input id="${side}-${p.id}-result" data-side="${side}" data-piece="${p.id}" type="number" step="1" value="${state.results[side][p.id]}" ${canInputResults() ? '' : 'disabled'} />
+              <input id="${side}-${p.id}-result" data-side="${side}" data-piece="${p.id}" type="number" step="1" value="${state.results[side][p.id]}" />
             </div>
           `).join('')}
         `;
@@ -2718,41 +2629,42 @@
       `;
     }
 
-    function renderPhaseIndicator() {
+    function renderDraftIndicator() {
       const nameEl = document.getElementById('phaseName');
       const steps = document.querySelectorAll('#phaseSteps .step');
       const msgEl = document.getElementById('phaseMessage');
-      const prevBtn = document.getElementById('phasePrev');
-      const nextBtn = document.getElementById('phaseNext');
+      const toggleBtn = document.getElementById('phaseToggle');
 
-      if (nameEl) nameEl.textContent = PHASE_LABELS[state.phase] || state.phase;
-      if (msgEl) msgEl.textContent = PHASE_MESSAGES[state.phase] || '';
-
-      steps.forEach(step => {
-        const stepPhase = step.dataset.step;
-        step.classList.remove('active', 'done');
-        const idx = getPhaseIndex(stepPhase);
-        const currentIdx = getCurrentPhaseIndex();
-        if (idx < currentIdx) step.classList.add('done');
-        else if (idx === currentIdx) step.classList.add('active');
-      });
-
-      // Buttons
-      const currentIdx = getCurrentPhaseIndex();
-      prevBtn.disabled = currentIdx === 0;
-      nextBtn.disabled = currentIdx === PHASE_ORDER.length - 1;
-      if (currentIdx < PHASE_ORDER.length - 1) {
-        const nextPhase = PHASE_ORDER[currentIdx + 1];
-        nextBtn.textContent = `Weiter → ${PHASE_LABELS[nextPhase]}`;
+      if (state.draftActive) {
+        nameEl.textContent = 'aktiv';
+        steps[0].classList.add('active');
+        steps[0].classList.remove('done');
+        steps[1].classList.remove('active', 'done');
+        msgEl.textContent = 'Thesen platzieren & Bilder hochladen';
+        toggleBtn.textContent = 'Draft beenden';
+        toggleBtn.classList.add('primary');
       } else {
-        nextBtn.textContent = 'Fertig';
+        nameEl.textContent = 'beendet';
+        steps[0].classList.remove('active');
+        steps[0].classList.add('done');
+        steps[1].classList.add('active');
+        steps[1].classList.remove('done');
+        msgEl.textContent = 'Draft abgeschlossen – Platzieren & Hochladen gesperrt';
+        toggleBtn.textContent = 'Draft wieder aktivieren';
+        toggleBtn.classList.remove('primary');
       }
-      // Prüfen, ob Weiter möglich ist
-      if (!nextBtn.disabled) {
-        const nextPhase = PHASE_ORDER[currentIdx + 1];
-        if (!canGoToPhase(nextPhase)) {
-          nextBtn.disabled = true;
-        }
+    }
+
+    function showDraftMessage(msg, isError = false) {
+      const el = document.getElementById('phaseMessage');
+      if (el) {
+        el.textContent = msg;
+        el.style.color = isError ? 'var(--bundesliga-red)' : 'var(--bundesliga-gold)';
+        clearTimeout(el._msgTimeout);
+        el._msgTimeout = setTimeout(() => {
+          el.textContent = state.draftActive ? 'Thesen platzieren & Bilder hochladen' : 'Draft abgeschlossen – Platzieren & Hochladen gesperrt';
+          el.style.color = 'var(--bundesliga-gold)';
+        }, 4000);
       }
     }
 
@@ -2767,7 +2679,7 @@
       renderThesisStatus();
       renderRandomizerStatus();
       renderTurnStatus();
-      renderPhaseIndicator();
+      renderDraftIndicator();
       fitAllCardText();
       updateUndoButtonState();
     }
@@ -2790,7 +2702,7 @@
     }
 
     // ============================
-    //  DRAG & DROP (mit Phasenprüfung)
+    //  DRAG & DROP (mit Draft‑Prüfung)
     // ============================
     function handleDragStart(e) {
       const id = e.currentTarget.dataset.id;
@@ -2813,11 +2725,10 @@
       cell.classList.remove('drag-over');
       if (!assignment) return;
 
-      // Phasenprüfung: nur in Draft-Phase erlaubt
       if (!canPlaceTheses()) {
         flashTurnDenied(cell);
         flashTurnDenied(document.getElementById('turnStatusDisplay'));
-        showPhaseMessage('Thesen können nur in der Draft‑Phase platziert werden.', true);
+        showDraftMessage('Thesen können nur im aktiven Draft platziert werden.', true);
         return;
       }
 
@@ -2890,7 +2801,7 @@
         if (!canPlaceTheses()) {
           flashTurnDenied(target);
           flashTurnDenied(document.getElementById('turnStatusDisplay'));
-          showPhaseMessage('Thesen können nur in der Draft‑Phase platziert werden.', true);
+          showDraftMessage('Thesen können nur im aktiven Draft platziert werden.', true);
         } else {
           const oldSide = assignment.side;
           const oldPiece = assignment.piece;
@@ -3040,33 +2951,29 @@
     });
 
     // ============================
-    //  UNDO & PHASEN-NAVIGATION
+    //  UNDO & DRAFT-TOGGLE
     // ============================
     undoBtn?.addEventListener('click', undoLastAction);
 
-    phaseNext?.addEventListener('click', () => {
-      const currentIdx = getCurrentPhaseIndex();
-      if (currentIdx < PHASE_ORDER.length - 1) {
-        const nextPhase = PHASE_ORDER[currentIdx + 1];
-        setPhase(nextPhase);
-      }
-    });
-
-    phasePrev?.addEventListener('click', () => {
-      const currentIdx = getCurrentPhaseIndex();
-      if (currentIdx > 0) {
-        const prevPhase = PHASE_ORDER[currentIdx - 1];
-        setPhase(prevPhase);
+    phaseToggle?.addEventListener('click', () => {
+      const before = snapshotState();
+      state.draftActive = !state.draftActive;
+      render();
+      pushUndo(before);
+      if (state.draftActive) {
+        showDraftMessage('Draft wieder aktiviert.');
+      } else {
+        showDraftMessage('Draft beendet – Platzieren & Hochladen gesperrt.');
       }
     });
 
     // ============================
-    //  EXPORT / IMPORT (erweitert um Phase)
+    //  EXPORT / IMPORT (erweitert um draftActive)
     // ============================
     function getFullExportPayload() {
       return {
         app: 'rasenschach',
-        version: 4,
+        version: 5,
         exportedAt: new Date().toISOString(),
         data: {
           theses: state.theses,
@@ -3076,7 +2983,7 @@
           questionValue: state.questionValue,
           figureImages: state.figureImages,
           teamLogos: teamLogos,
-          phase: state.phase,
+          draftActive: state.draftActive,
         },
       };
     }
@@ -3158,11 +3065,7 @@
             teamLogos.white = isImageUrl(data.teamLogos.white) ? data.teamLogos.white : null;
             teamLogos.black = isImageUrl(data.teamLogos.black) ? data.teamLogos.black : null;
           }
-          if (data.phase && PHASE_ORDER.includes(data.phase)) {
-            state.phase = data.phase;
-          } else {
-            state.phase = PHASES.THESEN;
-          }
+          state.draftActive = data.draftActive !== undefined ? data.draftActive : true;
           render();
           createResultSettings();
           renderTeamLogos();
@@ -3205,10 +3108,6 @@
     evaluationList.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-polarity]');
       if (!btn) return;
-      if (!canEvaluate()) {
-        showPhaseMessage('Bewertungen sind nur in der Auswertungs‑Phase möglich.', true);
-        return;
-      }
       const a = state.assignments.find(item => item.id === Number(btn.dataset.id));
       if (!a) return;
       const before = snapshotState();
@@ -3221,11 +3120,6 @@
     evaluationList.addEventListener('input', (e) => {
       const inp = e.target;
       if (!inp.matches('[data-field="thesis-text"]')) return;
-      if (!canEditTheses()) {
-        showPhaseMessage('Thesentexte können nur in der Eingabe‑Phase geändert werden.', true);
-        inp.value = state.theses[Number(inp.dataset.id) - 1]; // zurücksetzen
-        return;
-      }
       const idx = Number(inp.dataset.id) - 1;
       const before = snapshotState();
       const oldText = state.theses[idx];
@@ -3239,11 +3133,6 @@
     resultsGrid.addEventListener('input', (e) => {
       const inp = e.target;
       if (!inp.matches('[data-side][data-piece]')) return;
-      if (!canInputResults()) {
-        showPhaseMessage('Ergebnisse können nur in der Auswertungs‑Phase geändert werden.', true);
-        inp.value = state.results[inp.dataset.side]?.[inp.dataset.piece] ?? 0;
-        return;
-      }
       const { side, piece } = inp.dataset;
       if (!SIDES.includes(side) || !PIECE_IDS.includes(piece)) return;
       const before = snapshotState();
@@ -3295,7 +3184,7 @@
     // ============================
     render();
     createResultSettings();
-    renderPhaseIndicator();
+    renderDraftIndicator();
 
     // ============================
     //  HINTERGRUND (aus index.html)
