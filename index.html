@@ -1781,20 +1781,6 @@
         </div>
       </header>
 
-      <!-- PHASEN‑LEISTE (erweitert) -->
-      <div class="phase-bar" id="phaseBar">
-        <span class="phase-label">Phase</span>
-        <span class="phase-name" id="phaseName">Thesen</span>
-        <span class="phase-status" id="phaseStatus">
-          <span id="phaseStatusText">0 / 12 Thesen ausgefüllt</span>
-        </span>
-        <div class="phase-nav" id="phaseNav">
-          <button id="randomizerBtn" type="button" style="display:none;">Randomizer auslosen</button>
-          <button id="draftStartBtn" type="button" class="primary" style="display:none;">Draft starten</button>
-        </div>
-        <div class="phase-message" id="phaseMessage">Bitte alle 12 Thesen eingeben.</div>
-      </div>
-
       <div class="game-layout">
         <section class="scoreboard" aria-label="Spielstand">
           <div class="scorebug">
@@ -1836,21 +1822,23 @@
                 <span class="meta-dot">•</span>
                 <span>Saison 26/27</span>
               </div>
-              <div class="ticker-row turn-status">
-                <span class="ticker-label">Am Zug</span>
-                <div class="ticker-content" id="turnStatusDisplay"></div>
-              </div>
-              <div class="ticker-row thesis-status">
-                <span class="ticker-label">Thesen</span>
-                <div class="ticker-content" id="thesisStatusDisplay"></div>
-              </div>
-              <div class="ticker-row randomizer-status">
-                <span class="ticker-label">Randomizer</span>
-                <div class="ticker-content" id="randomizerStatusDisplay"></div>
-              </div>
             </div>
           </div>
         </section>
+
+        <!-- LEITFADEN (Phasen‑Leiste) -->
+        <div class="phase-bar" id="phaseBar">
+          <span class="phase-label">Phase</span>
+          <span class="phase-name" id="phaseName">Thesen</span>
+          <span class="phase-status" id="phaseStatus">
+            <span id="phaseStatusText">0 / 12 Thesen ausgefüllt</span>
+          </span>
+          <div class="phase-nav" id="phaseNav">
+            <button id="randomizerBtn" type="button" style="display:none;">Randomizer auslosen</button>
+            <button id="draftStartBtn" type="button" class="primary" style="display:none;">Draft starten</button>
+          </div>
+          <div class="phase-message" id="phaseMessage">Bitte alle 12 Thesen eingeben.</div>
+        </div>
 
         <div class="field-thesis-wrapper" id="fieldThesisWrapper">
           <section class="field-wrap">
@@ -2182,6 +2170,7 @@
     const thesisPanel = $('#thesisPanel');
     const fieldThesisWrapper = $('#fieldThesisWrapper');
     const undoBtn = $('#undoButton');
+    const phaseBar = $('#phaseBar');
     const randomizerBtn = $('#randomizerBtn');
     const draftStartBtn = $('#draftStartBtn');
     const phaseName = $('#phaseName');
@@ -2324,7 +2313,7 @@
     function isImagePickAllowed(cell) {
       if (state.phase !== 'bilder_draft') {
         flashTurnDenied(cell);
-        flashTurnDenied(document.getElementById('turnStatusDisplay'));
+        flashTurnDenied(document.getElementById('phaseBar'));
         return false;
       }
       const slot = cell.dataset.figureSlot;
@@ -2338,7 +2327,7 @@
       if (!file) return;
       if (!isImagePickAllowed(cell)) {
         flashTurnDenied(cell);
-        flashTurnDenied(document.getElementById('turnStatusDisplay'));
+        flashTurnDenied(document.getElementById('phaseBar'));
         return;
       }
       const process = (dataUrl) => {
@@ -2697,6 +2686,10 @@
       }
       phaseStatusText.textContent = statusText;
 
+      // Leitfaden ausblenden, sobald alle Schritte abgeschlossen sind –
+      // dann sieht man nur noch Spielanzeige + Brett.
+      if (phaseBar) phaseBar.style.display = (phase === 'fertig') ? 'none' : '';
+
       // Buttons ein-/ausblenden
       randomizerBtn.style.display = (phase === 'randomizer') ? 'inline-block' : 'none';
       draftStartBtn.style.display = (phase === 'thesen_draft' || phase === 'randomizer') ? 'inline-block' : 'none';
@@ -2793,7 +2786,7 @@
 
       if (state.phase !== 'thesen_draft') {
         flashTurnDenied(cell);
-        flashTurnDenied(document.getElementById('turnStatusDisplay'));
+        flashTurnDenied(document.getElementById('phaseBar'));
         return;
       }
 
@@ -2811,7 +2804,7 @@
         const turnSide = getCurrentThesisTurnSide();
         if (turnSide !== null && newSide !== turnSide) {
           flashTurnDenied(cell);
-          flashTurnDenied(document.getElementById('turnStatusDisplay'));
+          flashTurnDenied(document.getElementById('phaseBar'));
           return;
         }
       }
@@ -2867,7 +2860,7 @@
       if (target && assignment) {
         if (state.phase !== 'thesen_draft') {
           flashTurnDenied(target);
-          flashTurnDenied(document.getElementById('turnStatusDisplay'));
+          flashTurnDenied(document.getElementById('phaseBar'));
         } else {
           const oldSide = assignment.side;
           const oldPiece = assignment.piece;
@@ -2882,7 +2875,7 @@
                 if (turnSide !== null && newSide !== turnSide) {
                   turnOk = false;
                   flashTurnDenied(target);
-                  flashTurnDenied(document.getElementById('turnStatusDisplay'));
+                  flashTurnDenied(document.getElementById('phaseBar'));
                 }
               }
               if (turnOk) {
@@ -2942,7 +2935,7 @@
       if (url) {
         if (!isImagePickAllowed(cell)) {
           flashTurnDenied(cell);
-          flashTurnDenied(document.getElementById('turnStatusDisplay'));
+          flashTurnDenied(document.getElementById('phaseBar'));
           return;
         }
         const before = snapshotState();
@@ -2961,7 +2954,7 @@
       const cell = e.currentTarget;
       if (!isImagePickAllowed(cell)) {
         flashTurnDenied(cell);
-        flashTurnDenied(document.getElementById('turnStatusDisplay'));
+        flashTurnDenied(document.getElementById('phaseBar'));
         return;
       }
       const input = document.createElement('input');
@@ -3154,6 +3147,15 @@
             teamLogos.black = isImageUrl(data.teamLogos.black) ? data.teamLogos.black : null;
           }
           state.phase = (data.phase && ['thesen','randomizer','thesen_draft','bilder_draft','fertig'].includes(data.phase)) ? data.phase : 'thesen';
+
+          // Nach dem Import prüfen: sind alle 12 Thesen ausgefüllt, aber die
+          // Phase steht noch auf "thesen"? Dann direkt zum Randomizer wechseln,
+          // damit (falls das Zufallsfeld bereits ausgelost ist) sofort
+          // "Draft starten" angeboten wird.
+          if (state.phase === 'thesen' && areAllThesesFilled()) {
+            state.phase = 'randomizer';
+          }
+
           render();
           createResultSettings();
           renderTeamLogos();
