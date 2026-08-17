@@ -2171,6 +2171,7 @@
     const fieldThesisWrapper = $('#fieldThesisWrapper');
     const undoBtn = $('#undoButton');
     const phaseBar = $('#phaseBar');
+    let pickBoardAutoHidden = false;
     const randomizerBtn = $('#randomizerBtn');
     const draftStartBtn = $('#draftStartBtn');
     const phaseName = $('#phaseName');
@@ -2689,6 +2690,22 @@
       // Leitfaden ausblenden, sobald alle Schritte abgeschlossen sind –
       // dann sieht man nur noch Spielanzeige + Brett.
       if (phaseBar) phaseBar.style.display = (phase === 'fertig') ? 'none' : '';
+
+      // Pick Board automatisch ausblenden am Ende des Protokolls – genau wie
+      // der manuelle "Thesen ausblenden"-Schalter in den Einstellungen, nur
+      // automatisch ausgelöst. Einmalig beim Erreichen von "fertig", damit
+      // ein anschließendes manuelles Wiedereinblenden nicht sofort rückgängig
+      // gemacht wird.
+      if (phase === 'fertig') {
+        if (!pickBoardAutoHidden) {
+          thesisPanel.setAttribute('hidden', '');
+          fieldThesisWrapper.classList.add('thesis-hidden');
+          toggleThesisBtn.textContent = 'Thesen einblenden';
+          pickBoardAutoHidden = true;
+        }
+      } else {
+        pickBoardAutoHidden = false;
+      }
 
       // Buttons ein-/ausblenden
       randomizerBtn.style.display = (phase === 'randomizer') ? 'inline-block' : 'none';
